@@ -5,9 +5,10 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/stats-bot-app/pom.xml" />
-        <option value="$PROJECT_DIR$/stats-bot_v2-app/pom.xml" />
+        <option value="$PROJECT_DIR$/stats-bot_v2-app2/pom.xml" />
         <option value="$PROJECT_DIR$/stats-bot_v2-api/pom.xml" />
         <option value="$PROJECT_DIR$/stats-bot_v2-item/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
   </component>
