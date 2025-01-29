@@ -1,7 +1,6 @@
 package db.model;
 
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
-import db.model.enums.MatchType;
 import db.model.enums.PlayerName;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -37,7 +36,7 @@ import org.hibernate.annotations.TypeDefs;
     )
 })
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Top {
+public class TopItem {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")

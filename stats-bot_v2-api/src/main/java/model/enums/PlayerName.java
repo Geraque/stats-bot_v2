@@ -1,4 +1,4 @@
-package db.model.enums;
+package model.enums;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

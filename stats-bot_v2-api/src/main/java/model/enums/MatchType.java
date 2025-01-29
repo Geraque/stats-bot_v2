@@ -1,4 +1,4 @@
-package db.model.enums;
+package model.enums;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,14 +8,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum PlayerName {
-  DESMOND("Desmond"),
-  BLACK_VISION("BlackVision"),
-  GLOXINIA("Gloxinia"),
-  B4ONE("B4one"),
-  NEKIT("221w33"),
-  KOPFIRE("Kopfire"),
-  WOLF_SMXL("Wolf_SMXL");
+public enum MatchType {
+  MATCH_MAKING("ММ"),
+  WINGMAN("Напарники"),
+  PREMIER("Премьер");
 
   String name;
 }

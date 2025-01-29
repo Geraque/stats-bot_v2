@@ -44,7 +44,7 @@ import org.hibernate.annotations.TypeDefs;
     )
 })
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Match {
+public class MatchItem {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")

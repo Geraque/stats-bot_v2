@@ -10,7 +10,7 @@
   <modules>
     <module>stats-bot_v2-api</module>
     <module>stats-bot_v2-item</module>
-    <module>stats-bot_v2-app2</module>
+    <module>stats-bot_v2-app</module>
   </modules>
   <build>
     <plugins>
