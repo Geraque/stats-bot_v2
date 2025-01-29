@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15 # Используйте последнюю стабильную версию PostgreSQL, актуальную для вас
+    container_name: statsbot_postgres
+    restart: always
+    ports:
+      - "5432:5432" # Локальный порт 5432 будет перенаправлен внутрь контейнера
+    environment:
+      POSTGRES_USER: postgres # Имя пользователя для базы данных
+      POSTGRES_PASSWORD: gfhjkmvjq # Пароль для базы данных
+      POSTGRES_DB: StatsBot # Имя базы данных, которая создастся автоматически при запуске
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Для сохранения состояния базы данных
+
+volumes:
+  postgres_data:
+    driver: local # Хранилище данных на локальной машине
