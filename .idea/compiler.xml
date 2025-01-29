@@ -12,7 +12,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="stats-bot_v2-api" />
+        <module name="stats-bot_v2-app" />
         <module name="stats-bot-app" />
+        <module name="stats-bot_v2-item" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
