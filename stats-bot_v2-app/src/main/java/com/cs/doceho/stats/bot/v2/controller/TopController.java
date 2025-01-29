@@ -20,11 +20,6 @@ import ma.glasnost.orika.MapperFacade;
 import com.cs.doceho.stats.bot.v2.model.Top;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,7 +35,6 @@ public class TopController implements TopApi {
   MapperFacade mapper;
 
   //Получение всей информации
-  @GetMapping("/all")
   public List<Top> getAllTop() {
     return topRepository.findAll().stream()
         .map(it -> mapper.map(it, Top.class))
@@ -48,7 +42,6 @@ public class TopController implements TopApi {
   }
 
   //Получение информации по году
-  @GetMapping("/getbyyear/{year}")
   public ResponseEntity<List<String>> getYearTop(int year) {
     List<TopItem> doceho = topRepository.findAll();
     List<String> list = new ArrayList<>();
@@ -64,7 +57,6 @@ public class TopController implements TopApi {
   }
 
   //Получение информации по id
-  @GetMapping("/{id}")
   public ResponseEntity<Top> getTopById(Long topId)
       throws ResourceNotFoundException {
     TopItem top = topRepository.findById(topId)
@@ -73,7 +65,6 @@ public class TopController implements TopApi {
   }
 
   //Получение информации по имени
-  @GetMapping("/getbyname/{name}")
   public ResponseEntity<List<Top>> getTopByName(String playerName) {
     List<TopItem> top = topRepository.findAll();
     List<Top> result = new ArrayList<>();
@@ -86,7 +77,6 @@ public class TopController implements TopApi {
   }
 
   //Создание итогов
-  @PostMapping("/create")
   public Top createTop(Top top) {
     TopItem build = TopItem.builder()
         .name(PlayerName.valueOf(top.getName().name()))
@@ -99,8 +89,7 @@ public class TopController implements TopApi {
   }
 
   //Изменение итогов по id
-  @PutMapping("/{id}")
-  public ResponseEntity<Top> updateTop(@PathVariable(value = "id") Long topId,
+  public ResponseEntity<Top> updateTop(Long topId,
       @Valid @RequestBody Top topDetails) throws ResourceNotFoundException {
     TopItem top = topRepository.findById(topId)
         .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
@@ -115,8 +104,7 @@ public class TopController implements TopApi {
   }
 
   //Удаление информации по id
-  @DeleteMapping("/{id}")
-  public Map<String, Boolean> deleteTop(@PathVariable(value = "id") Long topId)
+  public Map<String, Boolean> deleteTop(Long topId)
       throws ResourceNotFoundException {
     TopItem top = topRepository.findById(topId)
         .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
