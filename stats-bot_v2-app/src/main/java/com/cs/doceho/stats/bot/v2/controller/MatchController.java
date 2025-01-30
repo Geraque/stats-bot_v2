@@ -7,6 +7,7 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
 import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
+import com.cs.doceho.stats.bot.v2.model.Match;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,12 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
-import com.cs.doceho.stats.bot.v2.model.Match;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-//Запросы к основной таблице со всеми матчами
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -33,7 +31,6 @@ public class MatchController implements MatchApi {
   MatchRepository matchRepository;
   MapperFacade mapper;
 
-  //Получение всех матчей
   @Override
   public List<Match> getAllMatches() {
     return matchRepository.findAll().stream()
@@ -41,7 +38,6 @@ public class MatchController implements MatchApi {
         .collect(Collectors.toList());
   }
 
-  //Получение матчей по id
   @Override
   public ResponseEntity<Match> getMatchById(Long matchId)
       throws ResourceNotFoundException {
@@ -52,7 +48,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(mapper.map(matchItem, Match.class));
   }
 
-  //Получение матчей по игроку
+
   @Override
   public ResponseEntity<List<Match>> getMatchByName(String playerName) {
     //Получаем все матчи и ревёрсим, чтобы первыми шли последние матчи
@@ -73,7 +69,6 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(collect);
   }
 
-  //Получение всей статистики игрока
   @Override
   public ResponseEntity<double[]> getPlayerStats(String playerName) {
     List<MatchItem> matchItems = matchRepository.findAll();
@@ -106,7 +101,6 @@ public class MatchController implements MatchApi {
   }
 
 
-  //Получение всей статистики всех игроков
   @Override
   public ResponseEntity<double[]> getAllStats() {
     List<MatchItem> matchItems = matchRepository.findAll();
@@ -218,7 +212,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(arr);
   }
 
-  //Получение топ 1 по рейтингу
+
   @Override
   public ResponseEntity<String[]> getRating() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -276,7 +270,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по опен киллам
+
   @Override
   public ResponseEntity<String[]> getOpenKill() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -333,7 +327,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по флешкам
+
   @Override
   public ResponseEntity<String[]> getFlash() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -390,7 +384,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по размену
+
   @Override
   public ResponseEntity<String[]> getTrade() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -447,7 +441,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по прострелам
+
   @Override
   public ResponseEntity<String[]> getWallBang() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -504,7 +498,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по трипл киллам
+
   @Override
   public ResponseEntity<String[]> getThreeKill() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -561,7 +555,6 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по квадро киллам
   @Override
   public ResponseEntity<String[]> getFourKill() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -618,7 +611,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по эйсам
+
   @Override
   public ResponseEntity<String[]> getAce() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -675,7 +668,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Получение топ 1 по клатчам
+
   @Override
   public ResponseEntity<String[]> getClutches() {
     List<MatchItem> doceho = matchRepository.findAll();
@@ -775,7 +768,7 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok().body(res);
   }
 
-  //Создание матча
+
   @Override
   public Match createMatch(Match match) {
     MatchItem matchItem = MatchItem.builder()
@@ -802,7 +795,7 @@ public class MatchController implements MatchApi {
     return mapper.map(save, Match.class);
   }
 
-  //Изменение матча по id
+
   @Override
   public ResponseEntity<Match> updateMatch(Long desmondId,
       Match matchDetails) throws ResourceNotFoundException {
@@ -832,9 +825,9 @@ public class MatchController implements MatchApi {
     return ResponseEntity.ok(mapper.map(updatedMatchItem, Match.class));
   }
 
-  //Удаление матча по id
+
   @Override
-  public Map<String, Boolean> deleteMatch(@PathVariable(value = "id") Long desmondId)
+  public Map<String, Boolean> deleteMatch(Long desmondId)
       throws ResourceNotFoundException {
     MatchItem matchItem = matchRepository.findById(desmondId)
         .orElseThrow(

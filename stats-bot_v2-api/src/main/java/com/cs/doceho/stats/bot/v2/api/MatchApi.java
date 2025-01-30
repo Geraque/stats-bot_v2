@@ -1,10 +1,12 @@
 package com.cs.doceho.stats.bot.v2.api;
 
 import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
+import com.cs.doceho.stats.bot.v2.model.Match;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
-import com.cs.doceho.stats.bot.v2.model.Match;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,90 +16,96 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping()
+@Api(value = "Запросы к основной таблице со всеми матчами", tags = {"match"})
+@RequestMapping("/match")
 public interface MatchApi {
 
-  @GetMapping("/matches")
+  @ApiOperation(value = "Получение всех матчей",
+      nickname = "getAllMatches", tags = {"match"})
+  @GetMapping
   List<Match> getAllMatches();
 
-  //Получение матчей по id
-  @GetMapping("/matches/{id}")
+  @ApiOperation(value = "Получение матчей по id",
+      nickname = "getMatchById", tags = {"match"})
+  @GetMapping("{id}")
   ResponseEntity<Match> getMatchById(@PathVariable(value = "id") Long matchId)
       throws ResourceNotFoundException;
 
-  //Получение матчей по игроку
-  @GetMapping("/getbyname/{name}")
-  ResponseEntity<List<Match>> getMatchByName(@PathVariable(value = "name") String matchName)
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение матчей по игроку",
+      nickname = "getMatchByName", tags = {"match"})
+  @GetMapping("/{name}")
+  ResponseEntity<List<Match>> getMatchByName(@PathVariable(value = "name") String matchName);
 
-  //Получение всей статистики игрока
-  @GetMapping("/getplayerstats/{name}")
-  ResponseEntity<double[]> getPlayerStats(@PathVariable(value = "name") String matchName)
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение всей статистики игрока",
+      nickname = "getPlayerStats", tags = {"match"})
+  @GetMapping("/player-stats/{name}")
+  ResponseEntity<double[]> getPlayerStats(@PathVariable(value = "name") String matchName);
 
 
-  //Получение всей статистики всех игроков
-  @GetMapping("/getallstats")
-  ResponseEntity<double[]> getAllStats()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение всей статистики всех игроков",
+      nickname = "getAllStats", tags = {"match"})
+  @GetMapping("/all-stats")
+  ResponseEntity<double[]> getAllStats();
 
-  //Получение топ 1 по рейтингу
-  @GetMapping("/getrating")
-  ResponseEntity<String[]> getRating()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по рейтингу",
+      nickname = "getRating", tags = {"match"})
+  @GetMapping("/rating")
+  ResponseEntity<String[]> getRating();
 
-  //Получение топ 1 по опен киллам
-  @GetMapping("/getopenkill")
-  ResponseEntity<String[]> getOpenKill()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по опен киллам",
+      nickname = "getOpenKill", tags = {"match"})
+  @GetMapping("/open-kill")
+  ResponseEntity<String[]> getOpenKill();
 
-  //Получение топ 1 по флешкам
-  @GetMapping("/getflash")
-  ResponseEntity<String[]> getFlash()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по флешкам",
+      nickname = "getFlash", tags = {"match"})
+  @GetMapping("/flash")
+  ResponseEntity<String[]> getFlash();
 
-  //Получение топ 1 по размену
-  @GetMapping("/gettrade")
-  ResponseEntity<String[]> getTrade()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по размену",
+      nickname = "getTrade", tags = {"match"})
+  @GetMapping("/trade")
+  ResponseEntity<String[]> getTrade();
 
-  //Получение топ 1 по прострелам
-  @GetMapping("/getwallbang")
-  ResponseEntity<String[]> getWallBang()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по прострелам",
+      nickname = "getWallBang", tags = {"match"})
+  @GetMapping("/wall-bang")
+  ResponseEntity<String[]> getWallBang();
 
-  //Получение топ 1 по трипл киллам
-  @GetMapping("/getthreekill")
-  ResponseEntity<String[]> getThreeKill()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по трипл киллам",
+      nickname = "getThreeKill", tags = {"match"})
+  @GetMapping("/three-kill")
+  ResponseEntity<String[]> getThreeKill();
 
-  //Получение топ 1 по квадро киллам
-  @GetMapping("/getfourkill")
-  ResponseEntity<String[]> getFourKill()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по квадро киллам",
+      nickname = "getFourKill", tags = {"match"})
+  @GetMapping("/four-kill")
+  ResponseEntity<String[]> getFourKill();
 
-  //Получение топ 1 по эйсам
-  @GetMapping("/getace")
-  ResponseEntity<String[]> getAce()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по эйсам",
+      nickname = "getAce", tags = {"match"})
+  @GetMapping("/ace")
+  ResponseEntity<String[]> getAce();
 
-  //Получение топ 1 по клатчам
-  @GetMapping("/getclutches")
-  ResponseEntity<String[]> getClutches()
-      throws ResourceNotFoundException;
+  @ApiOperation(value = "Получение топ 1 по клатчам",
+      nickname = "getClutches", tags = {"match"})
+  @GetMapping("/clutches")
+  ResponseEntity<String[]> getClutches();
 
-  //Создание матча
-  @PostMapping("/matches")
+  @ApiOperation(value = "Создание матча",
+      nickname = "createMatch", tags = {"match"})
+  @PostMapping
   Match createMatch(@Valid @RequestBody Match Match);
 
-
-  //Изменение матча по id
-  @PutMapping("/matches/{id}")
+  @ApiOperation(value = "Изменение матча по id",
+      nickname = "updateMatch", tags = {"match"})
+  @PutMapping("{id}")
   ResponseEntity<Match> updateMatch(@PathVariable(value = "id") Long desmondId,
       @Valid @RequestBody Match MatchDetails) throws ResourceNotFoundException;
 
-  //Удаление матча по id
-  @DeleteMapping("/matches/{id}")
+  @ApiOperation(value = "Удаление матча по id",
+      nickname = "deleteMatch", tags = {"match"})
+  @DeleteMapping("{id}")
   Map<String, Boolean> deleteMatch(@PathVariable(value = "id") Long desmondId)
       throws ResourceNotFoundException;
 

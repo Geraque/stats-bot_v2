@@ -6,42 +6,35 @@ import com.cs.doceho.stats.bot.v2.db.model.TopItem;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.TopRepository;
 import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
+import com.cs.doceho.stats.bot.v2.model.Top;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
-import com.cs.doceho.stats.bot.v2.model.Top;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-//Запросы к таблице с итогами года
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TopController implements TopApi {
 
-  @Autowired
   TopRepository topRepository;
   MapperFacade mapper;
 
-  //Получение всей информации
   public List<Top> getAllTop() {
     return topRepository.findAll().stream()
         .map(it -> mapper.map(it, Top.class))
         .collect(Collectors.toList());
   }
 
-  //Получение информации по году
   public ResponseEntity<List<String>> getYearTop(int year) {
     List<TopItem> doceho = topRepository.findAll();
     List<String> list = new ArrayList<>();
@@ -56,7 +49,6 @@ public class TopController implements TopApi {
     return ResponseEntity.ok().body(list);
   }
 
-  //Получение информации по id
   public ResponseEntity<Top> getTopById(Long topId)
       throws ResourceNotFoundException {
     TopItem top = topRepository.findById(topId)
@@ -64,7 +56,6 @@ public class TopController implements TopApi {
     return ResponseEntity.ok().body(mapper.map(top, Top.class));
   }
 
-  //Получение информации по имени
   public ResponseEntity<List<Top>> getTopByName(String playerName) {
     List<TopItem> top = topRepository.findAll();
     List<Top> result = new ArrayList<>();
@@ -76,7 +67,6 @@ public class TopController implements TopApi {
     return ResponseEntity.ok().body(result);
   }
 
-  //Создание итогов
   public Top createTop(Top top) {
     TopItem build = TopItem.builder()
         .name(PlayerName.valueOf(top.getName().name()))
@@ -88,9 +78,8 @@ public class TopController implements TopApi {
     return mapper.map(save, Top.class);
   }
 
-  //Изменение итогов по id
-  public ResponseEntity<Top> updateTop(Long topId,
-      @Valid @RequestBody Top topDetails) throws ResourceNotFoundException {
+  public ResponseEntity<Top> updateTop(Long topId, Top topDetails)
+      throws ResourceNotFoundException {
     TopItem top = topRepository.findById(topId)
         .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
 
@@ -103,7 +92,6 @@ public class TopController implements TopApi {
     return ResponseEntity.ok(mapper.map(updatedTop, Top.class));
   }
 
-  //Удаление информации по id
   public Map<String, Boolean> deleteTop(Long topId)
       throws ResourceNotFoundException {
     TopItem top = topRepository.findById(topId)

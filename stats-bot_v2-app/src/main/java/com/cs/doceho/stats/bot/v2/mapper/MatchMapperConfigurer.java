@@ -18,7 +18,6 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor
 public class MatchMapperConfigurer extends ConfigurableMapper {
 
