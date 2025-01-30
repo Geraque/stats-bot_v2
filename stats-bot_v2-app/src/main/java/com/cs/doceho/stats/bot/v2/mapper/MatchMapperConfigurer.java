@@ -1,6 +1,8 @@
 package com.cs.doceho.stats.bot.v2.mapper;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.TopItem;
+import com.cs.doceho.stats.bot.v2.model.Top;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -46,6 +48,19 @@ public class MatchMapperConfigurer extends ConfigurableMapper {
             match.setName(PlayerName.valueOf(matchItem.getName().name()));
             match.setType(MatchType.valueOf(matchItem.getType().name()));
 
+          }
+        }).register();
+
+    factory.classMap(TopItem.class, Top.class)
+        .field("id", "id")
+        .field("year", "year")
+        .field("rating", "rating")
+        .field("place", "place")
+        .customize(new CustomMapper<>() {
+          @Override
+          public void mapAtoB(TopItem topItem, Top top,
+              MappingContext context) {
+            top.setName(PlayerName.valueOf(topItem.getName().name()));
           }
         }).register();
   }
