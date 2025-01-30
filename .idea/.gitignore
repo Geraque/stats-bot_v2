@@ -1,3 +1,22 @@
-# Default ignored files
-/shelf/
-/workspace.xml
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+.idea
+*.iml
+*.ipr
+*.iws
+target
+/.java-version
+*flattened-pom.xml
+*.polyglot.pom.yaml
+/first_iteration.json
+/allure-results
+/allure-reports
+application.yaml
+/resources/logback-spring.xml
+test*.html
+test*.pdf
+/.envrc
