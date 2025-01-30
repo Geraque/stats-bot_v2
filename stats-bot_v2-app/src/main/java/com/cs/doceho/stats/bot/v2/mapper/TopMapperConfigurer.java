@@ -11,13 +11,13 @@ import ma.glasnost.orika.MappingContext;
 import com.cs.doceho.stats.bot.v2.model.Top;
 import com.cs.doceho.stats.bot.v2.model.enums.PlayerName;
 import org.springframework.stereotype.Component;
-import ru.ds.orika.MapperFactoryConfigurer;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @AllArgsConstructor
-public class TopMapperConfigurer implements MapperFactoryConfigurer {
+public class TopMapperConfigurer extends ConfigurableMapper {
 
   @Override
   public void configure(MapperFactory factory) {

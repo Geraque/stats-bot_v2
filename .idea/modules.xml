@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/stats-bot_v2-api/stats-bot_v2-api.iml" filepath="$PROJECT_DIR$/stats-bot_v2-api/stats-bot_v2-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/stats-bot_v2-item/stats-bot_v2-app.iml" filepath="$PROJECT_DIR$/stats-bot_v2-item/stats-bot_v2-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/stats-bot_v2-item/stats-bot_v2-item.iml" filepath="$PROJECT_DIR$/stats-bot_v2-item/stats-bot_v2-item.iml" />
     </modules>
   </component>
