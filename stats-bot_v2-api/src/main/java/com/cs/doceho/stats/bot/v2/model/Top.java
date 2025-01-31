@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import com.cs.doceho.stats.bot.v2.model.enums.PlayerName;
 
 @Data
 @Builder
@@ -18,13 +17,8 @@ import com.cs.doceho.stats.bot.v2.model.enums.PlayerName;
 public class Top {
 
   UUID id;
-
-  String name;
-
+  String playerName;
   Integer year;
-
   Double rating;
-
   Integer place;
-
 }

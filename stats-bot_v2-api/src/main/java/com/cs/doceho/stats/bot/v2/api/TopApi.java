@@ -1,6 +1,5 @@
 package com.cs.doceho.stats.bot.v2.api;
 
-import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
 import com.cs.doceho.stats.bot.v2.model.Top;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface TopApi {
 
   @GetMapping
-  List<Top> getAllTop();
+  ResponseEntity<List<Top>> getAllTop();
 
   @ApiOperation(value = "Получение информации по году",
       nickname = "getYearTop", tags = {"top"})

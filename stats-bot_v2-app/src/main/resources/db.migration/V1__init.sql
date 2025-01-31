@@ -17,15 +17,16 @@ DO $$ BEGIN
     CREATE TYPE match_types AS ENUM (
         'MATCH_MAKING',
         'WINGMAN',
-        'PREMIER'
+        'PREMIER',
+        'FACEIT'
     );
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует
 END $$;
 
 CREATE TABLE matches (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    name player_names NOT NULL,
-    data DATE,
+    player_name player_names NOT NULL,
+    date TIMESTAMP,
     rating DOUBLE PRECISION,
     smoke_kill INTEGER,
     open_kill INTEGER,
@@ -45,7 +46,7 @@ CREATE TABLE matches (
 
 CREATE TABLE tops (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    name player_names NOT NULL,
+    player_name player_names NOT NULL,
     year INTEGER,
     rating DOUBLE PRECISION,
     place INTEGER

@@ -27,10 +27,11 @@ public class TopController implements TopApi {
   MapperFacade mapper;
 
   @Override
-  public List<Top> getAllTop() {
-    return topService.getAll().stream()
+  public ResponseEntity<List<Top>> getAllTop() {
+    List<Top> topList = topService.getAll().stream()
         .map(it -> mapper.map(it, Top.class))
         .collect(Collectors.toList());
+    return ResponseEntity.ok(topList);
   }
 
   @Override

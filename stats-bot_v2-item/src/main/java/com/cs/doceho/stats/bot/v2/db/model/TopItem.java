@@ -47,8 +47,8 @@ public class TopItem {
 
   @Enumerated(EnumType.STRING)
   @Type(type = "pgsql_enum_player_name")
-  @Column(name = "name", columnDefinition = "player_names")
-  PlayerName name;
+  @Column(name = "player_name", columnDefinition = "player_names")
+  PlayerName playerName;
 
   @Column(name = "year")
   Integer year;

@@ -2,19 +2,15 @@ package com.cs.doceho.stats.bot.v2.mapper;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
 import com.cs.doceho.stats.bot.v2.db.model.TopItem;
+import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Top;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
-import com.cs.doceho.stats.bot.v2.model.Match;
-import com.cs.doceho.stats.bot.v2.model.enums.MatchType;
-import com.cs.doceho.stats.bot.v2.model.enums.PlayerName;
-import org.springframework.stereotype.Component;
 import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
@@ -25,7 +21,7 @@ public class MatchMapperConfigurer extends ConfigurableMapper {
   public void configure(MapperFactory factory) {
     factory.classMap(MatchItem.class, Match.class)
         .field("id", "id")
-        .field("data", "data")
+        .field("date", "date")
         .field("rating", "rating")
         .field("smokeKill", "smokeKill")
         .field("openKill", "openKill")
@@ -44,8 +40,8 @@ public class MatchMapperConfigurer extends ConfigurableMapper {
           @Override
           public void mapAtoB(MatchItem matchItem, Match match,
               MappingContext context) {
-            match.setName(PlayerName.valueOf(matchItem.getName().name()));
-            match.setType(MatchType.valueOf(matchItem.getType().name()));
+            match.setPlayerName(matchItem.getPlayerName().getName());
+            match.setType(matchItem.getType().getName());
 
           }
         }).register();
@@ -59,7 +55,7 @@ public class MatchMapperConfigurer extends ConfigurableMapper {
           @Override
           public void mapAtoB(TopItem topItem, Top top,
               MappingContext context) {
-            top.setName(topItem.getName().getName());
+            top.setPlayerName(topItem.getPlayerName().getName());
           }
         }).register();
   }
