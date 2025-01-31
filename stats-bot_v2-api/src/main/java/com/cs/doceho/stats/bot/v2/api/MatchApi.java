@@ -45,51 +45,6 @@ public interface MatchApi {
   @GetMapping("/all-stats")
   ResponseEntity<List<Player>> getAllStats();
 
-  @ApiOperation(value = "Получение топ 1 по рейтингу",
-      nickname = "getRating", tags = {"match"})
-  @GetMapping("/rating")
-  ResponseEntity<String[]> getRating();
-
-  @ApiOperation(value = "Получение топ 1 по опен киллам",
-      nickname = "getOpenKill", tags = {"match"})
-  @GetMapping("/open-kill")
-  ResponseEntity<String[]> getOpenKill();
-
-  @ApiOperation(value = "Получение топ 1 по флешкам",
-      nickname = "getFlash", tags = {"match"})
-  @GetMapping("/flash")
-  ResponseEntity<String[]> getFlash();
-
-  @ApiOperation(value = "Получение топ 1 по размену",
-      nickname = "getTrade", tags = {"match"})
-  @GetMapping("/trade")
-  ResponseEntity<String[]> getTrade();
-
-  @ApiOperation(value = "Получение топ 1 по прострелам",
-      nickname = "getWallBang", tags = {"match"})
-  @GetMapping("/wall-bang")
-  ResponseEntity<String[]> getWallBang();
-
-  @ApiOperation(value = "Получение топ 1 по трипл киллам",
-      nickname = "getThreeKill", tags = {"match"})
-  @GetMapping("/three-kill")
-  ResponseEntity<String[]> getThreeKill();
-
-  @ApiOperation(value = "Получение топ 1 по квадро киллам",
-      nickname = "getFourKill", tags = {"match"})
-  @GetMapping("/four-kill")
-  ResponseEntity<String[]> getFourKill();
-
-  @ApiOperation(value = "Получение топ 1 по эйсам",
-      nickname = "getAce", tags = {"match"})
-  @GetMapping("/ace")
-  ResponseEntity<String[]> getAce();
-
-  @ApiOperation(value = "Получение топ 1 по клатчам",
-      nickname = "getClutches", tags = {"match"})
-  @GetMapping("/clutches")
-  ResponseEntity<String[]> getClutches();
-
   @ApiOperation(value = "Создание матча",
       nickname = "createMatch", tags = {"match"})
   @PostMapping

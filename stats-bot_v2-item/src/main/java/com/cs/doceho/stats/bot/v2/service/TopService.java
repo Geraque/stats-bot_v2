@@ -39,7 +39,6 @@ public class TopService {
         .collect(Collectors.toList());
   }
 
-
   public List<TopItem> getByName(String playerName) {
     return topRepository.findAll().stream()
         .filter(item -> item.getPlayerName().name().equals(playerName))

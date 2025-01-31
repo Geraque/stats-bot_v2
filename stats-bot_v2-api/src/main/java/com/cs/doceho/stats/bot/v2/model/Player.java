@@ -1,5 +1,8 @@
 package com.cs.doceho.stats.bot.v2.model;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Player {
 

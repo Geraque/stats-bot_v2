@@ -42,7 +42,6 @@ public class MatchController implements MatchApi {
         .get();
   }
 
-
   @Override
   public ResponseEntity<List<Match>> getMatchByName(String playerName) {
     return Try.of(() -> matchService.getByName(playerName))
@@ -68,88 +67,14 @@ public class MatchController implements MatchApi {
         .get();
   }
 
-
-  @Override
-  public ResponseEntity<String[]> getRating() {
-    return Try.of(matchService::getRating)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
-  @Override
-  public ResponseEntity<String[]> getOpenKill() {
-    return Try.of(matchService::getOpenKill)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
-  @Override
-  public ResponseEntity<String[]> getFlash() {
-    return Try.of(matchService::getFlash)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
-  @Override
-  public ResponseEntity<String[]> getTrade() {
-    return Try.of(matchService::getTrade)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
-  @Override
-  public ResponseEntity<String[]> getWallBang() {
-    return Try.of(matchService::getWallBang)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
-  @Override
-  public ResponseEntity<String[]> getThreeKill() {
-    return Try.of(matchService::getThreeKill)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-  @Override
-  public ResponseEntity<String[]> getFourKill() {
-    return Try.of(matchService::getFourKill)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
-  @Override
-  public ResponseEntity<String[]> getAce() {
-    return Try.of(matchService::getAce)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
-  @Override
-  public ResponseEntity<String[]> getClutches() {
-    return Try.of(matchService::getClutches)
-        .map(ResponseEntity::ok)
-        .get();
-  }
-
-
   @Override
   public ResponseEntity<Match> create(Match match) {
-    log.debug("1231");
     return Try.of(() -> matchService.create(match))
         .map(reference -> mapper.map(reference, Match.class))
         .map(ResponseEntity::ok)
         .recover(NoSuchElementException.class, ResponseEntity.notFound().build())
         .get();
   }
-
 
   @Override
   public ResponseEntity<Match> update(UUID matchId,
@@ -160,7 +85,6 @@ public class MatchController implements MatchApi {
         .recover(NoSuchElementException.class, ResponseEntity.notFound().build())
         .get();
   }
-
 
   @Override
   public ResponseEntity<?> delete(UUID id) {
