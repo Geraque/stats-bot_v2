@@ -5,7 +5,6 @@ import com.cs.doceho.stats.bot.v2.model.Top;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +41,7 @@ public interface TopApi {
   @ApiOperation(value = "Создание итогов",
       nickname = "createTop", tags = {"top"})
   @PostMapping
-  Top createTop(@Valid @RequestBody Top top);
+  ResponseEntity<Top> createTop(@Valid @RequestBody Top top);
 
   @ApiOperation(value = "Изменение итогов по id",
       nickname = "updateTop", tags = {"top"})
@@ -53,6 +52,6 @@ public interface TopApi {
   @ApiOperation(value = "Удаление информации по id",
       nickname = "deleteTop", tags = {"top"})
   @DeleteMapping("/{id}")
-  Map<String, Boolean> deleteTop(@PathVariable(value = "id") Long topId)
+  ResponseEntity<?> deleteTop(@PathVariable(value = "id") Long topId)
       throws ResourceNotFoundException;
 }
