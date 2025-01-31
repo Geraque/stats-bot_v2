@@ -2,13 +2,13 @@ INSERT INTO public.tops (player_name,place,rating,"year") VALUES
 	 ('BLACK_VISION','1',1.33,2018),
 	 ('DESMOND','2',1.037,2018),
 	 ('GLOXINIA','3',0.9875,2018),
-	 ('MVforever01','4',0.76,2018),
+	 ('MVFOREVER01','4',0.76,2018),
 	 ('BLACK_VISION','1',1.39,2019),
 	 ('B4ONE','2',1.039789,2019),
 	 ('DESMOND','3',1.015566,2019),
 	 ('GLOXINIA','4',0.952836,2019),
 	 ('NEKIT','5',0.91989,2019),
-	 ('MVforever01','6',0.708761,2019);
+	 ('MVFOREVER01','6',0.708761,2019);
 INSERT INTO public.tops (id,player_name,place,rating,"year") VALUES
 	 ('B4ONE','1',1.131041,2020),
 	 ('DESMOND','2',1.015513,2020),
