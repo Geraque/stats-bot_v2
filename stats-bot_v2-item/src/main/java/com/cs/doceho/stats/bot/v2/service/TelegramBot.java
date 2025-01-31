@@ -15,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -168,6 +167,18 @@ public class TelegramBot extends TelegramLongPollingBot {
           log.info("Матчи 221w33");
           allMatchesByPlayer(chatId, "221w33");
           break;
+        case "Матчи Kopfire":
+          log.info("Матчи Kopfire");
+          allMatchesByPlayer(chatId, "Kopfire");
+          break;
+        case "Матчи MVforever01":
+          log.info("Матчи MVforever01");
+          allMatchesByPlayer(chatId, "MVforever01");
+          break;
+        case "Матчи Wolf_SMXL":
+          log.info("Матчи Wolf_SMXL");
+          allMatchesByPlayer(chatId, "Wolf_SMXL");
+          break;
         case "Статистика Desmond":
           log.info("Статистика Desmond");
           allStatsByName(chatId, "Desmond");
@@ -187,6 +198,18 @@ public class TelegramBot extends TelegramLongPollingBot {
         case "Статистика 221w33":
           log.info("Статистика 221w33");
           allStatsByName(chatId, "221w33");
+          break;
+        case "Статистика Kopfire":
+          log.info("Статистика Kopfire");
+          allStatsByName(chatId, "Kopfire");
+          break;
+        case "Статистика MVforever01":
+          log.info("Статистика MVforever01");
+          allStatsByName(chatId, "MVforever01");
+          break;
+        case "Статистика Wolf_SMXL":
+          log.info("Статистика Wolf_SMXL");
+          allStatsByName(chatId, "Wolf_SMXL");
           break;
         case "Ну нажми, ну пожалуйста":
           log.info("Ну нажми, ну пожалуйста");
@@ -208,9 +231,13 @@ public class TelegramBot extends TelegramLongPollingBot {
       return;
     }
 
-    String message = String.format("Топ по клатчам:\nИгрок: %s\nВсего игр: %d\nОбщее количество клатчей: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d",
-        player.getName(), player.getMatches(), player.getClutchOne() + player.getClutchTwo() + player.getClutchThree() + player.getClutchFour() + player.getClutchFive(),
-        player.getClutchOne(), player.getClutchTwo(), player.getClutchThree(), player.getClutchFour(), player.getClutchFive());
+    String message = String.format(
+        "Топ по клатчам:\nИгрок: %s\nВсего игр: %d\nОбщее количество клатчей: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d",
+        player.getName(), player.getMatches(),
+        player.getClutchOne() + player.getClutchTwo() + player.getClutchThree()
+            + player.getClutchFour() + player.getClutchFive(),
+        player.getClutchOne(), player.getClutchTwo(), player.getClutchThree(),
+        player.getClutchFour(), player.getClutchFive());
 
     sendMessage(chatId, message);
   }
@@ -240,7 +267,8 @@ public class TelegramBot extends TelegramLongPollingBot {
       return;
     }
     log.info("player: {}", player);
-    String message = String.format("Статистика %s за всё время:\n------\n\nКол-во матчей: %d\nРейтинг: %.2f\nУбийства в смок: %d\nЭнтри: %d\nТрипл килл: %d\nКвадро килл: %d\nЭйс: %d\nФлеш: %d\nРазмен: %d\nПрострел: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d",
+    String message = String.format(
+        "Статистика %s за всё время:\n------\n\nКол-во матчей: %d\nРейтинг: %.2f\nУбийства в смок: %d\nЭнтри: %d\nТрипл килл: %d\nКвадро килл: %d\nЭйс: %d\nФлеш: %d\nРазмен: %d\nПрострел: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d",
         name, player.getMatches(), player.getRating(), player.getSmokeKill(), player.getOpenKill(),
         player.getThreeKill(), player.getFourKill(), player.getAce(), player.getFlash(),
         player.getTrade(), player.getWallBang(), player.getClutchOne(), player.getClutchTwo(),
@@ -260,7 +288,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     String message = matches.stream()
         .limit(7)
-        .map(match -> String.format("\nДата: %s\nРейтинг: %.2f\nSmoke Kills: %d\nOpen Kills: %d\nTriple Kill: %d\nQuadro Kill: %d\nAce: %d\nFlash: %d\nTrade: %d\nWall Bang: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d\n------------------",
+        .map(match -> String.format(
+            "\nДата: %s\nРейтинг: %.2f\nSmoke Kills: %d\nOpen Kills: %d\nTriple Kill: %d\nQuadro Kill: %d\nAce: %d\nFlash: %d\nTrade: %d\nWall Bang: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d\n------------------",
             match.getDate(), match.getRating(), match.getSmokeKill(), match.getOpenKill(),
             match.getThreeKill(), match.getFourKill(), match.getAce(), match.getFlash(),
             match.getTrade(), match.getWallBang(), match.getClutchOne(), match.getClutchTwo(),
@@ -354,7 +383,8 @@ public class TelegramBot extends TelegramLongPollingBot {
       return;
     }
 
-    String message = String.format("Топ по кол-ву трипл киллов:\nИгрок: %s\nВсего игр: %d\nТрипл киллов за матч: %.2f",
+    String message = String.format(
+        "Топ по кол-ву трипл киллов:\nИгрок: %s\nВсего игр: %d\nТрипл киллов за матч: %.2f",
         player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
 
     sendMessage(chatId, message);
@@ -368,7 +398,8 @@ public class TelegramBot extends TelegramLongPollingBot {
       return;
     }
 
-    String message = String.format("Топ по кол-ву квадро киллов:\nИгрок: %s\nВсего игр: %d\nКвадро киллов за матч: %.2f",
+    String message = String.format(
+        "Топ по кол-ву квадро киллов:\nИгрок: %s\nВсего игр: %d\nКвадро киллов за матч: %.2f",
         player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
 
     sendMessage(chatId, message);
@@ -382,7 +413,8 @@ public class TelegramBot extends TelegramLongPollingBot {
       return;
     }
 
-    String message = String.format("Топ по кол-ву эйсов:\nИгрок: %s\nВсего игр: %d\nэйсов за матч: %.2f",
+    String message = String.format(
+        "Топ по кол-ву эйсов:\nИгрок: %s\nВсего игр: %d\nэйсов за матч: %.2f",
         player.getName(), player.getAce(), (double) player.getRating() / player.getMatches());
 
     sendMessage(chatId, message);
@@ -469,14 +501,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     row.add("Матчи B4one");
 
     keyboardRows.add(row);
-
     row = new KeyboardRow();
 
     row.add("Матчи Gloxinia");
     row.add("Матчи 221w33");
     row.add("Матчи Kopfire");
 
+    keyboardRows.add(row);
     row = new KeyboardRow();
+
     row.add("Матчи MVforever01");
     row.add("Матчи Wolf_SMXL");
     row.add("Топ со всей статой");
@@ -499,11 +532,17 @@ public class TelegramBot extends TelegramLongPollingBot {
     row.add("Статистика B4one");
 
     keyboardRows.add(row);
-
     row = new KeyboardRow();
 
     row.add("Статистика Gloxinia");
     row.add("Статистика 221w33");
+    row.add("Статистика Kopfire");
+
+    keyboardRows.add(row);
+    row = new KeyboardRow();
+
+    row.add("Статистика MVforever01");
+    row.add("Статистика Wolf_SMXL");
     row.add("Ну нажми, ну пожалуйста");
 
     keyboardRows.add(row);
