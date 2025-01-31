@@ -86,7 +86,7 @@ public class TopCategoryService {
       return Player.builder()
           .name(playerMatches.get(0).getPlayerName().getName())
           .matches(playerMatches.size())
-          .rating(totalMetricValue)
+          .rating(totalMetricValue) //TODO для каждого своё поле заполнять
           .build();
     });
   }

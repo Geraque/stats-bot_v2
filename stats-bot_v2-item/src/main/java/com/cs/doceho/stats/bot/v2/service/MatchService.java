@@ -144,19 +144,6 @@ public class MatchService {
 
     if (player.getMatches() > 0) {
       player.setRating(player.getRating() / player.getMatches());
-      player.setSmokeKill(player.getSmokeKill() / player.getMatches());
-      player.setOpenKill(player.getOpenKill() / player.getMatches());
-      player.setThreeKill(player.getThreeKill() / player.getMatches());
-      player.setFourKill(player.getFourKill() / player.getMatches());
-      player.setAce(player.getAce() / player.getMatches());
-      player.setFlash(player.getFlash() / player.getMatches());
-      player.setTrade(player.getTrade() / player.getMatches());
-      player.setWallBang(player.getWallBang() / player.getMatches());
-      player.setClutchOne(player.getClutchOne() / player.getMatches());
-      player.setClutchTwo(player.getClutchTwo() / player.getMatches());
-      player.setClutchThree(player.getClutchThree() / player.getMatches());
-      player.setClutchFour(player.getClutchFour() / player.getMatches());
-      player.setClutchFive(player.getClutchFive() / player.getMatches());
     }
 
     return player;

@@ -1,12 +1,20 @@
 package com.cs.doceho.stats.bot.v2.service;
 
 
+import com.cs.doceho.stats.bot.v2.api.CategoryApi;
+import com.cs.doceho.stats.bot.v2.api.MatchApi;
+import com.cs.doceho.stats.bot.v2.api.TopApi;
 import com.cs.doceho.stats.bot.v2.config.BotConfig;
+import com.cs.doceho.stats.bot.v2.model.Match;
+import com.cs.doceho.stats.bot.v2.model.Player;
+import com.cs.doceho.stats.bot.v2.model.Top;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,12 +29,19 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Slf4j
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TelegramBot extends TelegramLongPollingBot {
 
-  final BotConfig config;
+  BotConfig config;
+  MatchApi matchApi;
+  TopApi topApi;
+  CategoryApi categoryApi;
 
-  public TelegramBot(BotConfig config) {
+  public TelegramBot(BotConfig config, MatchApi matchApi, TopApi topApi, CategoryApi categoryApi) {
     this.config = config;
+    this.matchApi = matchApi;
+    this.topApi = topApi;
+    this.categoryApi = categoryApi;
     //Добавление меню
     List<BotCommand> listOfCommands = new ArrayList<>();
     listOfCommands.add(new BotCommand("/start", "Вернуться в главное меню"));
@@ -98,7 +113,7 @@ public class TelegramBot extends TelegramLongPollingBot {
           break;
         case "Топ прострел":
           log.info("Топ прострел");
-          topWallbang(chatId);
+          topWallBang(chatId);
           break;
         case "Топ 3 kill":
           log.info("Топ 3 kill");
@@ -152,6 +167,18 @@ public class TelegramBot extends TelegramLongPollingBot {
           log.info("Матчи 221w33");
           allMatchesByPlayer(chatId, "221w33");
           break;
+        case "Матчи Kopfire":
+          log.info("Матчи Kopfire");
+          allMatchesByPlayer(chatId, "Kopfire");
+          break;
+        case "Матчи MVforever01":
+          log.info("Матчи MVforever01");
+          allMatchesByPlayer(chatId, "MVforever01");
+          break;
+        case "Матчи Wolf_SMXL":
+          log.info("Матчи Wolf_SMXL");
+          allMatchesByPlayer(chatId, "Wolf_SMXL");
+          break;
         case "Статистика Desmond":
           log.info("Статистика Desmond");
           allStatsByName(chatId, "Desmond");
@@ -172,6 +199,18 @@ public class TelegramBot extends TelegramLongPollingBot {
           log.info("Статистика 221w33");
           allStatsByName(chatId, "221w33");
           break;
+        case "Статистика Kopfire":
+          log.info("Статистика Kopfire");
+          allStatsByName(chatId, "Kopfire");
+          break;
+        case "Статистика MVforever01":
+          log.info("Статистика MVforever01");
+          allStatsByName(chatId, "MVforever01");
+          break;
+        case "Статистика Wolf_SMXL":
+          log.info("Статистика Wolf_SMXL");
+          allStatsByName(chatId, "Wolf_SMXL");
+          break;
         case "Ну нажми, ну пожалуйста":
           log.info("Ну нажми, ну пожалуйста");
           sendMessage(chatId, update.getMessage().getChat().getLastName() +
@@ -184,226 +223,201 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
   }
 
-  //Получение топ клатчера
   private void topClutch(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getClutches().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getclutches", String.class);
-    //Удаление лишних символов
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
+    if (player == null) {
+      sendMessage(chatId, "Данные по клатчам не найдены.");
+      return;
+    }
 
-    String answer = "Топ по клатчам: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[7] +
-        "\nОбщее количество клатчей: " + arr[1] +
-        "\n1vs1: " + arr[2] +
-        "\n1vs2: " + arr[3] +
-        "\n1vs3: " + arr[4] +
-        "\n1vs4: " + arr[5] +
-        "\n1vs5: " + arr[6];
-    sendMessage(chatId, answer);
+    String message = String.format(
+        "Топ по клатчам:\nИгрок: %s\nВсего игр: %d\nОбщее количество клатчей: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d",
+        player.getName(), player.getMatches(),
+        player.getClutchOne() + player.getClutchTwo() + player.getClutchThree()
+            + player.getClutchFour() + player.getClutchFive(),
+        player.getClutchOne(), player.getClutchTwo(), player.getClutchThree(),
+        player.getClutchFour(), player.getClutchFive());
+
+    sendMessage(chatId, message);
   }
 
   //Получение топа за определённый год
   private void topYear(long chatId, int year) {
-    RestTemplate restTemplate = new RestTemplate();
+    List<Top> topList = topApi.getYearTop(year).getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/top/getbyyear/" + year,
-        String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-
-    StringBuilder answerb = new StringBuilder("Топ " + year + " года: ");
-
-    for (int i = 1; i < arr.length; i += 3) {
-      answerb.append("\nИгрок: ").append(arr[i])
-          .append("\nМесто: ").append(arr[i + 1])
-          .append("\nОбщий рейтинг: ").append(arr[i + 2]);
-      answerb.append("\n------------------");
+    if (topList == null || topList.isEmpty()) {
+      sendMessage(chatId, String.format("Данные за %d год не найдены.", year));
+      return;
     }
-    String answer = String.valueOf(answerb);
-    sendMessage(chatId, answer);
+
+    String message = topList.stream()
+        .map(top -> String.format("\nИгрок: %s\nМесто: %d\nОбщий рейтинг: %.2f\n------------------",
+            top.getPlayerName(), top.getPlace(), top.getRating()))
+        .collect(Collectors.joining("", String.format("Топ %d года:", year), ""));
+
+    sendMessage(chatId, message);
   }
 
-  //Получение всей статистики игрока
   private void allStatsByName(long chatId, String name) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = matchApi.getPlayerStats(name).getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getplayerstats/" + name,
-        String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
+    if (player == null) {
+      sendMessage(chatId, String.format("Данные о статистике игрока %s не найдены.", name));
+      return;
+    }
+    log.info("player: {}", player);
+    String message = String.format(
+        "Статистика %s за всё время:\n------\n\nКол-во матчей: %d\nРейтинг: %.2f\nУбийства в смок: %d\nЭнтри: %d\nТрипл килл: %d\nКвадро килл: %d\nЭйс: %d\nФлеш: %d\nРазмен: %d\nПрострел: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d",
+        name, player.getMatches(), player.getRating(), player.getSmokeKill(), player.getOpenKill(),
+        player.getThreeKill(), player.getFourKill(), player.getAce(), player.getFlash(),
+        player.getTrade(), player.getWallBang(), player.getClutchOne(), player.getClutchTwo(),
+        player.getClutchThree(), player.getClutchFour(), player.getClutchFive());
 
-    StringBuilder answerb = new StringBuilder(
-        "Статистика " + name + " за всё время: " + "\n------\n");
-
-    answerb.append("\nКол-во матчей: ").append(arr[0])
-        .append("\nРейтинг: ").append(arr[1])
-        .append("\nУбийства в смок: ").append(arr[2])
-        .append("\nЭнтри: ").append(arr[3])
-        .append("\nТрипл килл: ").append(arr[4])
-        .append("\nКвадро килл: ").append(arr[5])
-        .append("\nЭйс: ").append(arr[6])
-        .append("\nФлеш: ").append(arr[7])
-        .append("\nРазмен: ").append(arr[8])
-        .append("\nПрострел: ").append(arr[9])
-        .append("\n1vs1: ").append(arr[10])
-        .append("\n1vs2: ").append(arr[11])
-        .append("\n1vs3: ").append(arr[12])
-        .append("\n1vs4: ").append(arr[13])
-        .append("\n1vs5: ").append(arr[14]);
-
-    String answer = String.valueOf(answerb);
-    sendMessage(chatId, answer);
-
+    sendMessage(chatId, message);
   }
 
   //Получение последних 7 матчей игрока
   private void allMatchesByPlayer(long chatId, String name) {
-    RestTemplate restTemplate = new RestTemplate();
+    List<Match> matches = matchApi.getMatchByName(name).getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getbyname/" + name,
-        String.class);
-    http = http.replaceAll("[\\[-\\]\"{}]", "");
-    String[] arr = http.split(",");
-
-    StringBuilder answerb = new StringBuilder("Последние 7 матчей " + name + ":\n");
-    for (int i = 0; i < arr.length; i += 18) {
-      answerb.append("\n").append(arr[i + 2])
-          .append("\n").append(arr[i + 3])
-          .append("\n").append(arr[i + 4])
-          .append("\n").append(arr[i + 5])
-          .append("\n").append(arr[i + 6])
-          .append("\n").append(arr[i + 7])
-          .append("\n").append(arr[i + 8])
-          .append("\n").append(arr[i + 9])
-          .append("\n").append(arr[i + 10])
-          .append("\n").append(arr[i + 11])
-          .append("\n").append(arr[i + 12])
-          .append("\n").append(arr[i + 13])
-          .append("\n").append(arr[i + 14])
-          .append("\n").append(arr[i + 15])
-          .append("\n").append(arr[i + 16])
-          .append("\n").append(arr[i + 17]);
-      answerb.append("\n------------------");
+    if (matches == null || matches.isEmpty()) {
+      sendMessage(chatId, String.format("Данные о матчах игрока %s не найдены.", name));
+      return;
     }
 
-    String answer = String.valueOf(answerb);
-    sendMessage(chatId, answer);
+    String message = matches.stream()
+        .limit(7)
+        .map(match -> String.format(
+            "\nДата: %s\nРейтинг: %.2f\nSmoke Kills: %d\nOpen Kills: %d\nTriple Kill: %d\nQuadro Kill: %d\nAce: %d\nFlash: %d\nTrade: %d\nWall Bang: %d\n1vs1: %d\n1vs2: %d\n1vs3: %d\n1vs4: %d\n1vs5: %d\n------------------",
+            match.getDate(), match.getRating(), match.getSmokeKill(), match.getOpenKill(),
+            match.getThreeKill(), match.getFourKill(), match.getAce(), match.getFlash(),
+            match.getTrade(), match.getWallBang(), match.getClutchOne(), match.getClutchTwo(),
+            match.getClutchThree(), match.getClutchFour(), match.getClutchFive()))
+        .collect(Collectors.joining("", String.format("Последние 7 матчей %s:\n", name), ""));
+
+    sendMessage(chatId, message);
   }
 
   //Получение топ 1 по рейтингу
   private void topRating(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getRating().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getrating", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
+    if (player == null) {
+      sendMessage(chatId, "Данные о рейтинге не найдены.");
+      return;
+    }
 
-    String answer = "Топ по рейтингу: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nОбщий рейтинг: " + arr[2];
-    sendMessage(chatId, answer);
+    String message = String.format(
+        "Топ по рейтингу:\nИгрок: %s\nВсего игр: %d\nОбщий рейтинг: %.2f",
+        player.getName(), player.getMatches(), player.getRating());
+
+    sendMessage(chatId, message);
   }
 
   //Получение топ 1 по опен килам
   private void topOpenKill(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getOpenKill().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getopenkill", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-    String answer = "Топ по энтри: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nЭнтри за матч: " + arr[2];
-    sendMessage(chatId, answer);
+    if (player == null) {
+      sendMessage(chatId, "Данные по энтри не найдены.");
+      return;
+    }
+
+    String message = String.format("Топ по энтри:\nИгрок: %s\nВсего игр: %d\nЭнтри за матч: %.2f",
+        player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
+
+    sendMessage(chatId, message);
   }
 
-  //Получение топ 1 по флешкам
   private void topFlash(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getFlash().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getflash", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-    String answer = "Топ по кол-ву флешек: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nФлешек за матч: " + arr[2];
-    sendMessage(chatId, answer);
+    if (player == null) {
+      sendMessage(chatId, "Данные по флешкам не найдены.");
+      return;
+    }
+
+    String message = String.format(
+        "Топ по кол-ву флешек:\nИгрок: %s\nВсего игр: %d\nФлешек за матч: %.2f",
+        player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
+
+    sendMessage(chatId, message);
   }
 
-  //Получение топ 1 по разменам
   private void topTrade(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getTrade().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/gettrade", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-    String answer = "Топ по кол-ву разменов: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nРазменов за матч: " + arr[2];
-    sendMessage(chatId, answer);
+    if (player == null) {
+      sendMessage(chatId, "Данные по разменам не найдены.");
+      return;
+    }
+
+    String message = String.format(
+        "Топ по кол-ву разменов:\nИгрок: %s\nВсего игр: %d\nРазменов за матч: %.2f",
+        player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
+
+    sendMessage(chatId, message);
   }
 
-  //Получение топ 1 по прострелам
-  private void topWallbang(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+  private void topWallBang(long chatId) {
+    Player player = categoryApi.getWallBang().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getwallbang", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-    String answer = "Топ по кол-ву прострелов: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nПрострелов за матч: " + arr[2];
-    sendMessage(chatId, answer);
+    if (player == null) {
+      sendMessage(chatId, "Данные по прострелам не найдены.");
+      return;
+    }
+
+    String message = String.format(
+        "Топ по кол-ву прострелов:\nИгрок: %s\nВсего игр: %d\nПрострелов за матч: %.2f",
+        player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
+
+    sendMessage(chatId, message);
   }
 
-  //Получение топ 1 по трипл киллам
   private void topThreeKill(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getThreeKill().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getthreekill", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-    String answer = "Топ по кол-ву трипл киллов: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nТрипл киллов за матч: " + arr[2];
-    sendMessage(chatId, answer);
+    if (player == null) {
+      sendMessage(chatId, "Данные по трипл киллам не найдены.");
+      return;
+    }
+
+    String message = String.format(
+        "Топ по кол-ву трипл киллов:\nИгрок: %s\nВсего игр: %d\nТрипл киллов за матч: %.2f",
+        player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
+
+    sendMessage(chatId, message);
   }
 
-  //Получение топ 1 по квадро киллам
   private void topFourKill(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getFourKill().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getfourkill", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-    String answer = "Топ по кол-ву квадро киллов: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nКвадро киллов за матч: " + arr[2];
-    sendMessage(chatId, answer);
+    if (player == null) {
+      sendMessage(chatId, "Данные по квадро киллам не найдены.");
+      return;
+    }
+
+    String message = String.format(
+        "Топ по кол-ву квадро киллов:\nИгрок: %s\nВсего игр: %d\nКвадро киллов за матч: %.2f",
+        player.getName(), player.getMatches(), (double) player.getRating() / player.getMatches());
+
+    sendMessage(chatId, message);
   }
 
-  //Получение топ 1 по эйсам
   private void topAce(long chatId) {
-    RestTemplate restTemplate = new RestTemplate();
+    Player player = categoryApi.getAce().getBody();
 
-    String http = restTemplate.getForObject("http://localhost:8080/getace", String.class);
-    http = http.replaceAll("[\\[-\\]\"]", "");
-    String[] arr = http.split(",");
-    String answer = "Топ по кол-ву эйсов: " +
-        "\nИгрок: " + arr[0] +
-        "\nВсего игр: " + arr[1] +
-        "\nэйсов за матч: " + arr[2];
-    sendMessage(chatId, answer);
+    if (player == null) {
+      sendMessage(chatId, "Данные по эйсам не найдены.");
+      return;
+    }
+
+    String message = String.format(
+        "Топ по кол-ву эйсов:\nИгрок: %s\nВсего игр: %d\nэйсов за матч: %.2f",
+        player.getName(), player.getAce(), (double) player.getRating() / player.getMatches());
+
+    sendMessage(chatId, message);
   }
 
   //Генерация изначальных кнопок
@@ -477,6 +491,7 @@ public class TelegramBot extends TelegramLongPollingBot {
   }
 
   //Генерация кнопок с матчами игроков
+  //TODO Не отображается
   private void allStatsButton(SendMessage message) {
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
@@ -487,11 +502,17 @@ public class TelegramBot extends TelegramLongPollingBot {
     row.add("Матчи B4one");
 
     keyboardRows.add(row);
-
     row = new KeyboardRow();
 
     row.add("Матчи Gloxinia");
     row.add("Матчи 221w33");
+    row.add("Матчи Kopfire");
+
+    keyboardRows.add(row);
+    row = new KeyboardRow();
+
+    row.add("Матчи MVforever01");
+    row.add("Матчи Wolf_SMXL");
     row.add("Топ со всей статой");
 
     keyboardRows.add(row);
@@ -512,11 +533,17 @@ public class TelegramBot extends TelegramLongPollingBot {
     row.add("Статистика B4one");
 
     keyboardRows.add(row);
-
     row = new KeyboardRow();
 
     row.add("Статистика Gloxinia");
     row.add("Статистика 221w33");
+    row.add("Статистика Kopfire");
+
+    keyboardRows.add(row);
+    row = new KeyboardRow();
+
+    row.add("Статистика MVforever01");
+    row.add("Статистика Wolf_SMXL");
     row.add("Ну нажми, ну пожалуйста");
 
     keyboardRows.add(row);
