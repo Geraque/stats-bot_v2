@@ -26,18 +26,21 @@ public class TopController implements TopApi {
   TopService topService;
   MapperFacade mapper;
 
+  @Override
   public List<Top> getAllTop() {
     return topService.getAll().stream()
         .map(it -> mapper.map(it, Top.class))
         .collect(Collectors.toList());
   }
 
+  @Override
   public ResponseEntity<List<String>> getYearTop(int year) {
     return Try.of(() -> topService.getYearTop(year))
         .map(ResponseEntity::ok)
         .get();
   }
 
+  @Override
   public ResponseEntity<Top> getTopById(Long topId) {
     return Try.of(() -> topService.get(topId))
         .map(reference -> mapper.map(reference, Top.class))
@@ -46,6 +49,7 @@ public class TopController implements TopApi {
         .get();
   }
 
+  @Override
   public ResponseEntity<List<Top>> getTopByName(String playerName) {
     return Try.of(() -> topService.getByName(playerName))
         .map(reference -> reference.stream()
@@ -55,6 +59,7 @@ public class TopController implements TopApi {
         .get();
   }
 
+  @Override
   public ResponseEntity<Top> createTop(Top top) {
     return Try.of(() -> topService.create(top))
         .map(reference -> mapper.map(reference, Top.class))
@@ -63,6 +68,7 @@ public class TopController implements TopApi {
         .get();
   }
 
+  @Override
   public ResponseEntity<Top> updateTop(Long topId, Top topDetails)
       throws ResourceNotFoundException {
     return Try.of(() -> topService.update(topId, topDetails))
@@ -72,6 +78,7 @@ public class TopController implements TopApi {
         .get();
   }
 
+  @Override
   public ResponseEntity<?> deleteTop(Long topId)
       throws ResourceNotFoundException {
     topService.delete(topId);
