@@ -5,7 +5,6 @@ import com.cs.doceho.stats.bot.v2.model.Match;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -95,7 +94,7 @@ public interface MatchApi {
   @ApiOperation(value = "Создание матча",
       nickname = "createMatch", tags = {"match"})
   @PostMapping
-  Match createMatch(@Valid @RequestBody Match Match);
+  ResponseEntity<Match> createMatch(@Valid @RequestBody Match Match);
 
   @ApiOperation(value = "Изменение матча по id",
       nickname = "updateMatch", tags = {"match"})
@@ -106,7 +105,7 @@ public interface MatchApi {
   @ApiOperation(value = "Удаление матча по id",
       nickname = "deleteMatch", tags = {"match"})
   @DeleteMapping("{id}")
-  Map<String, Boolean> deleteMatch(@PathVariable(value = "id") Long desmondId)
+  ResponseEntity<?> deleteMatch(@PathVariable(value = "id") Long desmondId)
       throws ResourceNotFoundException;
 
 }

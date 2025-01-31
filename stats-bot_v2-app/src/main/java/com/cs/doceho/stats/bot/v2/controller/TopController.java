@@ -2,15 +2,12 @@ package com.cs.doceho.stats.bot.v2.controller;
 
 
 import com.cs.doceho.stats.bot.v2.api.TopApi;
-import com.cs.doceho.stats.bot.v2.db.model.TopItem;
-import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
-import com.cs.doceho.stats.bot.v2.db.repository.TopRepository;
 import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
 import com.cs.doceho.stats.bot.v2.model.Top;
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.cs.doceho.stats.bot.v2.service.TopService;
+import io.vavr.control.Try;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,80 +23,65 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TopController implements TopApi {
 
-  TopRepository topRepository;
+  TopService topService;
   MapperFacade mapper;
 
+  @Override
   public List<Top> getAllTop() {
-    return topRepository.findAll().stream()
+    return topService.getAll().stream()
         .map(it -> mapper.map(it, Top.class))
         .collect(Collectors.toList());
   }
 
+  @Override
   public ResponseEntity<List<String>> getYearTop(int year) {
-    List<TopItem> doceho = topRepository.findAll();
-    List<String> list = new ArrayList<>();
-    list.add(String.valueOf(year));
-    for (TopItem des : doceho) {
-      if (des.getYear() == year) {
-        list.add(des.getName().name());
-        list.add(String.valueOf(des.getPlace()));
-        list.add(String.valueOf(des.getRating()));
-      }
-    }
-    return ResponseEntity.ok().body(list);
+    return Try.of(() -> topService.getYearTop(year))
+        .map(ResponseEntity::ok)
+        .get();
   }
 
-  public ResponseEntity<Top> getTopById(Long topId)
-      throws ResourceNotFoundException {
-    TopItem top = topRepository.findById(topId)
-        .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
-    return ResponseEntity.ok().body(mapper.map(top, Top.class));
+  @Override
+  public ResponseEntity<Top> getTopById(Long topId) {
+    return Try.of(() -> topService.get(topId))
+        .map(reference -> mapper.map(reference, Top.class))
+        .map(ResponseEntity::ok)
+        .recover(NoSuchElementException.class, ResponseEntity.notFound().build())
+        .get();
   }
 
+  @Override
   public ResponseEntity<List<Top>> getTopByName(String playerName) {
-    List<TopItem> top = topRepository.findAll();
-    List<Top> result = new ArrayList<>();
-    for (TopItem des : top) {
-      if (des.getName().name().equals(playerName)) {
-        result.add(mapper.map(des, Top.class));
-      }
-    }
-    return ResponseEntity.ok().body(result);
+    return Try.of(() -> topService.getByName(playerName))
+        .map(reference -> reference.stream()
+            .map(it -> mapper.map(it, Top.class))
+            .collect(Collectors.toList()))
+        .map(ResponseEntity::ok)
+        .get();
   }
 
-  public Top createTop(Top top) {
-    TopItem build = TopItem.builder()
-        .name(PlayerName.valueOf(top.getName().name()))
-        .place(top.getPlace())
-        .rating(top.getRating())
-        .year(top.getYear())
-        .build();
-    TopItem save = topRepository.save(build);
-    return mapper.map(save, Top.class);
+  @Override
+  public ResponseEntity<Top> createTop(Top top) {
+    return Try.of(() -> topService.create(top))
+        .map(reference -> mapper.map(reference, Top.class))
+        .map(ResponseEntity::ok)
+        .recover(NoSuchElementException.class, ResponseEntity.notFound().build())
+        .get();
   }
 
+  @Override
   public ResponseEntity<Top> updateTop(Long topId, Top topDetails)
       throws ResourceNotFoundException {
-    TopItem top = topRepository.findById(topId)
-        .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
-
-    top.setName(PlayerName.valueOf(topDetails.getName().name()));
-    top.setRating(topDetails.getRating());
-    top.setYear(topDetails.getYear());
-    top.setPlace(topDetails.getPlace());
-
-    final TopItem updatedTop = topRepository.save(top);
-    return ResponseEntity.ok(mapper.map(updatedTop, Top.class));
+    return Try.of(() -> topService.update(topId, topDetails))
+        .map(reference -> mapper.map(reference, Top.class))
+        .map(ResponseEntity::ok)
+        .recover(NoSuchElementException.class, ResponseEntity.notFound().build())
+        .get();
   }
 
-  public Map<String, Boolean> deleteTop(Long topId)
+  @Override
+  public ResponseEntity<?> deleteTop(Long topId)
       throws ResourceNotFoundException {
-    TopItem top = topRepository.findById(topId)
-        .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
-
-    topRepository.delete(top);
-    Map<String, Boolean> response = new HashMap<>();
-    response.put("deleted", Boolean.TRUE);
-    return response;
+    topService.delete(topId);
+    return ResponseEntity.ok().build();
   }
 }
