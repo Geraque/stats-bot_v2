@@ -491,6 +491,7 @@ public class TelegramBot extends TelegramLongPollingBot {
   }
 
   //Генерация кнопок с матчами игроков
+  //TODO Не отображается
   private void allStatsButton(SendMessage message) {
     ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
