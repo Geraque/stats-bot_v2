@@ -18,4 +18,13 @@ public enum PlayerName {
   WOLF_SMXL("Wolf_SMXL");
 
   String name;
+
+  public static PlayerName fromName(String name) {
+    for (PlayerName playerName : PlayerName.values()) {
+      if (playerName.name.equals(name)) {
+        return playerName;
+      }
+    }
+    return null;
+  }
 }

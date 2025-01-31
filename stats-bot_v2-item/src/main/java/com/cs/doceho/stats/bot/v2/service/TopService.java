@@ -6,6 +6,7 @@ import com.cs.doceho.stats.bot.v2.db.repository.TopRepository;
 import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
 import com.cs.doceho.stats.bot.v2.model.Top;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.transaction.Transactional;
@@ -27,22 +28,17 @@ public class TopService {
     return topRepository.findAll();
   }
 
-  public TopItem get(Long topId) {
+  public TopItem get(UUID topId) {
     return topRepository.findById(topId)
         .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
   }
 
-  public List<String> getYearTop(int year) {
-    // Используем Stream API для фильтрации, преобразования и формирования списка.
+  public List<TopItem> getYearTop(int year) {
     return topRepository.findAll().stream()
         .filter(item -> item.getYear() == year)
-        .flatMap(item -> Stream.of(
-            String.valueOf(year),
-            item.getName().name(),
-            String.valueOf(item.getPlace()),
-            String.valueOf(item.getRating())))
         .collect(Collectors.toList());
   }
+
 
   public List<TopItem> getByName(String playerName) {
     return topRepository.findAll().stream()
@@ -53,7 +49,7 @@ public class TopService {
   @Transactional
   public TopItem create(Top top) {
     TopItem build = TopItem.builder()
-        .name(PlayerName.valueOf(top.getName().name()))
+        .name(PlayerName.fromName(top.getName()))
         .place(top.getPlace())
         .rating(top.getRating())
         .year(top.getYear())
@@ -62,10 +58,10 @@ public class TopService {
   }
 
   @Transactional
-  public TopItem update(Long topId, Top topDetails) {
+  public TopItem update(UUID topId, Top topDetails) {
     TopItem top = get(topId);
 
-    top.setName(PlayerName.valueOf(topDetails.getName().name()));
+    top.setName(PlayerName.fromName(topDetails.getName()));
     top.setRating(topDetails.getRating());
     top.setYear(topDetails.getYear());
     top.setPlace(topDetails.getPlace());
@@ -73,7 +69,7 @@ public class TopService {
     return topRepository.save(top);
   }
 
-  public void delete(Long topId) {
+  public void delete(UUID topId) {
     topRepository.deleteById(topId);
   }
 }

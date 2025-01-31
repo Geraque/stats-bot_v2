@@ -59,7 +59,7 @@ public class MatchMapperConfigurer extends ConfigurableMapper {
           @Override
           public void mapAtoB(TopItem topItem, Top top,
               MappingContext context) {
-            top.setName(PlayerName.valueOf(topItem.getName().name()));
+            top.setName(topItem.getName().getName());
           }
         }).register();
   }
