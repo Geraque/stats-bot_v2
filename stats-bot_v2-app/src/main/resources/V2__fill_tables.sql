@@ -851,3 +851,17 @@ INSERT INTO public.matches (ace,clutch_five,clutch_four,clutch_one,clutch_three,
 INSERT INTO public.matches (ace,clutch_five,clutch_four,clutch_one,clutch_three,clutch_two,"date",flash,four_kill,open_kill,rating,smoke_kill,three_kill,trade,wall_bang,"type",player_name) VALUES
 	 (0,0,0,0,0,0,'25.01.2023',0,0,0,0.98,0,0,1,0,'MATCH_MAKING','DESMOND'),
 	 (0,0,0,0,0,0,'26.01.2023',0,0,0,0.59,0,0,1,0,'MATCH_MAKING','DESMOND');
+
+INSERT INTO public.matches (player_name,rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"date","type") VALUES
+  ('DESMOND', 0.74,0,1,0,0,0,2,1,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('DESMOND', 1.03,1,5,0,0,0,0,0,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('DESMOND', 1.53,1,3,1,0,0,0,1,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('DESMOND', 2.11,0,0,1,0,0,0,0,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('BLACK_VISION', 1.36,0,4,0,0,0,0,2,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('BLACK_VISION', 0.9,0,0,0,0,0,0,3,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('BLACK_VISION', 0.79,0,0,0,0,0,0,1,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('BLACK_VISION', 1.02,1,0,0,0,0,0,1,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('B4ONE', 1.48,0,2,2,0,0,0,2,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('B4ONE', 2.05,0,1,2,0,0,0,4,0,1,1,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('B4ONE', 1.78,0,2,2,0,0,3,2,1,1,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
+  ('B4ONE', 1.83,0,4,1,0,0,1,1,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING');
