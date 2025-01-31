@@ -15,6 +15,7 @@ public enum PlayerName {
   B4ONE("B4one"),
   NEKIT("221w33"),
   KOPFIRE("Kopfire"),
+  MVFOREVER01("MVforever01"),
   WOLF_SMXL("Wolf_SMXL");
 
   String name;
