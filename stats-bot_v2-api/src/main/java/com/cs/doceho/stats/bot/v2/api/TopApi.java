@@ -5,6 +5,7 @@ import com.cs.doceho.stats.bot.v2.model.Top;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import java.util.UUID;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,13 +26,12 @@ public interface TopApi {
   @ApiOperation(value = "Получение информации по году",
       nickname = "getYearTop", tags = {"top"})
   @GetMapping("/year/{year}")
-  ResponseEntity<List<String>> getYearTop(@PathVariable(value = "year") int year);
+  ResponseEntity<List<Top>> getYearTop(@PathVariable(value = "year") int year);
 
   @ApiOperation(value = "Получение информации по id",
       nickname = "getTopById", tags = {"top"})
   @GetMapping("/{id}")
-  ResponseEntity<Top> getTopById(@PathVariable(value = "id") Long topId)
-      throws ResourceNotFoundException;
+  ResponseEntity<Top> getTopById(@PathVariable(value = "id") UUID topId);
 
   @ApiOperation(value = "Получение информации по имени",
       nickname = "getTopByName", tags = {"top"})
@@ -46,12 +46,11 @@ public interface TopApi {
   @ApiOperation(value = "Изменение итогов по id",
       nickname = "updateTop", tags = {"top"})
   @PutMapping("/{id}")
-  ResponseEntity<Top> updateTop(@PathVariable(value = "id") Long topId,
-      @Valid @RequestBody Top topDetails) throws ResourceNotFoundException;
+  ResponseEntity<Top> updateTop(@PathVariable(value = "id") UUID topId,
+      @Valid @RequestBody Top topDetails);
 
   @ApiOperation(value = "Удаление информации по id",
       nickname = "deleteTop", tags = {"top"})
   @DeleteMapping("/{id}")
-  ResponseEntity<?> deleteTop(@PathVariable(value = "id") Long topId)
-      throws ResourceNotFoundException;
+  ResponseEntity<?> deleteTop(@PathVariable(value = "id") UUID topId);
 }

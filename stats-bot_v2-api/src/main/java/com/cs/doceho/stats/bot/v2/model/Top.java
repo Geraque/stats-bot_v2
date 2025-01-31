@@ -19,7 +19,7 @@ public class Top {
 
   UUID id;
 
-  PlayerName name;
+  String name;
 
   Integer year;
 
