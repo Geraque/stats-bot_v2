@@ -4,6 +4,7 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -55,11 +56,11 @@ public class MatchItem {
 
   @Enumerated(EnumType.STRING)
   @Type(type = "pgsql_enum_player_name")
-  @Column(name = "name", columnDefinition = "player_names")
-  PlayerName name;
+  @Column(name = "player_name", columnDefinition = "player_names")
+  PlayerName playerName;
 
-  @Column(name = "data")
-  LocalDate data;
+  @Column(name = "date")
+  LocalDateTime date;
 
   @Column(name = "rating")
   Double rating;

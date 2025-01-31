@@ -15,4 +15,13 @@ public enum MatchType {
   FACEIT("Faceit");
 
   String name;
+
+  public static MatchType fromName(String name) {
+    for (MatchType matchName : MatchType.values()) {
+      if (matchName.name.equals(name)) {
+        return matchName;
+      }
+    }
+    return null;
+  }
 }

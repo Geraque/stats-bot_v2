@@ -1,7 +1,5 @@
 package com.cs.doceho.stats.bot.v2.model;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,11 +12,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Match {
+public class Player {
 
-  UUID id;
-  String playerName;
-  LocalDateTime date;
+  String name;
+  Integer matches;
   Double rating;
   Integer smokeKill;
   Integer openKill;
@@ -33,5 +30,4 @@ public class Match {
   Integer clutchThree;
   Integer clutchFour;
   Integer clutchFive;
-  String type;
 }

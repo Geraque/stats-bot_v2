@@ -42,14 +42,14 @@ public class TopService {
 
   public List<TopItem> getByName(String playerName) {
     return topRepository.findAll().stream()
-        .filter(item -> item.getName().name().equals(playerName))
+        .filter(item -> item.getPlayerName().name().equals(playerName))
         .collect(Collectors.toList());
   }
 
   @Transactional
   public TopItem create(Top top) {
     TopItem build = TopItem.builder()
-        .name(PlayerName.fromName(top.getName()))
+        .playerName(PlayerName.fromName(top.getPlayerName()))
         .place(top.getPlace())
         .rating(top.getRating())
         .year(top.getYear())
@@ -61,7 +61,7 @@ public class TopService {
   public TopItem update(UUID topId, Top topDetails) {
     TopItem top = get(topId);
 
-    top.setName(PlayerName.fromName(topDetails.getName()));
+    top.setPlayerName(PlayerName.fromName(topDetails.getPlayerName()));
     top.setRating(topDetails.getRating());
     top.setYear(topDetails.getYear());
     top.setPlace(topDetails.getPlace());
