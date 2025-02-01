@@ -9,7 +9,7 @@ INSERT INTO public.tops (player_name,place,rating,"year") VALUES
 	 ('GLOXINIA','4',0.952836,2019),
 	 ('NEKIT','5',0.91989,2019),
 	 ('MVFOREVER01','6',0.708761,2019);
-INSERT INTO public.tops (id,player_name,place,rating,"year") VALUES
+INSERT INTO public.tops (player_name,place,rating,"year") VALUES
 	 ('B4ONE','1',1.131041,2020),
 	 ('DESMOND','2',1.015513,2020),
 	 ('BLACK_VISION','3',1.005462,2020),
@@ -20,7 +20,7 @@ INSERT INTO public.tops (id,player_name,place,rating,"year") VALUES
 	 ('NEKIT','4',0.945,2021),
 	 ('GLOXINIA','5',0.875714,2021),
 	 ('B4ONE','1',1.35375,2022);
-INSERT INTO public.tops (id,player_name,place,rating,"year") VALUES
+INSERT INTO public.tops (player_name,place,rating,"year") VALUES
 	 ('BLACK_VISION','2',1.0,2022),
 	 ('DESMOND','3',0.995591,2022),
 	 ('GLOXINIA','4',0.93358,2022),
@@ -865,3 +865,23 @@ INSERT INTO public.matches (player_name,rating,smoke_kill,open_kill,three_kill,f
   ('B4ONE', 2.05,0,1,2,0,0,0,4,0,1,1,0,0,0,'17.02.2023', 'MATCH_MAKING'),
   ('B4ONE', 1.78,0,2,2,0,0,3,2,1,1,0,0,0,0,'17.02.2023', 'MATCH_MAKING'),
   ('B4ONE', 1.83,0,4,1,0,0,1,1,0,0,0,0,0,0,'17.02.2023', 'MATCH_MAKING');
+
+INSERT INTO public.matches (player_name,rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"date","type") VALUES
+  ('DESMOND',1.35,0,0,1,0,0,0,0,0,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('DESMOND',0.84,0,2,0,0,0,0,0,0,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('DESMOND',1.16,1,4,0,1,0,0,1,0,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('DESMOND',1.38,1,2,1,0,0,0,0,0,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('DESMOND',0.87,0,0,0,0,0,0,0,1,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('DESMOND',0.89,0,1,0,0,0,0,0,2,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('BLACK_VISION',1.01,1,0,0,0,0,0,1,0,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('BLACK_VISION',0.86,0,0,1,0,0,0,3,0,0,1,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('BLACK_VISION',1.24,0,0,0,0,0,1,5,2,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('BLACK_VISION',1.23,0,1,0,1,0,0,3,1,0,1,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('BLACK_VISION',0.55,0,1,0,0,0,0,0,1,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('BLACK_VISION',1.13,0,0,0,0,0,0,4,1,0,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('B4ONE',2.32,0,4,1,0,0,1,1,0,0,1,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('B4ONE',0.81,0,0,0,0,0,2,1,0,0,1,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('B4ONE',1.19,0,1,0,0,0,2,6,0,1,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('B4ONE',1.39,0,3,0,0,0,1,1,0,0,1,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('B4ONE',1.17,0,3,2,0,0,2,1,0,1,0,0,0,0,'24.02.2023','MATCH_MAKING'),
+  ('B4ONE',1.21,0,1,0,0,0,0,2,0,1,0,0,0,0,'24.02.2023','MATCH_MAKING');
