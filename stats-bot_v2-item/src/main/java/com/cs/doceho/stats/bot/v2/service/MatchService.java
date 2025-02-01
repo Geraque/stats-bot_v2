@@ -7,6 +7,7 @@ import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
 import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
+import com.cs.doceho.stats.bot.v2.service.utils.CalculationService;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 public class MatchService {
 
   MatchRepository matchRepository;
+  CalculationService calculationService;
 
   public List<MatchItem> getAll() {
     return matchRepository.findAll();
@@ -103,10 +105,11 @@ public class MatchService {
   }
 
   public Player getPlayerStats(String playerName) {
+    // Создание объекта player с начальными значениями статистики
     Player player = Player.builder()
         .name(playerName)
         .matches(0)
-        .rating((double) 0)
+        .rating(0.0)
         .smokeKill(0)
         .openKill(0)
         .threeKill(0)
@@ -122,26 +125,34 @@ public class MatchService {
         .clutchTwo(0)
         .build();
 
+    // Фильтрация матчей по имени игрока с дополнительными проверками на null
     getAll().stream()
-        .filter(match -> match.getPlayerName().getName().equals(playerName))
+        .filter(match -> match != null
+            && match.getPlayerName() != null
+            && match.getPlayerName().getName() != null
+            && match.getPlayerName().getName().equals(playerName))
         .forEach(match -> {
+          // Инкремент количества матчей
           player.setMatches(player.getMatches() + 1);
-          player.setRating(player.getRating() + match.getRating());
-          player.setSmokeKill(player.getSmokeKill() + match.getSmokeKill());
-          player.setOpenKill(player.getOpenKill() + match.getOpenKill());
-          player.setThreeKill(player.getThreeKill() + match.getThreeKill());
-          player.setFourKill(player.getFourKill() + match.getFourKill());
-          player.setAce(player.getAce() + match.getAce());
-          player.setFlash(player.getFlash() + match.getFlash());
-          player.setTrade(player.getTrade() + match.getTrade());
-          player.setWallBang(player.getWallBang() + match.getWallBang());
-          player.setClutchOne(player.getClutchOne() + match.getClutchOne());
-          player.setClutchTwo(player.getClutchTwo() + match.getClutchTwo());
-          player.setClutchThree(player.getClutchThree() + match.getClutchThree());
-          player.setClutchFour(player.getClutchFour() + match.getClutchFour());
-          player.setClutchFive(player.getClutchFive() + match.getClutchFive());
+
+          // Суммирование статистики с использованием методов safeDouble/calculationService.safeInt
+          player.setRating(player.getRating() +  calculationService.safeDouble(match.getRating()));
+          player.setSmokeKill(player.getSmokeKill() + calculationService.safeInt(match.getSmokeKill()));
+          player.setOpenKill(player.getOpenKill() + calculationService.safeInt(match.getOpenKill()));
+          player.setThreeKill(player.getThreeKill() + calculationService.safeInt(match.getThreeKill()));
+          player.setFourKill(player.getFourKill() + calculationService.safeInt(match.getFourKill()));
+          player.setAce(player.getAce() + calculationService.safeInt(match.getAce()));
+          player.setFlash(player.getFlash() + calculationService.safeInt(match.getFlash()));
+          player.setTrade(player.getTrade() + calculationService.safeInt(match.getTrade()));
+          player.setWallBang(player.getWallBang() + calculationService.safeInt(match.getWallBang()));
+          player.setClutchOne(player.getClutchOne() + calculationService.safeInt(match.getClutchOne()));
+          player.setClutchTwo(player.getClutchTwo() + calculationService.safeInt(match.getClutchTwo()));
+          player.setClutchThree(player.getClutchThree() + calculationService.safeInt(match.getClutchThree()));
+          player.setClutchFour(player.getClutchFour() + calculationService.safeInt(match.getClutchFour()));
+          player.setClutchFive(player.getClutchFive() + calculationService.safeInt(match.getClutchFive()));
         });
 
+    // Вычисление среднего значения рейтинга, если найдены матчи
     if (player.getMatches() > 0) {
       player.setRating(player.getRating() / player.getMatches());
     }
