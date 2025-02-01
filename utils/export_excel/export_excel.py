@@ -12,15 +12,15 @@ worksheet = workbook["2025 mm"]
 players = {
     "DESMOND": {
         "rating": 2,  # столбец B
-        "stats": list(range(7, 20))  # столбцы G (7) до S (19)
+        "stats": list(range(5, 18))  # столбцы E (5) до Q (17)
     },
     "BLACK_VISION": {
         "rating": 3,  # столбец C
-        "stats": list(range(20, 33))  # столбцы T (20) до AF (32)
+        "stats": list(range(18, 31))  # столбцы R (18) до AD (30)
     },
     "GLOXINIA": {
         "rating": 4,  # столбец D
-        "stats": list(range(33, 46))  # столбцы AG (33) до AS (45)
+        "stats": list(range(31, 44))  # столбцы AE (31) до AQ (43)
     }
 }
 # players = {
