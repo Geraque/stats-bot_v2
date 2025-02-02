@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/stats-bot_v2-api/stats-bot_v2-api.iml" filepath="$PROJECT_DIR$/stats-bot_v2-api/stats-bot_v2-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/stats-bot_v2-item/stats-bot_v2-item.iml" filepath="$PROJECT_DIR$/stats-bot_v2-item/stats-bot_v2-item.iml" />
-    </modules>
-  </component>
-</project>
