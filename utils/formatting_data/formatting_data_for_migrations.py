@@ -1,21 +1,36 @@
-# Задать имя файла
-file_name = "example.txt"
+#!/usr/bin/env python3
+import re
 
-# Чтение всех строк файла
-with open(file_name, "r", encoding="utf-8") as file:
-    lines = file.readlines()
+def convert_dates(text: str) -> str:
+    """
+    Функция заменяет даты формата dd.mm.yyyy на yyyy-mm-dd.
+    """
+    # Регулярное выражение для поиска дат в формате dd.mm.yyyy
+    pattern = re.compile(r'(\d{2})\.(\d{2})\.(\d{4})')
+    # Замена: \3 - год, \2 - месяц, \1 - день
+    return pattern.sub(r'\3-\2-\1', text)
 
-# Если в файле есть хотя бы одна строка:
-if lines:
-    # Первая строка остаётся без изменений
-    modified_lines = [lines[0]]
-    # Для остальных строк выполняется замена пробелов на запятые
-    for line in lines[1:]:
-        modified_lines.append(line.replace("	", ","))
-else:
-    modified_lines = lines
+def main():
+    filename = 'example.txt'
 
-# Запись изменённого содержимого обратно в тот же файл
-with open(file_name, "w", encoding="utf-8") as file:
-    file.writelines(modified_lines)
+    # Чтение содержимого файла
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            content = file.read()
+    except Exception as e:
+        print(f'Ошибка при чтении файла {filename}: {e}')
+        return
 
+    # Замена дат
+    updated_content = convert_dates(content)
+
+    # Запись изменённого содержимого обратно в тот же файл
+    try:
+        with open(filename, 'w', encoding='utf-8') as file:
+            file.write(updated_content)
+        print('Файл успешно обновлён.')
+    except Exception as e:
+        print(f'Ошибка при записи в файл {filename}: {e}')
+
+if __name__ == '__main__':
+    main()
