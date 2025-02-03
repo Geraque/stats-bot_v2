@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum PlayerName {
-  DESMOND("Desmond"),
+  DESMOND("Desmond\uD83C\uDFB4"),
   BLACK_VISION("BlackVision"),
   GLOXINIA("Gloxinia"),
   B4ONE("B4one"),

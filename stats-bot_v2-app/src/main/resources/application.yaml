@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/stats_bot
+    url: jdbc:postgresql://localhost:5433/stats_bot
     username: postgres
     password: gfhjkmvjq
   jpa:
