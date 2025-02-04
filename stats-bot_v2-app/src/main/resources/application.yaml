@@ -1,8 +1,8 @@
 spring:
+  config:
+    import: "optional:classpath:application-secrets.yaml"
   datasource:
     url: jdbc:postgresql://localhost:5433/stats_bot
-    username: postgres
-    password: gfhjkmvjq
   jpa:
     show-sql: true
     hibernate:
@@ -19,8 +19,5 @@ spring:
 
 bot:
   name: Doceho
-  token: 5679759748:AAGr5sBCEWfoWaaFVzrdqJfsSOel26NpfM4
 
-leetify:
-  login: alekspavlov02@mail.ru
-  password: gfhjkmvjq
+leetify: {}
