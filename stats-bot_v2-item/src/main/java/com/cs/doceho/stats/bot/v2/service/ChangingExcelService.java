@@ -42,7 +42,7 @@ public class ChangingExcelService {
     log.info("zxccccccccccccccccccc");
     log.info(System.getProperty("user.dir"));
     FileInputStream fis = new FileInputStream(FILE_PATH);
-    Workbook workbook = new XSSFWorkbook(fis);
+    XSSFWorkbook workbook = new XSSFWorkbook(fis);
     fis.close();
 
     // Обработка каждого матча из списка
