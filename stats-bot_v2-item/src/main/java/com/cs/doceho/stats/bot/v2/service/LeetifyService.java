@@ -6,8 +6,12 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
 import java.time.OffsetDateTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LeetifyService {
 
   @Autowired
@@ -61,7 +68,7 @@ public class LeetifyService {
       return;
     }
     // Ограничение до 20 игр
-    gameIds = gameIds.stream().limit(80).collect(Collectors.toList());
+    gameIds = gameIds.stream().limit(47).collect(Collectors.toList()); //26
 
     // Шаг 4. Обработка каждой игры из истории
     for (String gameId : gameIds) {
@@ -85,20 +92,20 @@ public class LeetifyService {
       if (gameDetail.getPlayerStats() != null) {
         for (PlayerStat stat : gameDetail.getPlayerStats()) {
           // Маппинг steam64Id в PlayerName согласно таблице
-          PlayerName playerName = mapSteam64IdToPlayerName(stat.getSteam64Id());
+          PlayerName playerName = PlayerName.fromId(stat.getSteam64Id());
           if (playerName == null) continue;
 
-          LocalDateTime finishedAt = parseDate(gameDetail.getFinishedAt());
+          LocalDateTime createdAt = parseDate(gameDetail.getCreatedAt());
           Double rating = stat.getHltvRating();
 
           // Проверка на дубликат (сравнение по date, playerName и rating)
-          MatchKey key = new MatchKey(finishedAt, playerName, rating);
+          MatchKey key = new MatchKey(createdAt, playerName, rating);
           if (existingMatchKeys.contains(key)) continue;
 
           // Создание объекта MatchItem и заполнение данных
           MatchItem matchItem = new MatchItem();
           matchItem.setPlayerName(playerName);
-          matchItem.setDate(finishedAt);
+          matchItem.setDate(createdAt);
           matchItem.setRating(rating);
           matchItem.setThreeKill(stat.getMulti3k());
           matchItem.setFourKill(stat.getMulti4k());
@@ -108,7 +115,7 @@ public class LeetifyService {
           // Параметры smokeKill и wallBang можно задать дефолтно (например, 0)
 
           // Маппинг dataSource в MatchType
-          matchItem.setType(mapDataSourceToMatchType(gameDetail.getDataSource()));
+          matchItem.setType(MatchType.fromLeetifyName(gameDetail.getDataSource()));
 
           // Подсчёт clutch-данных для игрока
           int clutchOne = 0, clutchTwo = 0, clutchThree = 0, clutchFour = 0, clutchFive = 0;
@@ -149,6 +156,7 @@ public class LeetifyService {
           matchItem.setOpenKill(openKill);
 
           // Сохранение объекта в базе
+          log.info("matchItem123: {}", matchItem);
           matchRepository.save(matchItem);
           existingMatchKeys.add(key);
         }
@@ -180,19 +188,30 @@ public class LeetifyService {
 
   /**
    * Выполняет GET запрос для получения истории игр.
-   * Из ответа извлекается только список id игр.
+   * Из ответа извлекается список объектов, содержащих поля id и createdAt.
+   * Результат сортируется по убыванию даты createdAt, после чего возвращается список id.
    */
   private List<String> getGameHistory(String token) {
     try {
       HttpHeaders headers = new HttpHeaders();
       headers.set("Authorization", "Bearer " + token);
       HttpEntity<Void> request = new HttpEntity<>(headers);
+
       ResponseEntity<GameHistoryResponse> response = restTemplate.exchange(
           HISTORY_URL, HttpMethod.GET, request, GameHistoryResponse.class);
+
       if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
         List<GameIdWrapper> gameWrappers = response.getBody().getGames();
-        if (gameWrappers != null) {
-          return gameWrappers.stream().map(GameIdWrapper::getId).collect(Collectors.toList());
+        if (gameWrappers != null && !gameWrappers.isEmpty()) {
+          // Сортировка по убыванию даты createdAt
+          gameWrappers.sort((o1, o2) -> {
+            OffsetDateTime d1 = OffsetDateTime.parse(o1.getCreatedAt());
+            OffsetDateTime d2 = OffsetDateTime.parse(o2.getCreatedAt());
+            return d2.compareTo(d1);
+          });
+          return gameWrappers.stream()
+              .map(GameIdWrapper::getId)
+              .collect(Collectors.toList());
         }
       }
     } catch (Exception e) {
@@ -265,48 +284,6 @@ public class LeetifyService {
   }
 
   /**
-   * Маппинг steam64Id в PlayerName согласно заданной таблице.
-   */
-  private PlayerName mapSteam64IdToPlayerName(String steam64Id) {
-    if (steam64Id == null) return null;
-    switch (steam64Id) {
-      case "76561198113198660":
-      case "76561198815456644":
-      case "76561198093023765":
-        return PlayerName.DESMOND;
-      case "76561198182310891":
-        return PlayerName.GLOXINIA;
-      case "76561198342639103":
-        return PlayerName.BLACK_VISION;
-      case "76561198154347514":
-        return PlayerName.KOPFIRE;
-      case "76561198341666571":
-        return PlayerName.WOLF_SMXL;
-      default:
-        return null;
-    }
-  }
-
-  /**
-   * Маппинг dataSource в MatchType согласно заданным соответствиям.
-   */
-  private MatchType mapDataSourceToMatchType(String dataSource) {
-    if (dataSource == null) return null;
-    switch (dataSource) {
-      case "matchmaking_wingman":
-        return MatchType.WINGMAN;
-      case "matchmaking":
-        return MatchType.MATCH_MAKING;
-      case "premier":
-        return MatchType.PREMIER;
-      case "faceit":
-        return MatchType.FACEIT;
-      default:
-        return null;
-    }
-  }
-
-  /**
    * Парсинг строки с датой (предполагается формат ISO_DATE_TIME).
    */
   private LocalDateTime parseDate(String dateStr) {
@@ -321,8 +298,9 @@ public class LeetifyService {
 
   // --- DTO классы ---
   @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class LoginResponse {
-    private String token;
+    String token;
   }
 
   /**
@@ -330,42 +308,49 @@ public class LeetifyService {
    * Извлекается поле games – список объектов, каждый из которых содержит только id игры.
    */
   @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class GameHistoryResponse {
-    private List<GameIdWrapper> games;
+    List<GameIdWrapper> games;
   }
   @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class GameIdWrapper {
-    private String id;
+    String id;
+    String createdAt;
   }
   @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class GameDetail {
-    private String finishedAt;
-    private String dataSource;
-    private List<PlayerStat> playerStats;
+    String createdAt;
+    String dataSource;
+    List<PlayerStat> playerStats;
   }
 
   @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class PlayerStat {
-    private String name;
-    private String steam64Id;
-    private Double hltvRating;
-    private Integer multi3k;
-    private Integer multi4k;
-    private Integer multi5k;
-    private Integer flashAssist;
-    private Integer tradeKillAttempts;
+    String name;
+    String steam64Id;
+    Double hltvRating;
+    Integer multi3k;
+    Integer multi4k;
+    Integer multi5k;
+    Integer flashAssist;
+    Integer tradeKillAttempts;
   }
 
   @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class ClutchData {
-    private String steam64Id;
-    private int clutchesWon;
-    private int handicap;
+    String steam64Id;
+    int clutchesWon;
+    int handicap;
   }
 
   @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class OpeningDuel {
-    private String attackerName;
+    String attackerName;
   }
 
   /**
@@ -375,10 +360,11 @@ public class LeetifyService {
 
   @Data
   @AllArgsConstructor
+  @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class MatchKey {
-    private LocalDateTime date;
-    private PlayerName playerName;
-    private Double rating;
+    LocalDateTime date;
+    PlayerName playerName;
+    Double rating;
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
