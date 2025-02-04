@@ -9,12 +9,13 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum MatchType {
-  MATCH_MAKING("ММ"),
-  WINGMAN("Напарники"),
-  PREMIER("Премьер"),
-  FACEIT("Faceit");
+  MATCH_MAKING("ММ", "matchmaking"),
+  WINGMAN("Напарники", "matchmaking_wingman"),
+  PREMIER("Премьер", "premier"),
+  FACEIT("Faceit", "faceit");
 
   String name;
+  String leetifyName;
 
   public static MatchType fromName(String name) {
     for (MatchType matchName : MatchType.values()) {
@@ -24,4 +25,14 @@ public enum MatchType {
     }
     return null;
   }
+
+  public static MatchType fromLeetifyName(String name) {
+    for (MatchType matchName : MatchType.values()) {
+      if (matchName.leetifyName.equals(name)) {
+        return matchName;
+      }
+    }
+    return null;
+  }
+
 }

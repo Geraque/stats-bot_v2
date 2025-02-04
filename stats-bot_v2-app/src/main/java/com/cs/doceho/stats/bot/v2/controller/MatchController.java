@@ -4,6 +4,7 @@ package com.cs.doceho.stats.bot.v2.controller;
 import com.cs.doceho.stats.bot.v2.api.MatchApi;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
+import com.cs.doceho.stats.bot.v2.service.LeetifyService;
 import com.cs.doceho.stats.bot.v2.service.MatchService;
 import io.vavr.control.Try;
 import java.util.List;
@@ -25,10 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class MatchController implements MatchApi {
 
   MatchService matchService;
+  LeetifyService leetifyService;
   MapperFacade mapper;
 
   @Override
   public List<Match> getAllMatches() {
+    leetifyService.processMatches();
     return matchService.getAll().stream()
         .map(it -> mapper.map(it, Match.class))
         .collect(Collectors.toList());
