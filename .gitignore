@@ -20,4 +20,4 @@ application.yaml
 test*.html
 test*.pdf
 /.envrc
-/resources/application-secrets.yaml
+stats-bot_v2-app/src/main/resources/application-secrets.yaml
