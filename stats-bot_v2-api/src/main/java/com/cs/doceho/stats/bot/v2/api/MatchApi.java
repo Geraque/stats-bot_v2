@@ -4,6 +4,7 @@ import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
@@ -23,7 +24,7 @@ public interface MatchApi {
   @ApiOperation(value = "Получение всех матчей",
       nickname = "getAllMatches", tags = {"match"})
   @GetMapping
-  List<Match> getAllMatches();
+  List<Match> getAllMatches() throws IOException;
 
   @ApiOperation(value = "Получение матчей по id",
       nickname = "getMatchById", tags = {"match"})

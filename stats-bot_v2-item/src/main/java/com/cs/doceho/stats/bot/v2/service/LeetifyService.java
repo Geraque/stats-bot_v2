@@ -44,7 +44,7 @@ public class LeetifyService {
   RestTemplate restTemplate = new RestTemplate();
   LeetifyProperties leetifyProperties;
   ChangingExcelService changingExcelService;
-  static  String LOGIN_URL = "https://api.leetify.com/api/login";
+  static String LOGIN_URL = "https://api.leetify.com/api/login";
   static String HISTORY_URL = "https://api.leetify.com/api/games/history";
   static String GAME_DETAIL_URL = "https://api.leetify.com/api/games/{id}";
   static String CLUTCHES_URL = "https://api.leetify.com/api/games/{id}/clutches";

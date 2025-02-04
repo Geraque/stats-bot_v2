@@ -2,11 +2,17 @@ package com.cs.doceho.stats.bot.v2.controller;
 
 
 import com.cs.doceho.stats.bot.v2.api.MatchApi;
+import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
+import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
+import com.cs.doceho.stats.bot.v2.service.ChangingExcelService;
 import com.cs.doceho.stats.bot.v2.service.LeetifyService;
 import com.cs.doceho.stats.bot.v2.service.MatchService;
 import io.vavr.control.Try;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -27,11 +33,32 @@ public class MatchController implements MatchApi {
 
   MatchService matchService;
   LeetifyService leetifyService;
+  ChangingExcelService changingExcelService;
   MapperFacade mapper;
 
   @Override
-  public List<Match> getAllMatches() {
-    leetifyService.processMatches();
+  public List<Match> getAllMatches() throws IOException {
+//    leetifyService.processMatches();
+    MatchItem matchItem = MatchItem.builder()
+        .playerName(PlayerName.fromName(PlayerName.DESMOND.getName()))
+        .date(LocalDateTime.now())
+        .rating(5.0)
+        .smokeKill(6)
+        .openKill(7)
+        .threeKill(8)
+        .fourKill(9)
+        .ace(9)
+        .flash(8)
+        .trade(7)
+        .wallBang(6)
+        .clutchOne(5)
+        .clutchTwo(4)
+        .clutchThree(3)
+        .clutchFour(2)
+        .clutchFive(1)
+        .type(MatchType.MATCH_MAKING)
+        .build();
+    changingExcelService.addMatches(List.of(matchItem));
     return matchService.getAll().stream()
         .map(it -> mapper.map(it, Match.class))
         .collect(Collectors.toList());

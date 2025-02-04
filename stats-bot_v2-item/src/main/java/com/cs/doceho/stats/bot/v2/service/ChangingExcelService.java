@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChangingExcelService {
 
-  static String FILE_PATH = "statistics.xlsx";
+  static String FILE_PATH = "stats-bot_v2-app/src/main/resources/statistics.xlsx";
 
   /**
    * Добавление матчей из списка в Excel-файл.
@@ -39,6 +39,8 @@ public class ChangingExcelService {
    * @throws IOException при ошибках работы с файлом
    */
   public void addMatches(List<MatchItem> matchList) throws IOException {
+    log.info("zxccccccccccccccccccc");
+    log.info(System.getProperty("user.dir"));
     FileInputStream fis = new FileInputStream(FILE_PATH);
     Workbook workbook = new XSSFWorkbook(fis);
     fis.close();
