@@ -6,8 +6,10 @@ import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,11 +43,12 @@ public class LeetifyService {
   MatchRepository matchRepository;
   RestTemplate restTemplate = new RestTemplate();
   LeetifyProperties leetifyProperties;
-  String LOGIN_URL = "https://api.leetify.com/api/login";
-  String HISTORY_URL = "https://api.leetify.com/api/games/history";
-  String GAME_DETAIL_URL = "https://api.leetify.com/api/games/{id}";
-  String CLUTCHES_URL = "https://api.leetify.com/api/games/{id}/clutches";
-  String OPENING_DUELS_URL = "https://api.leetify.com/api/games/{id}/opening-duels";
+  ChangingExcelService changingExcelService;
+  static  String LOGIN_URL = "https://api.leetify.com/api/login";
+  static String HISTORY_URL = "https://api.leetify.com/api/games/history";
+  static String GAME_DETAIL_URL = "https://api.leetify.com/api/games/{id}";
+  static String CLUTCHES_URL = "https://api.leetify.com/api/games/{id}/clutches";
+  static String OPENING_DUELS_URL = "https://api.leetify.com/api/games/{id}/opening-duels";
 
   /**
    * Основной метод для обработки матчей. 1) Получаются последние 20 матчей из БД для проверки
@@ -54,7 +57,9 @@ public class LeetifyService {
    * деталей, clutch-данных и opening‑duels, производится маппинг статистики в MatchItem с проверкой
    * дубликатов, после чего объект сохраняется.
    */
-  public void processMatches() {
+  public void processMatches() throws IOException {
+    List<MatchItem> addedMatches = new ArrayList<>();
+
     // Шаг 1. Получение последних 20 матчей для проверки дубликатов
     List<MatchItem> existingMatches = matchRepository.findTop20ByOrderByDateDesc();
     Set<MatchKey> existingMatchKeys = new HashSet<>();
@@ -173,11 +178,13 @@ public class LeetifyService {
 
           // Сохранение объекта в базе
           log.info("matchItem123: {}", matchItem);
+          addedMatches.add(matchItem);
           matchRepository.save(matchItem);
           existingMatchKeys.add(key);
         }
       }
     }
+    changingExcelService.addMatches(addedMatches);
   }
 
   /**
