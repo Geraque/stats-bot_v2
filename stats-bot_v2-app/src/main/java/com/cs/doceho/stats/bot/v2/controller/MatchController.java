@@ -31,7 +31,6 @@ public class MatchController implements MatchApi {
 
   @Override
   public List<Match> getAllMatches() {
-    System.out.println("12312312");
     leetifyService.processMatches();
     return matchService.getAll().stream()
         .map(it -> mapper.map(it, Match.class))
