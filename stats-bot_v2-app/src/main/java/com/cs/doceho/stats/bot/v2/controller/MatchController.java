@@ -7,12 +7,10 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
-import com.cs.doceho.stats.bot.v2.service.ChangingExcel;
 import com.cs.doceho.stats.bot.v2.service.ChangingExcelService;
 import com.cs.doceho.stats.bot.v2.service.LeetifyService;
 import com.cs.doceho.stats.bot.v2.service.MatchService;
 import io.vavr.control.Try;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -35,15 +33,15 @@ public class MatchController implements MatchApi {
   MatchService matchService;
   LeetifyService leetifyService;
   ChangingExcelService changingExcelService;
-  ChangingExcel changingExcel;
   MapperFacade mapper;
 
   @Override
   public List<Match> getAllMatches() throws Exception {
 //    leetifyService.processMatches();
+    LocalDateTime now = LocalDateTime.now();
     MatchItem matchItem = MatchItem.builder()
         .playerName(PlayerName.fromName(PlayerName.DESMOND.getName()))
-        .date(LocalDateTime.now())
+        .date(now)
         .rating(5.0)
         .smokeKill(6)
         .openKill(7)
@@ -60,8 +58,26 @@ public class MatchController implements MatchApi {
         .clutchFive(1)
         .type(MatchType.MATCH_MAKING)
         .build();
-    changingExcelService.addMatches(List.of(matchItem));
-//    changingExcel.addMatches(List.of(matchItem));
+    MatchItem matchItem2 = MatchItem.builder()
+        .playerName(PlayerName.fromName(PlayerName.BLACK_VISION.getName()))
+        .date(now)
+        .rating(4.0)
+        .smokeKill(5)
+        .openKill(4)
+        .threeKill(3)
+        .fourKill(2)
+        .ace(1)
+        .flash(0)
+        .trade(9)
+        .wallBang(8)
+        .clutchOne(7)
+        .clutchTwo(6)
+        .clutchThree(5)
+        .clutchFour(4)
+        .clutchFive(3)
+        .type(MatchType.MATCH_MAKING)
+        .build();
+    changingExcelService.addMatches(List.of(matchItem, matchItem2));
     return matchService.getAll().stream()
         .map(it -> mapper.map(it, Match.class))
         .collect(Collectors.toList());

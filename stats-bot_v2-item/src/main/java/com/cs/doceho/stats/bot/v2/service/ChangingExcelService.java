@@ -7,33 +7,27 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-/**
- * Класс для изменения Excel-файла statistics.xlsx.
- * Принимает список объектов MatchItem и добавляет данные матчей (одна запись = один матч для конкретного игрока)
- * в конец соответствующего листа.
- */
 @Service
-@RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChangingExcelService {
 
+  // Файл располагается в ресурсах проекта, путь можно указать относительно корня
   static String FILE_PATH = "stats-bot_v2-app/src/main/resources/statistics.xlsx";
 
   /**
-   * Добавление матчей из списка в Excel-файл.
-   * Для каждого MatchItem определяется нужный лист, вычисляется номер нового матча (match identifier)
-   * и добавляется новая строка с данными.
+   * Добавление матчей из списка в Excel-файл. Если для нового матча ещё не создан блок с датой,
+   * сначала добавляется строка с датой. Затем определяется следующий номер матча для данного дня и
+   * создаётся строка с данными.
    *
    * @param matchList список объектов MatchItem для записи в файл
    * @throws IOException при ошибках работы с файлом
@@ -43,55 +37,94 @@ public class ChangingExcelService {
     XSSFWorkbook workbook = new XSSFWorkbook(fis);
     fis.close();
 
-    // Обработка каждого матча из списка
+    // Форматирование даты: dd.MM.yyyy
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
     for (MatchItem match : matchList) {
       String sheetName = getSheetName(match.getType());
       if (sheetName == null) {
-        // Пропуск, если тип матча не распознан
         log.info("sheetName == null");
         continue;
       }
       Sheet sheet = workbook.getSheet(sheetName);
       if (sheet == null) {
         sheet = workbook.createSheet(sheetName);
-        // При необходимости можно добавить заголовочную строку
+        // При необходимости можно создать заголовочную строку
       }
 
-      // Определение нового номера карты:
-      String matchIdentifier = getNextMatchIdentifier(sheet);
+      // Получение даты матча в строковом формате
+      String matchDateStr = match.getDate().format(dtf);
 
-      // Определение индекса новой строки (добавление в конец листа)
-      int newRowIndex = sheet.getLastRowNum() + 1;
-      // Если лист пуст (нет заголовка) – можно начать со строки 1
-      if (newRowIndex == 0) {
-        newRowIndex = 1;
+      // Найти последнюю строку, где записана дата (ячейка A не содержит "map")
+      int lastDateRowIndex = findLastDateRowIndex(sheet);
+      int newRowIndex;
+      int matchNumber;
+
+      if (lastDateRowIndex == -1) {
+        // Если ещё нет ни одной строки с датой (например, лист пуст или только заголовок)
+        // Предполагается, что заголовок находится в строке 0, поэтому дата добавляется в строке 1.
+        newRowIndex = sheet.getLastRowNum() + 1;
+        if (newRowIndex < 1) {
+          newRowIndex = 1;
+        }
+        Row dateRow = sheet.createRow(newRowIndex);
+        dateRow.createCell(0).setCellValue(matchDateStr);
+        log.info("Добавлена строка с датой: {} в строке {}", matchDateStr, newRowIndex);
+        // Следующая строка для матча
+        newRowIndex++;
+        matchNumber = 1;
+      } else {
+        // Если найдена хотя бы одна строка с датой, получаем значение даты из последней такой строки
+        Row lastDateRow = sheet.getRow(lastDateRowIndex);
+        String lastDateStr = lastDateRow.getCell(0).getStringCellValue().trim();
+        if (lastDateStr.equals(matchDateStr)) {
+          // Новый матч относится к уже существующему блоку (одинаковая дата)
+          int lastMatchRowIndex = findLastMatchRowIndexForDateSection(sheet, lastDateRowIndex);
+          newRowIndex = lastMatchRowIndex + 1;
+          if (lastMatchRowIndex == lastDateRowIndex) {
+            // В блоке ещё нет матчей – это первый матч за этот день
+            matchNumber = 1;
+          } else {
+            // Из предыдущей строки с матчем получаем идентификатор вида "N map"
+            Row lastMatchRow = sheet.getRow(lastMatchRowIndex);
+            String lastMatchId = lastMatchRow.getCell(0).getStringCellValue().trim();
+            try {
+              String[] parts = lastMatchId.split("\\s+");
+              matchNumber = Integer.parseInt(parts[0]) + 1;
+            } catch (NumberFormatException e) {
+              matchNumber = 1;
+            }
+          }
+        } else {
+          // Дата нового матча отличается от последней записанной даты.
+          // Добавляем новую строку с датой в конец листа.
+          newRowIndex = sheet.getLastRowNum() + 1;
+          Row dateRow = sheet.createRow(newRowIndex);
+          dateRow.createCell(0).setCellValue(matchDateStr);
+          log.info("Добавлена новая строка с датой: {} в строке {}", matchDateStr, newRowIndex);
+          newRowIndex++;
+          matchNumber = 1;
+        }
       }
-      Row row = sheet.createRow(newRowIndex);
 
-      // Запись идентификатора матча в колонку A (индекс 0)
-      Cell cellA = row.createCell(0);
-      cellA.setCellValue(matchIdentifier);
+      // Создание строки с данными матча и установка идентификатора (например, "1 map", "2 map", …)
+      Row matchRow = sheet.createRow(newRowIndex);
+      String matchIdentifier = matchNumber + " map";
+      matchRow.createCell(0).setCellValue(matchIdentifier);
 
-      // В зависимости от типа матча заполняются колонки с данными
+      // Запись данных в зависимости от типа матча
       if (match.getType() == MatchType.WINGMAN) {
-        // Для листа "2х2 2025": только рейтинг в соответствующую колонку
         int targetCol = getWingmanRatingColumn(match.getPlayerName());
         if (targetCol != -1 && match.getRating() != null) {
-          Cell ratingCell = row.createCell(targetCol);
-          ratingCell.setCellValue(match.getRating());
+          matchRow.createCell(targetCol).setCellValue(match.getRating());
         }
       } else {
-        // Для листов "2025 mm", "Premier 2025" и "Faceit 2025":
-        // Запись рейтинга в колонку (B-D) в зависимости от playerName
         int ratingCol = getNonWingmanRatingColumn(match.getPlayerName());
         if (ratingCol != -1 && match.getRating() != null) {
-          Cell ratingCell = row.createCell(ratingCol);
-          ratingCell.setCellValue(match.getRating());
+          matchRow.createCell(ratingCol).setCellValue(match.getRating());
         }
-        // Запись статистики в соответствующий диапазон колонок
         int statsStartCol = getNonWingmanStatsStartColumn(match.getPlayerName());
         if (statsStartCol != -1) {
-          // Список статистических показателей в нужном порядке
           int[] stats = new int[13];
           stats[0] = (match.getSmokeKill() != null) ? match.getSmokeKill() : 0;
           stats[1] = (match.getOpenKill() != null) ? match.getOpenKill() : 0;
@@ -106,16 +139,13 @@ public class ChangingExcelService {
           stats[10] = (match.getClutchThree() != null) ? match.getClutchThree() : 0;
           stats[11] = (match.getClutchFour() != null) ? match.getClutchFour() : 0;
           stats[12] = (match.getClutchFive() != null) ? match.getClutchFive() : 0;
-          log.info("stats: {}", stats);
           for (int i = 0; i < stats.length; i++) {
-            Cell cell = row.createCell(statsStartCol + i);
-            cell.setCellValue(stats[i]);
+            matchRow.createCell(statsStartCol + i).setCellValue(stats[i]);
           }
         }
       }
     }
 
-    // Запись изменений в файл
     FileOutputStream fos = new FileOutputStream(FILE_PATH);
     workbook.write(fos);
     fos.close();
@@ -123,11 +153,62 @@ public class ChangingExcelService {
   }
 
   /**
-   * Определение имени листа по типу матча.
+   * Поиск последней строки, содержащей дату (ячейка A не пуста и не содержит "map").
    *
-   * @param type тип матча (MatchType)
-   * @return имя листа или null, если тип не распознан
+   * @param sheet лист Excel
+   * @return индекс последней строки с датой или -1, если такой строки нет
    */
+  private int findLastDateRowIndex(Sheet sheet) {
+    int lastDateRow = -1;
+    for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+      Row row = sheet.getRow(i);
+      if (row != null) {
+        Cell cell = row.getCell(0);
+        if (cell != null && cell.getCellType() == CellType.STRING) {
+          String val = cell.getStringCellValue().trim();
+          if (!val.isEmpty() && !val.toLowerCase().contains("map")) {
+            lastDateRow = i;
+          }
+        }
+      }
+    }
+    return lastDateRow;
+  }
+
+  /**
+   * Поиск последней строки для текущего блока (после строки с датой), где записан идентификатор
+   * матча (ячейка A содержит "map").
+   *
+   * @param sheet        лист Excel
+   * @param dateRowIndex индекс строки с датой
+   * @return индекс последней строки, содержащей идентификатор матча для данного дня
+   */
+  private int findLastMatchRowIndexForDateSection(Sheet sheet, int dateRowIndex) {
+    int lastMatchRow = dateRowIndex;
+    for (int i = dateRowIndex + 1; i <= sheet.getLastRowNum(); i++) {
+      Row row = sheet.getRow(i);
+      if (row == null) {
+        break;
+      }
+      Cell cell = row.getCell(0);
+      if (cell == null || cell.getCellType() != CellType.STRING) {
+        break;
+      }
+      String val = cell.getStringCellValue().trim();
+      if (val.isEmpty()) {
+        break;
+      }
+      // Если значение не содержит "map", значит это новая дата – выходим из цикла
+      if (!val.toLowerCase().contains("map")) {
+        break;
+      }
+      lastMatchRow = i;
+    }
+    return lastMatchRow;
+  }
+
+  // Остальные методы остаются без изменений
+
   private String getSheetName(MatchType type) {
     if (type == null) {
       log.info("type == null");
@@ -148,46 +229,7 @@ public class ChangingExcelService {
     }
   }
 
-  /**
-   * Определение следующего номера матча (match identifier) для нового ряда.
-   * Ищется последняя заполненная строка (начиная со строки 2) с ненулевым значением в колонке A,
-   * содержащим шаблон «N map». Если найден, то N увеличивается на 1, иначе возвращается «1 map».
-   *
-   * @param sheet лист Excel
-   * @return строка-номер матча, например, «4 map»
-   */
-  private String getNextMatchIdentifier(Sheet sheet) {
-    // Предполагается, что первая строка (индекс 0) – заголовок.
-    for (int i = sheet.getLastRowNum(); i >= 1; i--) {
-      Row row = sheet.getRow(i);
-      if (row == null) continue;
-      Cell cell = row.getCell(0);
-      if (cell == null) continue;
-      if (cell.getCellType() == CellType.STRING) {
-        String value = cell.getStringCellValue();
-        if (value != null && value.toLowerCase().contains("map")) {
-          String[] parts = value.trim().split("\\s+");
-          try {
-            int num = Integer.parseInt(parts[0]);
-            return (num + 1) + " map";
-          } catch (NumberFormatException e) {
-            // Если не удалось распарсить число – продолжить поиск
-          }
-        }
-      }
-    }
-    return "1 map";
-  }
-
-  /**
-   * Определение колонки для записи рейтинга в листе «2х2 2025» (WINGMAN).
-   *
-   * @param playerName имя игрока
-   * @return индекс колонки или -1, если имя не распознано
-   */
   private int getWingmanRatingColumn(PlayerName playerName) {
-    // Структура листа "2х2 2025":
-    // A: номер матча, B: DESMOND, C: BLACK_VISION, D: GLOXINIA, E: WOLF_SMXL
     if (playerName == null) {
       return -1;
     }
@@ -205,14 +247,7 @@ public class ChangingExcelService {
     }
   }
 
-  /**
-   * Определение колонки для записи рейтинга в листах "2025 mm", "Premier 2025", "Faceit 2025".
-   *
-   * @param playerName имя игрока
-   * @return индекс колонки (B-D) или -1, если имя не распознано
-   */
   private int getNonWingmanRatingColumn(PlayerName playerName) {
-    // Структура листов: A: номер матча, B: DESMOND, C: BLACK_VISION, D: GLOXINIA, далее статистика
     if (playerName == null) {
       return -1;
     }
@@ -228,13 +263,6 @@ public class ChangingExcelService {
     }
   }
 
-  /**
-   * Определение стартовой колонки для записи статистики в листах "2025 mm", "Premier 2025", "Faceit 2025".
-   *
-   * @param playerName имя игрока
-   * @return индекс стартовой колонки или -1, если имя не распознано.
-   *         Для DESMOND – E (индекс 4), BLACK_VISION – R (индекс 17), GLOXINIA – AE (индекс 30).
-   */
   private int getNonWingmanStatsStartColumn(PlayerName playerName) {
     if (playerName == null) {
       return -1;
