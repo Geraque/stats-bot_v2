@@ -2,15 +2,15 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15 # Используйте последнюю стабильную версию PostgreSQL, актуальную для вас
+    image: postgres:15
     container_name: statsbot_postgres
     restart: always
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
-      POSTGRES_USER: postgres # Имя пользователя для базы данных
-      POSTGRES_PASSWORD: gfhjkmvjq # Пароль для базы данных
-      POSTGRES_DB: stats_bot # Имя базы данных, которая создастся автоматически при запуске
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data # Для сохранения состояния базы данных
 

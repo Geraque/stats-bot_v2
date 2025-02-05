@@ -7,6 +7,7 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
+import com.cs.doceho.stats.bot.v2.service.ChangingExcel;
 import com.cs.doceho.stats.bot.v2.service.ChangingExcelService;
 import com.cs.doceho.stats.bot.v2.service.LeetifyService;
 import com.cs.doceho.stats.bot.v2.service.MatchService;
@@ -34,10 +35,11 @@ public class MatchController implements MatchApi {
   MatchService matchService;
   LeetifyService leetifyService;
   ChangingExcelService changingExcelService;
+  ChangingExcel changingExcel;
   MapperFacade mapper;
 
   @Override
-  public List<Match> getAllMatches() throws IOException {
+  public List<Match> getAllMatches() throws Exception {
 //    leetifyService.processMatches();
     MatchItem matchItem = MatchItem.builder()
         .playerName(PlayerName.fromName(PlayerName.DESMOND.getName()))
@@ -59,6 +61,7 @@ public class MatchController implements MatchApi {
         .type(MatchType.MATCH_MAKING)
         .build();
     changingExcelService.addMatches(List.of(matchItem));
+//    changingExcel.addMatches(List.of(matchItem));
     return matchService.getAll().stream()
         .map(it -> mapper.map(it, Match.class))
         .collect(Collectors.toList());

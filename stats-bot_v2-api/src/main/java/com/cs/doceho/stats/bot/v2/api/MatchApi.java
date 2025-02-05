@@ -24,7 +24,7 @@ public interface MatchApi {
   @ApiOperation(value = "Получение всех матчей",
       nickname = "getAllMatches", tags = {"match"})
   @GetMapping
-  List<Match> getAllMatches() throws IOException;
+  List<Match> getAllMatches() throws Exception;
 
   @ApiOperation(value = "Получение матчей по id",
       nickname = "getMatchById", tags = {"match"})

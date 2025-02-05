@@ -39,8 +39,6 @@ public class ChangingExcelService {
    * @throws IOException при ошибках работы с файлом
    */
   public void addMatches(List<MatchItem> matchList) throws IOException {
-    log.info("zxccccccccccccccccccc");
-    log.info(System.getProperty("user.dir"));
     FileInputStream fis = new FileInputStream(FILE_PATH);
     XSSFWorkbook workbook = new XSSFWorkbook(fis);
     fis.close();
@@ -50,6 +48,7 @@ public class ChangingExcelService {
       String sheetName = getSheetName(match.getType());
       if (sheetName == null) {
         // Пропуск, если тип матча не распознан
+        log.info("sheetName == null");
         continue;
       }
       Sheet sheet = workbook.getSheet(sheetName);
@@ -107,7 +106,7 @@ public class ChangingExcelService {
           stats[10] = (match.getClutchThree() != null) ? match.getClutchThree() : 0;
           stats[11] = (match.getClutchFour() != null) ? match.getClutchFour() : 0;
           stats[12] = (match.getClutchFive() != null) ? match.getClutchFive() : 0;
-
+          log.info("stats: {}", stats);
           for (int i = 0; i < stats.length; i++) {
             Cell cell = row.createCell(statsStartCol + i);
             cell.setCellValue(stats[i]);
@@ -131,12 +130,14 @@ public class ChangingExcelService {
    */
   private String getSheetName(MatchType type) {
     if (type == null) {
+      log.info("type == null");
       return null;
     }
     switch (type) {
       case WINGMAN:
         return "2х2 2025";
       case MATCH_MAKING:
+        log.info("return \"2025 mm\"");
         return "2025 mm";
       case PREMIER:
         return "Premier 2025";
