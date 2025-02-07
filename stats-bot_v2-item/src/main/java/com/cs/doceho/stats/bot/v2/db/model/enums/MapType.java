@@ -9,16 +9,16 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum MapType {
-  DUST_II("dust", "de_dust 2"),
+  DUST_II("dust", "de_dust2"),
   MIRAGE("mir", "de_mirage"),
   INFERNO("inf", "de_inferno"),
   ANCIENT("anc", "de_ancient"),
-  OFFICE("off", "de_office"),
+  OFFICE("off", "cs_office"),
   VERTIGO("vert", "de_vertigo"),
   TRAIN("train", "de_train"),
   ANUBIS("anu", "de_anubis"),
   NUKE("nuke", "de_nuke"),
-  ITALY("italy", "de_italy"),
+  ITALY("italy", "cs_italy"),
   EDIN("edin", "de_edin"),
   WHISTLE("whi", "de_whistle"),
   PALAIS("pal", "de_palais"),

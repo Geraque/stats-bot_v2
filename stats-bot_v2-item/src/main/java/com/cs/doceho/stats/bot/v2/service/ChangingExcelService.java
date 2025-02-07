@@ -75,6 +75,8 @@ public class ChangingExcelService {
         continue;
       }
       String dayKey = match.getDate().format(dayFormatter);
+      log.info("match.getDate(): {}", match.getDate());
+      log.info("match.getMap(): {}", match.getMap());
       String matchKey = match.getDate().format(fullFormatter) + "|" + match.getMap().getName();
       grouped.computeIfAbsent(sheetName, k -> new HashMap<>())
           .computeIfAbsent(dayKey, k -> new HashMap<>())
