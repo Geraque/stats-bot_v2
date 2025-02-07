@@ -24,6 +24,26 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует
 END $$;
 
+DO $$ BEGIN
+    CREATE TYPE map_types AS ENUM (
+        'DUST_II',
+        'MIRAGE',
+        'INFERNO',
+        'ANCIENT',
+        'OFFICE',
+        'VERTIGO',
+        'TRAIN',
+        'ANUBIS',
+        'NUKE',
+        'ITALY',
+        'EDIN',
+        'WHISTLE',
+        'PALAIS',
+        'OVERPASS'
+    );
+EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует
+END $$;
+
 CREATE TABLE matches (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     player_name player_names NOT NULL,
@@ -42,7 +62,8 @@ CREATE TABLE matches (
     clutch_three INTEGER,
     clutch_four INTEGER,
     clutch_five INTEGER,
-    type match_types NOT NULL
+    type match_types NOT NULL,
+    map map_types
 );
 
 CREATE TABLE tops (

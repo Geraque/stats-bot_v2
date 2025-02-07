@@ -1,5 +1,6 @@
 package com.cs.doceho.stats.bot.v2.db.model;
 
+import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
@@ -40,6 +41,11 @@ import org.hibernate.annotations.TypeDefs;
     ),
     @TypeDef(
         name = "pgsql_enum_match_type",
+        typeClass = PostgreSQLEnumType.class,
+        defaultForType = MatchType.class
+    ),
+    @TypeDef(
+        name = "pgsql_enum_map_type",
         typeClass = PostgreSQLEnumType.class,
         defaultForType = MatchType.class
     )
@@ -108,5 +114,10 @@ public class MatchItem {
   @Type(type = "pgsql_enum_match_type")
   @Column(name = "type", columnDefinition = "match_types")
   MatchType type;
+
+  @Enumerated(EnumType.STRING)
+  @Type(type = "pgsql_enum_map_type")
+  @Column(name = "map", columnDefinition = "map_types")
+  MapType map;
 
 }

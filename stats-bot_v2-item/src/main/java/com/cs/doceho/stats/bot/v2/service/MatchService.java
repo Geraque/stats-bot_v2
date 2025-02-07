@@ -1,6 +1,7 @@
 package com.cs.doceho.stats.bot.v2.service;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
@@ -68,6 +69,7 @@ public class MatchService {
         .clutchFour(match.getClutchFour())
         .clutchFive(match.getClutchFive())
         .type(MatchType.fromName(match.getType()))
+        .map(MapType.fromName(match.getMap()))
         .build();
 
     return matchRepository.save(matchItem);
@@ -95,6 +97,7 @@ public class MatchService {
     matchItem.setClutchFour(matchDetails.getClutchFour());
     matchItem.setClutchFive(matchDetails.getClutchFive());
     matchItem.setType(MatchType.fromName(matchDetails.getType()));
+    matchItem.setMap(MapType.fromName(matchDetails.getMap()));
 
     return matchRepository.save(matchItem);
   }

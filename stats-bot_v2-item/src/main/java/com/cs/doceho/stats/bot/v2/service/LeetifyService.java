@@ -3,6 +3,7 @@ package com.cs.doceho.stats.bot.v2.service;
 
 import com.cs.doceho.stats.bot.v2.config.LeetifyProperties;
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
@@ -136,6 +137,7 @@ public class LeetifyService {
 
           // Маппинг dataSource в MatchType
           matchItem.setType(MatchType.fromLeetifyName(gameDetail.getDataSource()));
+          matchItem.setMap(MapType.fromLeetifyName(gameDetail.getMapName()));
 
           // Подсчёт clutch-данных для игрока
           int clutchOne = 0, clutchTwo = 0, clutchThree = 0, clutchFour = 0, clutchFive = 0;
@@ -356,6 +358,7 @@ public class LeetifyService {
 
     String createdAt;
     String dataSource;
+    String mapName;
     List<PlayerStat> playerStats;
   }
 
