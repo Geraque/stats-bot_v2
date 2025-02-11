@@ -21,3 +21,4 @@ test*.html
 test*.pdf
 /.envrc
 **/application-secrets.yaml
+*.env

@@ -2,8 +2,10 @@ package com.cs.doceho.stats.bot.v2.mapper;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
 import com.cs.doceho.stats.bot.v2.db.model.TopItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Top;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.CustomMapper;
@@ -42,6 +44,10 @@ public class MatchMapperConfigurer extends ConfigurableMapper {
               MappingContext context) {
             match.setPlayerName(matchItem.getPlayerName().getName());
             match.setType(matchItem.getType().getName());
+            match.setMap(Optional.ofNullable(matchItem)
+                .map(MatchItem::getMap)
+                .map(MapType::getName)
+                .orElse(null));
 
           }
         }).register();

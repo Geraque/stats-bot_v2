@@ -3,12 +3,10 @@ package com.cs.doceho.stats.bot.v2.service;
 import com.cs.doceho.stats.bot.v2.db.model.TopItem;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.TopRepository;
-import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
 import com.cs.doceho.stats.bot.v2.model.Top;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,7 @@ public class TopService {
 
   public TopItem get(UUID topId) {
     return topRepository.findById(topId)
-        .orElseThrow(() -> new ResourceNotFoundException("Top not found for this id : " + topId));
+        .orElseThrow(() -> new RuntimeException("Top not found for this id : " + topId));
   }
 
   public List<TopItem> getYearTop(int year) {

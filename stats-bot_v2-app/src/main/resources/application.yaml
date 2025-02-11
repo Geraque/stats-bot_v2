@@ -2,7 +2,7 @@ spring:
   config:
     import: "optional:classpath:application-secrets.yaml"
   datasource:
-    url: jdbc:postgresql://localhost:5433/stats_bot
+    url: jdbc:postgresql://localhost:5434/stats_bot
   jpa:
     show-sql: true
     hibernate:

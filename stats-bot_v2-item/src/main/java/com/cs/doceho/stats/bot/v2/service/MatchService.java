@@ -1,10 +1,10 @@
 package com.cs.doceho.stats.bot.v2.service;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
-import com.cs.doceho.stats.bot.v2.exception.ResourceNotFoundException;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
 import com.cs.doceho.stats.bot.v2.service.utils.CalculationService;
@@ -38,7 +38,7 @@ public class MatchService {
   public MatchItem get(UUID matchId) {
     return matchRepository.findById(matchId)
         .orElseThrow(
-            () -> new ResourceNotFoundException("Match not found for this id : " + matchId));
+            () -> new RuntimeException("Match not found for this id : " + matchId));
   }
 
   public List<MatchItem> getByName(String playerName) {
@@ -69,6 +69,7 @@ public class MatchService {
         .clutchFour(match.getClutchFour())
         .clutchFive(match.getClutchFive())
         .type(MatchType.fromName(match.getType()))
+        .map(MapType.fromName(match.getMap()))
         .build();
 
     return matchRepository.save(matchItem);
@@ -96,6 +97,7 @@ public class MatchService {
     matchItem.setClutchFour(matchDetails.getClutchFour());
     matchItem.setClutchFive(matchDetails.getClutchFive());
     matchItem.setType(MatchType.fromName(matchDetails.getType()));
+    matchItem.setMap(MapType.fromName(matchDetails.getMap()));
 
     return matchRepository.save(matchItem);
   }

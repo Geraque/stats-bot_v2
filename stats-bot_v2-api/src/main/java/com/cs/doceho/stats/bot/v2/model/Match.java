@@ -34,4 +34,5 @@ public class Match {
   Integer clutchFour;
   Integer clutchFive;
   String type;
+  String map;
 }
