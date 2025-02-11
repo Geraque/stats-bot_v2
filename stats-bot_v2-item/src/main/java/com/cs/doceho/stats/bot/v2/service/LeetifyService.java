@@ -52,7 +52,7 @@ public class LeetifyService {
   static String GAME_DETAIL_URL = "https://api.leetify.com/api/games/{id}";
   static String CLUTCHES_URL = "https://api.leetify.com/api/games/{id}/clutches";
   static String OPENING_DUELS_URL = "https://api.leetify.com/api/games/{id}/opening-duels";
-  static Integer LIMIT = 82;
+  static Integer LIMIT = 61; //80
 
   /**
    * Основной метод для обработки матчей. 1) Получаются последние 20 матчей из БД для проверки
@@ -79,11 +79,26 @@ public class LeetifyService {
       return;
     }
     // Шаг 3. Получение истории игр, извлекаются только id игр
+//    List<String> gameIds = tokens.stream()
+//        .flatMap(token -> getGameHistory(token).stream())
+//        .sorted((o1, o2) -> {
+//          OffsetDateTime d1 = OffsetDateTime.parse(o1.getCreatedAt());
+//          OffsetDateTime d2 = OffsetDateTime.parse(o2.getCreatedAt());
+//          return d2.compareTo(d1);
+//        })
+//        .map(GameIdWrapper::getId)
+//        .collect(Collectors.toList());
     List<String> gameIds = tokens.stream()
         .flatMap(token -> getGameHistory(token).stream())
-        .sorted((o1, o2) -> {
-          OffsetDateTime d1 = OffsetDateTime.parse(o1.getCreatedAt());
-          OffsetDateTime d2 = OffsetDateTime.parse(o2.getCreatedAt());
+        .sorted((o1, o2) -> { //Нужно, потому что в Leetify иногда даты создания позже дата окончания
+          OffsetDateTime d1Created = OffsetDateTime.parse(o1.getCreatedAt());
+          OffsetDateTime d1Finished = OffsetDateTime.parse(o1.getFinishedAt());
+          OffsetDateTime d1 = d1Created.isBefore(d1Finished) ? d1Created : d1Finished;
+
+          OffsetDateTime d2Created = OffsetDateTime.parse(o2.getCreatedAt());
+          OffsetDateTime d2Finished = OffsetDateTime.parse(o2.getFinishedAt());
+          OffsetDateTime d2 = d2Created.isBefore(d2Finished) ? d2Created : d2Finished;
+
           return d2.compareTo(d1);
         })
         .map(GameIdWrapper::getId)
@@ -143,7 +158,7 @@ public class LeetifyService {
               .fourKill(stat.getMulti4k())
               .ace(stat.getMulti5k())
               .flash(stat.getFlashAssist())
-              .trade(stat.getTradeKillAttempts())
+              .trade(stat.getTradeKillsSucceeded())
               .smokeKill(0)
               .wallBang(0)
               .openKill(openKillCounts.getOrDefault(stat.getName(), 0))
@@ -361,6 +376,7 @@ public class LeetifyService {
 
     String id;
     String createdAt;
+    String finishedAt;
   }
 
   @Data
@@ -384,7 +400,7 @@ public class LeetifyService {
     Integer multi4k;
     Integer multi5k;
     Integer flashAssist;
-    Integer tradeKillAttempts;
+    Integer tradeKillsSucceeded;
   }
 
   @Data
