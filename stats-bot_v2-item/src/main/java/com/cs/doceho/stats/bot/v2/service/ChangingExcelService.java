@@ -6,9 +6,13 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -47,7 +51,7 @@ public class ChangingExcelService {
    * @param matchList список объектов MatchItem для записи в файл
    * @throws IOException при ошибках работы с файлом
    */
-  public void addMatches(java.util.List<MatchItem> matchList) throws IOException {
+  public void addMatches(List<MatchItem> matchList) throws IOException {
     log.info("Получен список матчей: {}", matchList);
     FileInputStream fis = new FileInputStream(FILE_PATH);
     XSSFWorkbook workbook = new XSSFWorkbook(fis);
@@ -78,7 +82,8 @@ public class ChangingExcelService {
       log.info("match.getDate(): {}", match.getDate());
       log.info("match.getMap(): {}", match.getMap());
       String matchKey = match.getDate().format(fullFormatter) + "|" + match.getMap().getName();
-      grouped.computeIfAbsent(sheetName, k -> new HashMap<>())
+      grouped.computeIfAbsent(sheetName, k ->
+              new TreeMap<>(Comparator.comparing((String key) -> LocalDate.parse(key, dayFormatter))))
           .computeIfAbsent(dayKey, k -> new HashMap<>())
           .computeIfAbsent(matchKey, k -> new HashMap<>())
           .put(match.getPlayerName(), match);
