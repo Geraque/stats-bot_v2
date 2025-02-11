@@ -75,12 +75,10 @@ public class ChangingExcelService {
     for (MatchItem match : matchList) {
       String sheetName = getSheetName(match.getType());
       if (sheetName == null) {
-        log.info("Тип матча не распознан, пропуск: {}", match);
+        log.warn("Тип матча не распознан, пропуск: {}", match);
         continue;
       }
       String dayKey = match.getDate().format(dayFormatter);
-      log.info("match.getDate(): {}", match.getDate());
-      log.info("match.getMap(): {}", match.getMap());
       String matchKey = match.getDate().format(fullFormatter) + "|" + match.getMap().getName();
       grouped.computeIfAbsent(sheetName, k ->
               new TreeMap<>(Comparator.comparing((String key) -> LocalDate.parse(key, dayFormatter))))
@@ -254,6 +252,7 @@ public class ChangingExcelService {
                 max = num;
               }
             } catch (NumberFormatException e) {
+              log.warn("Неверный формат в getGlobalNextMatchNumber");
               // Игнорировать неверный формат
             }
           }
