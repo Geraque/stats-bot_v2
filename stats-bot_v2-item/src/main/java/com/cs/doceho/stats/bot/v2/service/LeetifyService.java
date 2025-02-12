@@ -79,30 +79,34 @@ public class LeetifyService {
       return;
     }
     // Шаг 3. Получение истории игр, извлекаются только id игр
-//    List<String> gameIds = tokens.stream()
-//        .flatMap(token -> getGameHistory(token).stream())
-//        .sorted((o1, o2) -> {
-//          OffsetDateTime d1 = OffsetDateTime.parse(o1.getCreatedAt());
-//          OffsetDateTime d2 = OffsetDateTime.parse(o2.getCreatedAt());
-//          return d2.compareTo(d1);
-//        })
-//        .map(GameIdWrapper::getId)
-//        .collect(Collectors.toList());
     List<String> gameIds = tokens.stream()
         .flatMap(token -> getGameHistory(token).stream())
-        .sorted((o1, o2) -> { //Нужно, потому что в Leetify иногда даты создания позже дата окончания
-          OffsetDateTime d1Created = OffsetDateTime.parse(o1.getCreatedAt());
-          OffsetDateTime d1Finished = OffsetDateTime.parse(o1.getFinishedAt());
-          OffsetDateTime d1 = d1Created.isBefore(d1Finished) ? d1Created : d1Finished;
-
-          OffsetDateTime d2Created = OffsetDateTime.parse(o2.getCreatedAt());
-          OffsetDateTime d2Finished = OffsetDateTime.parse(o2.getFinishedAt());
-          OffsetDateTime d2 = d2Created.isBefore(d2Finished) ? d2Created : d2Finished;
-
+        .sorted((o1, o2) -> {
+          OffsetDateTime d1 = OffsetDateTime.parse(o1.getFinishedAt());
+          OffsetDateTime d2 = OffsetDateTime.parse(o2.getFinishedAt());
           return d2.compareTo(d1);
         })
         .map(GameIdWrapper::getId)
         .collect(Collectors.toList());
+//    List<String> gameIds = tokens.stream()
+//        .flatMap(token -> getGameHistory(token).stream())
+//        .sorted((o1, o2) -> { //Нужно, потому что в Leetify иногда даты создания позже дата окончания
+//          OffsetDateTime d1Created = OffsetDateTime.parse(o1.getCreatedAt());
+//          OffsetDateTime d1Finished = OffsetDateTime.parse(o1.getFinishedAt());
+//          OffsetDateTime d1 = d1Created.isBefore(d1Finished) ? d1Created : d1Finished;
+//          log.info("d1Created: {}", d1Created);
+//          log.info("d1Finished: {}", d1Finished);
+//          log.info("d1: {}", d1);
+//          OffsetDateTime d2Created = OffsetDateTime.parse(o2.getCreatedAt());
+//          OffsetDateTime d2Finished = OffsetDateTime.parse(o2.getFinishedAt());
+//          OffsetDateTime d2 = d2Created.isBefore(d2Finished) ? d2Created : d2Finished;
+//          log.info("d2Created: {}", d2Created);
+//          log.info("d2Finished: {}", d2Finished);
+//          log.info("d2: {}", d2);
+//          return d2.compareTo(d1);
+//        })
+//        .map(GameIdWrapper::getId)
+//        .collect(Collectors.toList());
 
     if (gameIds.isEmpty()) {
       System.out.println("История игр пуста или не получена.");
@@ -140,11 +144,11 @@ public class LeetifyService {
             continue;
           }
 
-          LocalDateTime createdAt = parseDate(gameDetail.getCreatedAt());
+          LocalDateTime finishedAt = parseDate(gameDetail.getFinishedAt());
           Double rating = stat.getHltvRating();
 
           // Проверка на дубликат (сравнение по date, playerName и rating)
-          MatchKey key = new MatchKey(createdAt, playerName, rating);
+          MatchKey key = new MatchKey(finishedAt, playerName, rating);
           if (existingMatchKeys.contains(key)) {
             continue;
           }
@@ -152,7 +156,7 @@ public class LeetifyService {
           // Создание объекта MatchItem и заполнение данных
           MatchItem matchItem = MatchItem.builder()
               .playerName(playerName)
-              .date(createdAt)
+              .date(finishedAt)
               .rating(rating)
               .threeKill(stat.getMulti3k())
               .fourKill(stat.getMulti4k())
@@ -252,7 +256,7 @@ public class LeetifyService {
 
   /**
    * Выполняет GET запрос для получения истории игр. Из ответа извлекается список объектов,
-   * содержащих поля id и createdAt. Результат сортируется по убыванию даты createdAt, после чего
+   * содержащих поля id и finishedAt. Результат сортируется по убыванию даты finishedAt, после чего
    * возвращается список id.
    */
   private List<GameIdWrapper> getGameHistory(String token) {
@@ -375,7 +379,6 @@ public class LeetifyService {
   public static class GameIdWrapper {
 
     String id;
-    String createdAt;
     String finishedAt;
   }
 
@@ -383,7 +386,7 @@ public class LeetifyService {
   @FieldDefaults(level = AccessLevel.PRIVATE)
   public static class GameDetail {
 
-    String createdAt;
+    String finishedAt;
     String dataSource;
     String mapName;
     List<PlayerStat> playerStats;
