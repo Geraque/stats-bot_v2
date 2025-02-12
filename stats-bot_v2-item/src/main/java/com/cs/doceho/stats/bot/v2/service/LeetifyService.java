@@ -170,6 +170,9 @@ public class LeetifyService {
               .map(MapType.fromLeetifyName(gameDetail.getMapName()))
               .build();
 
+          if(MatchType.MATCH_MAKING.equals(matchItem.getType()) && gameDetail.getMatchmakingGameStats().get(0).getRank() > 100){
+            matchItem.setType(MatchType.PREMIER);
+          }
           // Подсчёт clutch-данных для игрока
           int clutchOne = 0, clutchTwo = 0, clutchThree = 0, clutchFour = 0, clutchFive = 0;
           if (clutches != null) {
@@ -390,6 +393,7 @@ public class LeetifyService {
     String dataSource;
     String mapName;
     List<PlayerStat> playerStats;
+    List<PlayerRank> matchmakingGameStats;
   }
 
   @Data
@@ -404,6 +408,13 @@ public class LeetifyService {
     Integer multi5k;
     Integer flashAssist;
     Integer tradeKillsSucceeded;
+  }
+
+  @Data
+  @FieldDefaults(level = AccessLevel.PRIVATE)
+  public static class PlayerRank {
+
+    Integer rank;
   }
 
   @Data
