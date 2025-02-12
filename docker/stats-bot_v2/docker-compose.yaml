@@ -4,7 +4,6 @@ services:
   postgres:
     image: postgres:15
     container_name: statsbot_postgres
-    restart: always
     ports:
       - "5434:5432"
     environment:
