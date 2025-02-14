@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -29,11 +30,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 /**
- * Сервис для изменения Excel-файла statistics.xlsx.
- * Если несколько MatchItem за один день объединяются в один блок (с заголовком-дата),
- * то на уровне матча выполняется дополнительная группировка: если совпадают полный временной штамп (dd.MM.yyyy'T'HH:mm:ss),
- * карта и тип матча, то данные разных игроков записываются в одну строку (один матч).
- * При этом номер матча определяется глобально по всему листу.
+ * Сервис для изменения Excel-файла statistics.xlsx. Если несколько MatchItem за один день
+ * объединяются в один блок (с заголовком-дата), то на уровне матча выполняется дополнительная
+ * группировка: если совпадают полный временной штамп (dd.MM.yyyy'T'HH:mm:ss), карта и тип матча, то
+ * данные разных игроков записываются в одну строку (один матч). При этом номер матча определяется
+ * глобально по всему листу.
  */
 @Service
 @RequiredArgsConstructor
@@ -44,17 +45,18 @@ public class ChangingExcelService {
   // Путь к файлу (относительный путь к файлу, расположенного в resources)
   static String FILE_PATH = "stats-bot_v2-app/src/main/resources/statistics.xlsx";
 
-  static Map<MatchResult, byte[]> COLOR_MATHC_RESULT_MAP = Map.of(MatchResult.WIN, new byte[] { (byte) 198, (byte) 239, (byte) 206 },
-      MatchResult.LOSE,  new byte[] { (byte) 255, (byte) 199, (byte) 206},
-      MatchResult.DRAW,  new byte[] { (byte) 255, (byte) 235, (byte) 156});
+  static Map<MatchResult, byte[]> COLOR_MATHC_RESULT_MAP = Map.of(MatchResult.WIN,
+      new byte[]{(byte) 198, (byte) 239, (byte) 206},
+      MatchResult.LOSE, new byte[]{(byte) 255, (byte) 199, (byte) 206},
+      MatchResult.DRAW, new byte[]{(byte) 255, (byte) 235, (byte) 156});
 
   /**
-   * Добавление матчей из списка в Excel-файл.
-   * Группировка выполняется по листу, затем по дате (dd.MM.yyyy) и далее по полному ключу матча,
-   * который формируется из полного временного штампа (dd.MM.yyyy'T'HH:mm:ss) и названия карты.
-   * Если у объектов совпадают все параметры, то данные разных игроков объединяются в одну строку.
-   * Нумерация матчей определяется глобально (например, если последний матч в предыдущий день имел номер 40,
-   * то первый матч нового дня получит номер 41).
+   * Добавление матчей из списка в Excel-файл. Группировка выполняется по листу, затем по дате
+   * (dd.MM.yyyy) и далее по полному ключу матча, который формируется из полного временного штампа
+   * (dd.MM.yyyy'T'HH:mm:ss) и названия карты. Если у объектов совпадают все параметры, то данные
+   * разных игроков объединяются в одну строку. Нумерация матчей определяется глобально (например,
+   * если последний матч в предыдущий день имел номер 40, то первый матч нового дня получит номер
+   * 41).
    *
    * @param matchList список объектов MatchItem для записи в файл
    * @throws IOException при ошибках работы с файлом
@@ -131,7 +133,9 @@ public class ChangingExcelService {
           String mapName = sampleMatch.getMap().getName();
           String matchIdentifier = nextMatchNumber + " map (" + mapName + ")";
 
-          XSSFColor xssfColor = new XSSFColor(COLOR_MATHC_RESULT_MAP.getOrDefault(sampleMatch.getResult(), new byte[] { (byte) 255, (byte) 255, (byte) 255}), null);
+          XSSFColor xssfColor = new XSSFColor(
+              COLOR_MATHC_RESULT_MAP.getOrDefault(sampleMatch.getResult(),
+                  new byte[]{(byte) 255, (byte) 255, (byte) 255}), null);
           CellStyle mapCellStyle = workbook.createCellStyle();
           mapCellStyle.setFillForegroundColor(xssfColor);
           mapCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -188,7 +192,12 @@ public class ChangingExcelService {
         }
       }
     }
-
+    for (String sheetName : grouped.keySet()) {
+      Sheet sheet = workbook.getSheet(sheetName);
+      if (sheet != null) {
+        updateAverageFormula(sheet);
+      }
+    }
     FileOutputStream fos = new FileOutputStream(FILE_PATH);
     workbook.write(fos);
     fos.close();
@@ -245,7 +254,8 @@ public class ChangingExcelService {
   }
 
   /**
-   * Обходит весь лист и находит максимальный номер матча (из ячеек A, содержащих строку вида "N map").
+   * Обходит весь лист и находит максимальный номер матча (из ячеек A, содержащих строку вида "N
+   * map").
    *
    * @param sheet лист Excel
    * @return максимальный номер матча, найденный в листе (если матчей нет, возвращается 0)
@@ -275,6 +285,72 @@ public class ChangingExcelService {
     }
     return max;
   }
+
+  private void updateAverageFormula(Sheet sheet) {
+    int lastRowNum = sheet.getLastRowNum();
+    Row averageRow = sheet.getRow(lastRowNum);
+    if (averageRow == null) {
+      return;
+    }
+
+    // Выбор диапазона столбцов в зависимости от названия листа
+    log.info("sheet.getSheetName(): {}", sheet.getSheetName());
+    List<String> symbols = sheet.getSheetName().contains("2x2")
+        ? List.of("B", "C", "D", "E")
+        : generateColumnSymbols("B", "BE");
+
+    // Обновление формулы для каждого столбца из списка
+    for (int i = 0; i < symbols.size(); i++) {
+      // Номер ячейки на строке среднего может начинаться не с 0
+      Cell avgCell = averageRow.getCell(i + 1);
+
+      if (avgCell != null && avgCell.getCellType() == CellType.FORMULA) {
+        String column = symbols.get(i);
+        // Используется lastRowNum как номер последней строки (учёт того, что строки нумеруются с 0)
+        String newFormula = "AVERAGE(" + column + "3:" + column + lastRowNum + ")";
+        avgCell.setCellFormula(newFormula);
+      }
+    }
+  }
+
+  /**
+   * Генерация списка Excel-столбцов от начального до конечного (включительно).
+   * Пример: generateColumnSymbols("B", "BE") вернёт список всех столбцов от B до BE.
+   */
+  private List<String> generateColumnSymbols(String start, String end) {
+    List<String> symbols = new ArrayList<>();
+    int startIndex = excelColumnToNumber(start);
+    int endIndex = excelColumnToNumber(end);
+    for (int i = startIndex; i <= endIndex; i++) {
+      symbols.add(numberToExcelColumn(i));
+    }
+    return symbols;
+  }
+
+  /**
+   * Преобразование Excel-обозначения столбца (например, "B") в число (например, 2).
+   */
+  private int excelColumnToNumber(String column) {
+    int result = 0;
+    for (char ch : column.toUpperCase().toCharArray()) {
+      result = result * 26 + (ch - 'A' + 1);
+    }
+    return result;
+  }
+
+  /**
+   * Преобразование числа в Excel-обозначение столбца.
+   */
+  private String numberToExcelColumn(int number) {
+    StringBuilder column = new StringBuilder();
+    while (number > 0) {
+      int rem = (number - 1) % 26;
+      column.insert(0, (char) (rem + 'A'));
+      number = (number - 1) / 26;
+    }
+    return column.toString();
+  }
+
 
   // Методы для определения номеров столбцов остаются без изменений
 
