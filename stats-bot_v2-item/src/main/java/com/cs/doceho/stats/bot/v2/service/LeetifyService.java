@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -206,21 +207,20 @@ public class LeetifyService {
   }
 
   private MatchResult calculateMapResult(List<PlayerStat> playerStats, List<Integer> teamScores, MatchType type) {
-    int i;
-    for (i = 0; i < playerStats.size(); i++) {
-      if (PlayerName.DESMOND.getIds().contains(playerStats.get(i).steam64Id)) {
-        break;
-      }
-    }
+    int index = IntStream.range(0, playerStats.size())
+        .filter(i -> PlayerName.DESMOND.getIds().contains(playerStats.get(i).steam64Id))
+        .findFirst()
+        .orElse(-1);
+
     int teamId = 0;
     switch (type){
       case WINGMAN:
-        teamId = i > 2 ? 1 : 0 ;
+        teamId = index > 2 ? 1 : 0 ;
         break;
       case FACEIT:
       case PREMIER:
       case MATCH_MAKING:
-        teamId = i > 4 ? 1 : 0 ;
+        teamId = index > 4 ? 1 : 0 ;
         break;
     }
     int winRounds = teamScores.get(teamId);
