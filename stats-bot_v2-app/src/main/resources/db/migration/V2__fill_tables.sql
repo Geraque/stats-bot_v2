@@ -2169,3 +2169,15 @@ INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,th
 	 ('acca9928-a47f-426f-ab76-e88c567992c1','DESMOND','2025-01-29 08:53:20',0.92,0,3,0,0,0,0,1,0,1,1,0,0,0,'WINGMAN','VERTIGO'),
 	 ('0ff26b41-04b7-41da-8e06-4a217b90a447','BLACK_VISION','2025-01-29 08:53:20',0.64,0,2,0,0,0,0,1,0,1,1,0,0,0,'WINGMAN','VERTIGO'),
 	 ('6d67d836-966c-4352-be08-c8ea2b5ee3dc','DESMOND','2025-01-29 08:39:47',0.89,0,3,0,0,0,0,2,0,2,1,0,0,0,'WINGMAN','INFERNO');
+
+INSERT INTO matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('9c4002c6-0418-48d8-a9bb-aa808026276c'::uuid,'DESMOND'::public."player_names",'2025-02-13 10:03:51.000',0.69,0,3,0,0,0,0,1,0,0,0,0,0,0,'MATCH_MAKING'::public."match_types",'ANCIENT'::public."map_types",'WIN'),
+	 ('b6d20b29-f139-4eda-a095-7536b3a6fef9'::uuid,'GLOXINIA'::public."player_names",'2025-02-13 10:03:51.000',0.49,0,3,0,0,0,0,1,0,0,0,0,0,0,'MATCH_MAKING'::public."match_types",'ANCIENT'::public."map_types",'WIN'),
+	 ('141079fc-2400-4ff9-a5d0-2a23ad0bd855'::uuid,'BLACK_VISION'::public."player_names",'2025-02-13 10:03:51.000',1.71,0,4,3,0,0,1,2,0,1,0,1,0,0,'MATCH_MAKING'::public."match_types",'ANCIENT'::public."map_types",'WIN'),
+	 ('dea33ce7-e0d7-4248-b5d9-db741b50e764'::uuid,'BLACK_VISION'::public."player_names",'2025-02-13 09:22:40.000',1.47,0,3,1,1,0,0,1,0,0,0,0,0,0,'MATCH_MAKING'::public."match_types",'OFFICE'::public."map_types",'LOSE'),
+	 ('0779c774-f193-4741-a2d6-d5ec7f9049ce'::uuid,'DESMOND'::public."player_names",'2025-02-13 09:22:40.000',0.86,0,2,0,0,0,0,2,0,0,0,0,0,0,'MATCH_MAKING'::public."match_types",'OFFICE'::public."map_types",'LOSE'),
+	 ('9cc29ed6-47d4-43e5-931b-9758519a9293'::uuid,'GLOXINIA'::public."player_names",'2025-02-13 09:22:40.000',1.1,0,3,0,1,0,0,3,0,0,0,0,0,0,'MATCH_MAKING'::public."match_types",'OFFICE'::public."map_types",'LOSE'),
+	 ('554d2286-76a3-4aae-992e-5172ce82c477'::uuid,'DESMOND'::public."player_names",'2025-02-13 09:05:57.000',0.98,0,3,0,0,0,0,0,0,2,0,0,0,0,'WINGMAN'::public."match_types",'NUKE'::public."map_types",'WIN'),
+	 ('90a303b1-7b3f-491d-a06b-964ac07bbdfe'::uuid,'BLACK_VISION'::public."player_names",'2025-02-13 09:05:57.000',1.15,0,5,0,0,0,0,1,0,2,1,0,0,0,'WINGMAN'::public."match_types",'NUKE'::public."map_types",'WIN'),
+	 ('76c33dfd-1c1e-4e70-aaf0-30289d03d811'::uuid,'BLACK_VISION'::public."player_names",'2025-02-13 08:52:06.000',0.45,0,2,0,0,0,0,0,0,1,0,0,0,0,'WINGMAN'::public."match_types",'INFERNO'::public."map_types",'LOSE'),
+	 ('fc0e044e-4d6a-4191-92ab-d033cd215a0e'::uuid,'DESMOND'::public."player_names",'2025-02-13 08:52:06.000',0.62,0,2,0,0,0,0,0,0,1,0,0,0,0,'WINGMAN'::public."match_types",'INFERNO'::public."map_types",'LOSE');

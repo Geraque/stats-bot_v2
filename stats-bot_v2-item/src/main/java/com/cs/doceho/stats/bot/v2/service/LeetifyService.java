@@ -5,6 +5,7 @@ import com.cs.doceho.stats.bot.v2.config.LeetifyProperties;
 import com.cs.doceho.stats.bot.v2.config.LeetifyProperties.Account;
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,7 +54,7 @@ public class LeetifyService {
   static String GAME_DETAIL_URL = "https://api.leetify.com/api/games/{id}";
   static String CLUTCHES_URL = "https://api.leetify.com/api/games/{id}/clutches";
   static String OPENING_DUELS_URL = "https://api.leetify.com/api/games/{id}/opening-duels";
-  static Integer LIMIT = 61; //80
+  static Integer LIMIT = 4; //80
 
   /**
    * Основной метод для обработки матчей. 1) Получаются последние 20 матчей из БД для проверки
@@ -88,25 +90,6 @@ public class LeetifyService {
         })
         .map(GameIdWrapper::getId)
         .collect(Collectors.toList());
-//    List<String> gameIds = tokens.stream()
-//        .flatMap(token -> getGameHistory(token).stream())
-//        .sorted((o1, o2) -> { //Нужно, потому что в Leetify иногда даты создания позже дата окончания
-//          OffsetDateTime d1Created = OffsetDateTime.parse(o1.getCreatedAt());
-//          OffsetDateTime d1Finished = OffsetDateTime.parse(o1.getFinishedAt());
-//          OffsetDateTime d1 = d1Created.isBefore(d1Finished) ? d1Created : d1Finished;
-//          log.info("d1Created: {}", d1Created);
-//          log.info("d1Finished: {}", d1Finished);
-//          log.info("d1: {}", d1);
-//          OffsetDateTime d2Created = OffsetDateTime.parse(o2.getCreatedAt());
-//          OffsetDateTime d2Finished = OffsetDateTime.parse(o2.getFinishedAt());
-//          OffsetDateTime d2 = d2Created.isBefore(d2Finished) ? d2Created : d2Finished;
-//          log.info("d2Created: {}", d2Created);
-//          log.info("d2Finished: {}", d2Finished);
-//          log.info("d2: {}", d2);
-//          return d2.compareTo(d1);
-//        })
-//        .map(GameIdWrapper::getId)
-//        .collect(Collectors.toList());
 
     if (gameIds.isEmpty()) {
       System.out.println("История игр пуста или не получена.");
@@ -152,7 +135,7 @@ public class LeetifyService {
           if (existingMatchKeys.contains(key)) {
             continue;
           }
-
+          MatchType matchType = MatchType.fromLeetifyName(gameDetail.getDataSource());
           // Создание объекта MatchItem и заполнение данных
           MatchItem matchItem = MatchItem.builder()
               .playerName(playerName)
@@ -166,18 +149,21 @@ public class LeetifyService {
               .smokeKill(0)
               .wallBang(0)
               .openKill(openKillCounts.getOrDefault(stat.getName(), 0))
-              .type(MatchType.fromLeetifyName(gameDetail.getDataSource()))
+              .type(matchType)
               .map(MapType.fromLeetifyName(gameDetail.getMapName()))
+              .result(calculateMapResult(gameDetail.getPlayerStats(), gameDetail.getTeamScores(), matchType))
               .build();
 
-          if(MatchType.MATCH_MAKING.equals(matchItem.getType()) && gameDetail.getMatchmakingGameStats().get(0).getRank() > 100){
+          if (MatchType.MATCH_MAKING.equals(matchItem.getType())
+              && gameDetail.getMatchmakingGameStats().get(0).getRank() > 100) {
             matchItem.setType(MatchType.PREMIER);
           }
           // Подсчёт clutch-данных для игрока
           int clutchOne = 0, clutchTwo = 0, clutchThree = 0, clutchFour = 0, clutchFive = 0;
           if (clutches != null) {
             for (ClutchData clutch : clutches) {
-              if (clutch.getClutchesWon() == 1 && stat.getSteam64Id().equals(clutch.getSteam64Id())) {
+              if (clutch.getClutchesWon() == 1 && stat.getSteam64Id()
+                  .equals(clutch.getSteam64Id())) {
                 switch (clutch.getHandicap()) {
                   case 0:
                     clutchOne++;
@@ -209,9 +195,8 @@ public class LeetifyService {
               .clutchFive(clutchFive)
               .build();
 
-
           // Сохранение объекта в базе
-          log.info("matchItem123: {}", matchItem);
+          log.info("save: {}", matchItem);
           addedMatches.add(matchItem);
           matchRepository.save(matchItem);
           existingMatchKeys.add(key);
@@ -219,6 +204,29 @@ public class LeetifyService {
       }
     }
     changingExcelService.addMatches(addedMatches);
+  }
+
+  private MatchResult calculateMapResult(List<PlayerStat> playerStats, List<Integer> teamScores, MatchType type) {
+    int index = IntStream.range(0, playerStats.size())
+        .filter(i -> PlayerName.DESMOND.getIds().contains(playerStats.get(i).steam64Id))
+        .findFirst()
+        .orElse(-1);
+
+    int teamId = 0;
+    switch (type){
+      case WINGMAN:
+        teamId = index > 2 ? 1 : 0 ;
+        break;
+      case FACEIT:
+      case PREMIER:
+      case MATCH_MAKING:
+        teamId = index > 4 ? 1 : 0 ;
+        break;
+    }
+    int winRounds = teamScores.get(teamId);
+    int loseRounds = teamScores.get(teamId == 0 ? 1 : 0);
+    return winRounds > loseRounds ? MatchResult.WIN :
+        winRounds == loseRounds ? MatchResult.DRAW : MatchResult.LOSE;
   }
 
   /**
@@ -272,7 +280,7 @@ public class LeetifyService {
           HISTORY_URL, HttpMethod.GET, request, GameHistoryResponse.class);
 
       if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-          return response.getBody().getGames();
+        return response.getBody().getGames();
       }
     } catch (Exception e) {
       System.out.println("Ошибка при получении истории игр: " + e.getMessage());
@@ -394,6 +402,7 @@ public class LeetifyService {
     String mapName;
     List<PlayerStat> playerStats;
     List<PlayerRank> matchmakingGameStats;
+    List<Integer> teamScores;
   }
 
   @Data
