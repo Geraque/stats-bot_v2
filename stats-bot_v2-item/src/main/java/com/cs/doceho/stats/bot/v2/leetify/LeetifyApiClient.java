@@ -62,7 +62,6 @@ public class LeetifyApiClient {
 
   public List<GameIdWrapper> getGameHistory(String token) {
     try {
-      log.info("token: {}", token);
       HttpHeaders headers = new HttpHeaders();
       headers.set("Authorization", "Bearer " + token);
       HttpEntity<Void> request = new HttpEntity<>(headers);
