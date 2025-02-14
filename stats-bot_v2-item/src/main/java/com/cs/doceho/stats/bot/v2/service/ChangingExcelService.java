@@ -1,6 +1,7 @@
 package com.cs.doceho.stats.bot.v2.service;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.FileInputStream;
@@ -18,9 +19,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +44,10 @@ public class ChangingExcelService {
   // Путь к файлу (относительный путь к файлу, расположенного в resources)
   static String FILE_PATH = "stats-bot_v2-app/src/main/resources/statistics.xlsx";
 
+  static Map<MatchResult, byte[]> COLOR_MATHC_RESULT_MAP = Map.of(MatchResult.WIN, new byte[] { (byte) 198, (byte) 239, (byte) 206 },
+      MatchResult.LOSE,  new byte[] { (byte) 255, (byte) 199, (byte) 206},
+      MatchResult.DRAW,  new byte[] { (byte) 255, (byte) 235, (byte) 156});
+
   /**
    * Добавление матчей из списка в Excel-файл.
    * Группировка выполняется по листу, затем по дате (dd.MM.yyyy) и далее по полному ключу матча,
@@ -57,9 +65,7 @@ public class ChangingExcelService {
     XSSFWorkbook workbook = new XSSFWorkbook(fis);
     fis.close();
 
-    // Форматтер для заголовка дня (без времени)
     DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    // Форматтер для полного временного штампа (с временем, разделитель T)
     DateTimeFormatter fullFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy'T'HH:mm:ss");
 
     /*
@@ -124,7 +130,15 @@ public class ChangingExcelService {
           MatchItem sampleMatch = matchData.values().iterator().next();
           String mapName = sampleMatch.getMap().getName();
           String matchIdentifier = nextMatchNumber + " map (" + mapName + ")";
-          matchRow.createCell(0).setCellValue(matchIdentifier);
+
+          XSSFColor xssfColor = new XSSFColor(COLOR_MATHC_RESULT_MAP.getOrDefault(sampleMatch.getResult(), new byte[] { (byte) 255, (byte) 255, (byte) 255}), null);
+          CellStyle mapCellStyle = workbook.createCellStyle();
+          mapCellStyle.setFillForegroundColor(xssfColor);
+          mapCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+          Cell mapCell = matchRow.createCell(0);
+          mapCell.setCellValue(matchIdentifier);
+          mapCell.setCellStyle(mapCellStyle);
+
           log.info("Добавлена строка матча для дня {} с идентификатором {} в строке {}",
               dayKey, matchIdentifier, insertRowIndex);
 

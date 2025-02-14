@@ -25,6 +25,15 @@ EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если
 END $$;
 
 DO $$ BEGIN
+    CREATE TYPE match_results AS ENUM (
+        'WIN',
+        'LOSE',
+        'DRAW'
+    );
+EXCEPTION WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
     CREATE TYPE map_types AS ENUM (
         'DUST_II',
         'MIRAGE',
@@ -63,7 +72,8 @@ CREATE TABLE matches (
     clutch_four INTEGER,
     clutch_five INTEGER,
     type match_types NOT NULL,
-    map map_types
+    map map_types,
+    result match_results
 );
 
 CREATE TABLE tops (
