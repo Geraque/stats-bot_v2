@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -42,13 +41,33 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChangingExcelService {
 
-  // Путь к файлу (относительный путь к файлу, расположенного в resources)
+  UpdateLastRowService updateAverageFormula;
   static String FILE_PATH = "stats-bot_v2-app/src/main/resources/statistics.xlsx";
 
+  static Map<MatchType, String> SHEET_NAME_MAP = Map.of(MatchType.WINGMAN, "2х2 2025",
+      MatchType.MATCH_MAKING, "2025 mm",
+      MatchType.PREMIER, "Premier 2025",
+      MatchType.FACEIT, "Faceit 2025");
   static Map<MatchResult, byte[]> COLOR_MATHC_RESULT_MAP = Map.of(MatchResult.WIN,
       new byte[]{(byte) 198, (byte) 239, (byte) 206},
       MatchResult.LOSE, new byte[]{(byte) 255, (byte) 199, (byte) 206},
       MatchResult.DRAW, new byte[]{(byte) 255, (byte) 235, (byte) 156});
+  static Map<PlayerName, Integer> WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
+      PlayerName.BLACK_VISION, 2,
+      PlayerName.GLOXINIA, 3,
+      PlayerName.WOLF_SMXL, 4);
+  static Map<PlayerName, Integer> NON_WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
+      PlayerName.BLACK_VISION, 2,
+      PlayerName.GLOXINIA, 3,
+      PlayerName.WOLF_SMXL, 4,
+      PlayerName.GLEB, 5);
+
+  static Map<PlayerName, Integer> NON_WINGMAN_STATS_START_COLUMN_MAP = Map.of(PlayerName.DESMOND, 6,
+      PlayerName.BLACK_VISION, 19,
+      PlayerName.GLOXINIA, 32,
+      PlayerName.WOLF_SMXL, 45,
+      PlayerName.GLEB, 58);
+
 
   /**
    * Добавление матчей из списка в Excel-файл. Группировка выполняется по листу, затем по дате
@@ -62,7 +81,6 @@ public class ChangingExcelService {
    * @throws IOException при ошибках работы с файлом
    */
   public void addMatches(List<MatchItem> matchList) throws IOException {
-    log.info("Получен список матчей: {}", matchList);
     FileInputStream fis = new FileInputStream(FILE_PATH);
     XSSFWorkbook workbook = new XSSFWorkbook(fis);
     fis.close();
@@ -81,7 +99,7 @@ public class ChangingExcelService {
      */
     Map<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> grouped = new HashMap<>();
     for (MatchItem match : matchList) {
-      String sheetName = getSheetName(match.getType());
+      String sheetName = SHEET_NAME_MAP.get(match.getType());
       if (sheetName == null) {
         log.warn("Тип матча не распознан, пропуск: {}", match);
         continue;
@@ -150,7 +168,7 @@ public class ChangingExcelService {
           if (sampleMatch.getType() == MatchType.WINGMAN) {
             // Для листа "2х2 2025": столбцы B, C, D, E – рейтинги для DESMOND, BLACK_VISION, GLOXINIA, WOLF_SMXL
             for (Map.Entry<PlayerName, MatchItem> entry : matchData.entrySet()) {
-              int targetCol = getWingmanRatingColumn(entry.getKey());
+              int targetCol = WINGMAN_RATING_COLUMN_MAP.get(entry.getKey());
               if (targetCol != -1 && entry.getValue().getRating() != null) {
                 Cell cell = matchRow.createCell(targetCol);
                 cell.setCellValue(entry.getValue().getRating());
@@ -160,12 +178,12 @@ public class ChangingExcelService {
             // Для листов "2025 mm", "Premier 2025", "Faceit 2025":
             // Рейтинг – колонки B, C, D; статистика – диапазоны для каждого игрока.
             for (Map.Entry<PlayerName, MatchItem> entry : matchData.entrySet()) {
-              int ratingCol = getNonWingmanRatingColumn(entry.getKey());
+              int ratingCol = NON_WINGMAN_RATING_COLUMN_MAP.get(entry.getKey());
               if (ratingCol != -1 && entry.getValue().getRating() != null) {
                 Cell cell = matchRow.createCell(ratingCol);
                 cell.setCellValue(entry.getValue().getRating());
               }
-              int statsStartCol = getNonWingmanStatsStartColumn(entry.getKey());
+              int statsStartCol = NON_WINGMAN_STATS_START_COLUMN_MAP.get(entry.getKey());
               if (statsStartCol != -1) {
                 MatchItem mi = entry.getValue();
                 int[] stats = new int[13];
@@ -195,7 +213,7 @@ public class ChangingExcelService {
     for (String sheetName : grouped.keySet()) {
       Sheet sheet = workbook.getSheet(sheetName);
       if (sheet != null) {
-        updateAverageFormula(sheet);
+        updateAverageFormula.apply(sheet);
       }
     }
     FileOutputStream fos = new FileOutputStream(FILE_PATH);
@@ -260,6 +278,8 @@ public class ChangingExcelService {
    * @param sheet лист Excel
    * @return максимальный номер матча, найденный в листе (если матчей нет, возвращается 0)
    */
+
+  //TODO Переписать
   private int getGlobalNextMatchNumber(Sheet sheet) {
     int max = 0;
     for (int i = 0; i <= sheet.getLastRowNum(); i++) {
@@ -286,144 +306,4 @@ public class ChangingExcelService {
     return max;
   }
 
-  private void updateAverageFormula(Sheet sheet) {
-    int lastRowNum = sheet.getLastRowNum();
-    Row averageRow = sheet.getRow(lastRowNum);
-    if (averageRow == null) {
-      return;
-    }
-
-    // Выбор диапазона столбцов в зависимости от названия листа
-    log.info("sheet.getSheetName(): {}", sheet.getSheetName());
-    List<String> symbols = sheet.getSheetName().contains("2x2")
-        ? List.of("B", "C", "D", "E")
-        : generateColumnSymbols("B", "BE");
-
-    // Обновление формулы для каждого столбца из списка
-    for (int i = 0; i < symbols.size(); i++) {
-      // Номер ячейки на строке среднего может начинаться не с 0
-      Cell avgCell = averageRow.getCell(i + 1);
-
-      if (avgCell != null && avgCell.getCellType() == CellType.FORMULA) {
-        String column = symbols.get(i);
-        // Используется lastRowNum как номер последней строки (учёт того, что строки нумеруются с 0)
-        String newFormula = "AVERAGE(" + column + "3:" + column + lastRowNum + ")";
-        avgCell.setCellFormula(newFormula);
-      }
-    }
-  }
-
-  /**
-   * Генерация списка Excel-столбцов от начального до конечного (включительно).
-   * Пример: generateColumnSymbols("B", "BE") вернёт список всех столбцов от B до BE.
-   */
-  private List<String> generateColumnSymbols(String start, String end) {
-    List<String> symbols = new ArrayList<>();
-    int startIndex = excelColumnToNumber(start);
-    int endIndex = excelColumnToNumber(end);
-    for (int i = startIndex; i <= endIndex; i++) {
-      symbols.add(numberToExcelColumn(i));
-    }
-    return symbols;
-  }
-
-  /**
-   * Преобразование Excel-обозначения столбца (например, "B") в число (например, 2).
-   */
-  private int excelColumnToNumber(String column) {
-    int result = 0;
-    for (char ch : column.toUpperCase().toCharArray()) {
-      result = result * 26 + (ch - 'A' + 1);
-    }
-    return result;
-  }
-
-  /**
-   * Преобразование числа в Excel-обозначение столбца.
-   */
-  private String numberToExcelColumn(int number) {
-    StringBuilder column = new StringBuilder();
-    while (number > 0) {
-      int rem = (number - 1) % 26;
-      column.insert(0, (char) (rem + 'A'));
-      number = (number - 1) / 26;
-    }
-    return column.toString();
-  }
-
-
-  // Методы для определения номеров столбцов остаются без изменений
-
-  private String getSheetName(MatchType type) {
-    if (type == null) {
-      log.info("type == null");
-      return null;
-    }
-    switch (type) {
-      case WINGMAN:
-        return "2х2 2025";
-      case MATCH_MAKING:
-        return "2025 mm";
-      case PREMIER:
-        return "Premier 2025";
-      case FACEIT:
-        return "Faceit 2025";
-      default:
-        return null;
-    }
-  }
-
-  private int getWingmanRatingColumn(PlayerName playerName) {
-    if (playerName == null) {
-      return -1;
-    }
-    switch (playerName) {
-      case DESMOND:
-        return 1;
-      case BLACK_VISION:
-        return 2;
-      case GLOXINIA:
-        return 3;
-      case WOLF_SMXL:
-        return 4;
-      default:
-        return -1;
-    }
-  }
-
-  private int getNonWingmanRatingColumn(PlayerName playerName) {
-    if (playerName == null) {
-      return -1;
-    }
-    switch (playerName) {
-      case DESMOND:
-        return 1;
-      case BLACK_VISION:
-        return 2;
-      case GLOXINIA:
-        return 3;
-      case WOLF_SMXL:
-        return 4;
-      default:
-        return -1;
-    }
-  }
-
-  private int getNonWingmanStatsStartColumn(PlayerName playerName) {
-    if (playerName == null) {
-      return -1;
-    }
-    switch (playerName) {
-      case DESMOND:
-        return 5;
-      case BLACK_VISION:
-        return 18;
-      case GLOXINIA:
-        return 31;
-      case WOLF_SMXL:
-        return 44;
-      default:
-        return -1;
-    }
-  }
 }
