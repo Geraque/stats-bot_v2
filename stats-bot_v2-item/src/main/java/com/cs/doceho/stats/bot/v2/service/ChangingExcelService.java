@@ -129,8 +129,6 @@ public class ChangingExcelService {
         int dateRowIndex = findDateRowIndex(sheet, dayKey);
         if (dateRowIndex == -1) {
           int insertRowIndex = getInsertRowIndex(sheet);
-          log.info("insertRowIndex: {}", insertRowIndex);
-          log.info("sheet.getLastRowNum(): {}", sheet.getLastRowNum());
           sheet.shiftRows(insertRowIndex, sheet.getLastRowNum(), 1);
           Row dateRow = sheet.createRow(insertRowIndex);
           dateRow.createCell(0).setCellValue(dayKey);
@@ -255,7 +253,6 @@ public class ChangingExcelService {
    */
   private int getInsertRowIndex(Sheet sheet) {
     int lastRowNum = sheet.getLastRowNum();
-    log.info("lastRowNum: {}", lastRowNum);
     for (int i = lastRowNum; i >= 0; i--) {
       Row row = sheet.getRow(i);
       if (row != null) {
