@@ -44,7 +44,7 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 4;
+  static Integer LIMIT = 22;
 
   public void processMatches() throws IOException {
     List<String> tokens = apiClient.getAllTokens(leetifyProperties.getAccounts());
@@ -136,6 +136,9 @@ public class LeetifyProcessingService {
         .filter(i -> PlayerName.DESMOND.getIds().contains(playerStats.get(i).getSteam64Id()))
         .findFirst()
         .orElse(-1);
+    log.info("index: {}", index);
+    log.info("playerStats: {}", playerStats);
+    log.info("teamScores: {}", teamScores);
     int teamId = 0;
     switch (type) {
       case WINGMAN:

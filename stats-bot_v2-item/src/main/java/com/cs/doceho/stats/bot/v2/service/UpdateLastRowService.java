@@ -24,7 +24,7 @@ public class UpdateLastRowService {
     log.info("sheet.getSheetName(): {}", sheet.getSheetName());
     List<String> symbols = sheet.getSheetName().contains("2x2")
         ? List.of("B", "C", "D", "E")
-        : generateColumnSymbols("B", "BE");
+        : generateColumnSymbols("B", "BS");
 
     // Обновление формулы для каждого столбца из списка
     for (int i = 0; i < symbols.size(); i++) {

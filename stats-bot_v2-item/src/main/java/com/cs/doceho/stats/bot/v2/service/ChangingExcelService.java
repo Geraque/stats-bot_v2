@@ -44,7 +44,7 @@ public class ChangingExcelService {
   UpdateLastRowService updateAverageFormula;
   static String FILE_PATH = "stats-bot_v2-app/src/main/resources/statistics.xlsx";
 
-  static Map<MatchType, String> SHEET_NAME_MAP = Map.of(MatchType.WINGMAN, "2x2 2025",
+  static Map<MatchType, String> SHEET_NAME_MAP = Map.of(MatchType.WINGMAN, "2х2 2025",
       MatchType.MATCH_MAKING, "2025 mm",
       MatchType.PREMIER, "Premier 2025",
       MatchType.FACEIT, "Faceit 2025");
@@ -59,12 +59,14 @@ public class ChangingExcelService {
   static Map<PlayerName, Integer> NON_WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
       PlayerName.BLACK_VISION, 2,
       PlayerName.GLOXINIA, 3,
-      PlayerName.WOLF_SMXL, 4);
+      PlayerName.WOLF_SMXL, 4,
+      PlayerName.GLEB, 5);
 
-  static Map<PlayerName, Integer> NON_WINGMAN_STATS_START_COLUMN_MAP = Map.of(PlayerName.DESMOND, 5,
-      PlayerName.BLACK_VISION, 18,
-      PlayerName.GLOXINIA, 31,
-      PlayerName.WOLF_SMXL, 44);
+  static Map<PlayerName, Integer> NON_WINGMAN_STATS_START_COLUMN_MAP = Map.of(PlayerName.DESMOND, 6,
+      PlayerName.BLACK_VISION, 19,
+      PlayerName.GLOXINIA, 32,
+      PlayerName.WOLF_SMXL, 45,
+      PlayerName.GLEB, 58);
 
 
   /**
@@ -79,7 +81,6 @@ public class ChangingExcelService {
    * @throws IOException при ошибках работы с файлом
    */
   public void addMatches(List<MatchItem> matchList) throws IOException {
-    log.info("Получен список матчей: {}", matchList);
     FileInputStream fis = new FileInputStream(FILE_PATH);
     XSSFWorkbook workbook = new XSSFWorkbook(fis);
     fis.close();
@@ -128,6 +129,8 @@ public class ChangingExcelService {
         int dateRowIndex = findDateRowIndex(sheet, dayKey);
         if (dateRowIndex == -1) {
           int insertRowIndex = getInsertRowIndex(sheet);
+          log.info("insertRowIndex: {}", insertRowIndex);
+          log.info("sheet.getLastRowNum(): {}", sheet.getLastRowNum());
           sheet.shiftRows(insertRowIndex, sheet.getLastRowNum(), 1);
           Row dateRow = sheet.createRow(insertRowIndex);
           dateRow.createCell(0).setCellValue(dayKey);
@@ -252,6 +255,7 @@ public class ChangingExcelService {
    */
   private int getInsertRowIndex(Sheet sheet) {
     int lastRowNum = sheet.getLastRowNum();
+    log.info("lastRowNum: {}", lastRowNum);
     for (int i = lastRowNum; i >= 0; i--) {
       Row row = sheet.getRow(i);
       if (row != null) {

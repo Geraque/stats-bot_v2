@@ -8,7 +8,8 @@ DO $$ BEGIN
         'NEKIT',
         'KOPFIRE',
         'MVFOREVER01',
-        'WOLF_SMXL'
+        'WOLF_SMXL',
+        'GLEB'
     );
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует
 END $$;
