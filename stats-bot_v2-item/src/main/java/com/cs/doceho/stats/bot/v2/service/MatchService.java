@@ -209,34 +209,6 @@ public class MatchService {
         .collect(Collectors.toList());
   }
 
-  private Player getTopPlayerByMetric(ToDoubleFunction<MatchItem> metricFunction) {
-    return getTopPlayerByAggregator(playerMatches -> {
-      double totalMetricValue = playerMatches.stream()
-          .mapToDouble(metricFunction)
-          .sum();
-
-      return Player.builder()
-          .name(playerMatches.get(0).getPlayerName().getName())
-          .matches(playerMatches.size())
-          .rating(totalMetricValue)
-          .build();
-    });
-  }
-
-  private Player getTopPlayerByMetricWithAverage(ToDoubleFunction<MatchItem> metricFunction) {
-    return getTopPlayerByAggregator(playerMatches -> {
-      double totalMetricValue = playerMatches.stream()
-          .mapToDouble(metricFunction)
-          .sum();
-
-      return Player.builder()
-          .name(playerMatches.get(0).getPlayerName().getName())
-          .matches(playerMatches.size())
-          .rating(totalMetricValue / playerMatches.size())
-          .build();
-    });
-  }
-
   private Player getTopPlayerByAggregator(Function<List<MatchItem>, Player> aggregatorFunction) {
     List<MatchItem> matches = getAll();
 
@@ -246,12 +218,6 @@ public class MatchService {
         .map(aggregatorFunction)
         .max(Comparator.comparing(Player::getRating))
         .orElse(null);
-  }
-
-  private int sumInt(List<MatchItem> playerMatches, ToIntFunction<MatchItem> mapper) {
-    return playerMatches.stream()
-        .mapToInt(mapper)
-        .sum();
   }
 
 }

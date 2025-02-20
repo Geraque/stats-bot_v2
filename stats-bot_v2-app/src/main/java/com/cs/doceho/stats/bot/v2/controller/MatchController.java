@@ -28,7 +28,7 @@ public class MatchController implements MatchApi {
   MapperFacade mapper;
 
   @Override
-  public List<Match> getAllMatches() throws Exception {
+  public List<Match> getAllMatches() {
     return matchService.getAll().stream()
         .map(it -> mapper.map(it, Match.class))
         .collect(Collectors.toList());
