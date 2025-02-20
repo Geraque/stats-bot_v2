@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 public class ChangingExcelService {
 
   UpdateLastRowService updateAverageFormula;
-  static String FILE_PATH = "stats-bot_v2-app/src/main/resources/statistics.xlsx";
+  static String FILE_PATH = "stats-bot_v2-app/src/main/resources/Statistics.xlsx";
 
   static Map<MatchType, String> SHEET_NAME_MAP = Map.of(MatchType.WINGMAN, "2х2 2025",
       MatchType.MATCH_MAKING, "2025 mm",
