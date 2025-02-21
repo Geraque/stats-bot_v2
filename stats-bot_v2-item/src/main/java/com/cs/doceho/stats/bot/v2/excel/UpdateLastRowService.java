@@ -20,19 +20,15 @@ public class UpdateLastRowService {
       return;
     }
 
-    // Выбор диапазона столбцов в зависимости от названия листа
     List<String> symbols = sheet.getSheetName().contains("2x2")
         ? List.of("B", "C", "D", "E")
         : generateColumnSymbols("B", "BS");
 
-    // Обновление формулы для каждого столбца из списка
     for (int i = 0; i < symbols.size(); i++) {
-      // Номер ячейки на строке среднего может начинаться не с 0
       Cell avgCell = averageRow.getCell(i + 1);
 
       if (avgCell != null && avgCell.getCellType() == CellType.FORMULA) {
         String column = symbols.get(i);
-        // Используется lastRowNum как номер последней строки (учёт того, что строки нумеруются с 0)
         String newFormula = "AVERAGE(" + column + "3:" + column + lastRowNum + ")";
         avgCell.setCellFormula(newFormula);
       }
@@ -53,9 +49,6 @@ public class UpdateLastRowService {
     return symbols;
   }
 
-  /**
-   * Преобразование Excel-обозначения столбца (например, "B") в число (например, 2).
-   */
   private int excelColumnToNumber(String column) {
     int result = 0;
     for (char ch : column.toUpperCase().toCharArray()) {
@@ -64,9 +57,6 @@ public class UpdateLastRowService {
     return result;
   }
 
-  /**
-   * Преобразование числа в Excel-обозначение столбца.
-   */
   private String numberToExcelColumn(int number) {
     StringBuilder column = new StringBuilder();
     while (number > 0) {

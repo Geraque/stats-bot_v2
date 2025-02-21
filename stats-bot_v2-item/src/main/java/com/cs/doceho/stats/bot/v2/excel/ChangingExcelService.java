@@ -25,12 +25,6 @@ public class ChangingExcelService {
 
   static String FILE_PATH = "stats-bot_v2-app/src/main/resources/Statistics.xlsx";
 
-  /**
-   * Добавление матчей из списка в Excel-файл.
-   *
-   * @param matchList список объектов MatchItem для записи в файл
-   * @throws IOException при ошибках работы с файлом
-   */
   public void addMatches(List<MatchItem> matchList) throws IOException {
     XSSFWorkbook workbook = excelWriter.readWorkbook(FILE_PATH);
 

@@ -44,13 +44,6 @@ public class FinderUtils {
     return lastRowNum + 1;
   }
 
-  /**
-   * Обходит весь лист и находит максимальный номер матча (из ячеек A, содержащих строку вида "N
-   * map").
-   *
-   * @param sheet лист Excel
-   * @return максимальный номер матча, найденный в листе (если матчей нет, возвращается 0)
-   */
   public int getGlobalNextMatchNumber(Sheet sheet) {
     int lastMapRow = sheet.getLastRowNum() - 1;
     int lastMapNumber = 0;

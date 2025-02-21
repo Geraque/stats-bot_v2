@@ -34,7 +34,6 @@ public class ExcelWriter {
       new byte[]{(byte) 198, (byte) 239, (byte) 206},
       MatchResult.LOSE, new byte[]{(byte) 255, (byte) 199, (byte) 206},
       MatchResult.DRAW, new byte[]{(byte) 255, (byte) 235, (byte) 156});
-
   static Map<PlayerName, Integer> WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
       PlayerName.BLACK_VISION, 2,
       PlayerName.GLOXINIA, 3,
@@ -44,28 +43,24 @@ public class ExcelWriter {
       PlayerName.GLOXINIA, 3,
       PlayerName.WOLF_SMXL, 4,
       PlayerName.GLEB, 5);
-
   static Map<PlayerName, Integer> NON_WINGMAN_STATS_START_COLUMN_MAP = Map.of(PlayerName.DESMOND, 6,
       PlayerName.BLACK_VISION, 19,
       PlayerName.GLOXINIA, 32,
       PlayerName.WOLF_SMXL, 45,
       PlayerName.GLEB, 58);
 
-  // Метод для чтения существующего файла
   public XSSFWorkbook readWorkbook(String filePath) throws IOException {
     try (FileInputStream fis = new FileInputStream(filePath)) {
       return new XSSFWorkbook(fis);
     }
   }
 
-  // Метод для записи в файл
   public void saveWorkbook(String filePath, XSSFWorkbook workbook) throws IOException {
     try (workbook; FileOutputStream fos = new FileOutputStream(filePath)) {
       workbook.write(fos);
     }
   }
 
-  // Обработка листа Excel (вставка строк, ячеек)
   public void processSheet(String sheetName, XSSFWorkbook workbook,
       Map<String, Map<String, Map<PlayerName, MatchItem>>> dayGroups) {
     Sheet sheet = workbook.getSheet(sheetName);
@@ -96,7 +91,8 @@ public class ExcelWriter {
     return dateRowIndex;
   }
 
-  private void processMatchRows(XSSFWorkbook workbook, Sheet sheet, Map<String, Map<PlayerName, MatchItem>> matchGroups,
+  private void processMatchRows(XSSFWorkbook workbook, Sheet sheet,
+      Map<String, Map<PlayerName, MatchItem>> matchGroups,
       int dateRowIndex, int globalCounter) {
     for (Map.Entry<String, Map<PlayerName, MatchItem>> matchEntry : matchGroups.entrySet()) {
       Map<PlayerName, MatchItem> matchData = matchEntry.getValue();
@@ -113,7 +109,7 @@ public class ExcelWriter {
     }
   }
 
-  private void insertMatchData(XSSFWorkbook workbook,Row matchRow, int nextMatchNumber,
+  private void insertMatchData(XSSFWorkbook workbook, Row matchRow, int nextMatchNumber,
       Map<PlayerName, MatchItem> matchData) {
     MatchItem sampleMatch = matchData.values().iterator().next();
     String mapName = sampleMatch.getMap().getName();
@@ -141,9 +137,7 @@ public class ExcelWriter {
 
   private void fillPlayerData(Row matchRow, MatchType matchType,
       Map<PlayerName, MatchItem> matchData) {
-    // Заполнение строки данными для каждого игрока
     if (matchType == MatchType.WINGMAN) {
-      // Для листа "2х2 2025": столбцы B, C, D, E – рейтинги для DESMOND, BLACK_VISION, GLOXINIA, WOLF_SMXL
       for (Map.Entry<PlayerName, MatchItem> entry : matchData.entrySet()) {
         int targetCol = WINGMAN_RATING_COLUMN_MAP.get(entry.getKey());
         if (targetCol != -1 && entry.getValue().getRating() != null) {
@@ -152,8 +146,6 @@ public class ExcelWriter {
         }
       }
     } else {
-      // Для листов "2025 mm", "Premier 2025", "Faceit 2025":
-      // Рейтинг – колонки B, C, D; статистика – диапазоны для каждого игрока.
       for (Map.Entry<PlayerName, MatchItem> entry : matchData.entrySet()) {
         int ratingCol = NON_WINGMAN_RATING_COLUMN_MAP.get(entry.getKey());
         if (ratingCol != -1 && entry.getValue().getRating() != null) {
