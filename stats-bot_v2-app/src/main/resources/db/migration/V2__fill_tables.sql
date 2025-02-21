@@ -2214,8 +2214,8 @@ INSERT INTO matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kil
 	 ('dad55846-b129-48a6-b057-d61bcd03062e'::uuid,'DESMOND'::public."player_names",'2025-02-15 09:28:56.000',0.42,0,2,0,0,0,0,0,0,0,0,0,0,0,'WINGMAN'::public."match_types",'INFERNO'::public."map_types",'WIN'::public."match_results");
 
 INSERT INTO matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
-	 ('955ff896-1693-462c-8498-f5994bdf9f2d'::uuid,'DESMOND'::public."player_names",'2025-02-18 10:29:21.000',1.09,0,6,0,0,0,0,2,0,1,1,0,0,0,'WINGMAN'::public."match_types",'OVERPASS'::public."map_types",'DRAW'::public."match_results"),
-	 ('fc2696a2-b0ee-4894-b6ef-b761fb673ca1'::uuid,'WOLF_SMXL'::public."player_names",'2025-02-18 10:29:21.000',0.9,0,2,0,0,0,0,1,0,0,1,0,0,0,'WINGMAN'::public."match_types",'OVERPASS'::public."map_types",'DRAW'::public."match_results"),
+--	 ('955ff896-1693-462c-8498-f5994bdf9f2d'::uuid,'DESMOND'::public."player_names",'2025-02-18 10:29:21.000',1.09,0,6,0,0,0,0,2,0,1,1,0,0,0,'WINGMAN'::public."match_types",'OVERPASS'::public."map_types",'DRAW'::public."match_results"),
+--	 ('fc2696a2-b0ee-4894-b6ef-b761fb673ca1'::uuid,'WOLF_SMXL'::public."player_names",'2025-02-18 10:29:21.000',0.9,0,2,0,0,0,0,1,0,0,1,0,0,0,'WINGMAN'::public."match_types",'OVERPASS'::public."map_types",'DRAW'::public."match_results"),
 	 ('e96fa16c-73e6-475d-ac62-b5dfd5309fe9'::uuid,'WOLF_SMXL'::public."player_names",'2025-02-18 10:17:53.000',1.16,0,3,0,0,0,0,1,0,1,1,0,0,0,'WINGMAN'::public."match_types",'NUKE'::public."map_types",'WIN'::public."match_results"),
 	 ('cd56e837-bf7a-4382-b8e9-86febfae7e66'::uuid,'DESMOND'::public."player_names",'2025-02-18 10:17:53.000',1.64,0,5,0,0,0,0,2,0,2,1,0,0,0,'WINGMAN'::public."match_types",'NUKE'::public."map_types",'WIN'::public."match_results"),
 	 ('1012e0ac-12f5-4748-834d-43a8eff4db05'::uuid,'DESMOND'::public."player_names",'2025-02-18 10:02:06.000',0.9,0,4,0,0,0,0,1,0,1,0,0,0,0,'WINGMAN'::public."match_types",'INFERNO'::public."map_types",'LOSE'::public."match_results"),

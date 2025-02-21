@@ -1,4 +1,4 @@
-package com.cs.doceho.stats.bot.v2.service;
+package com.cs.doceho.stats.bot.v2.excel;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
@@ -88,7 +88,7 @@ public class ChangingExcelService {
     DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     DateTimeFormatter fullFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy'T'HH:mm:ss");
 
-    /*
+    /**
      * Группировка по ключам:
      *  - Внешний Map: ключ – имя листа (определяется по типу матча).
      *  - Второй уровень: ключ – день (формат dd.MM.yyyy) для размещения заголовка.
@@ -279,31 +279,26 @@ public class ChangingExcelService {
    * @return максимальный номер матча, найденный в листе (если матчей нет, возвращается 0)
    */
 
-  //TODO Переписать
   private int getGlobalNextMatchNumber(Sheet sheet) {
-    int max = 0;
-    for (int i = 0; i <= sheet.getLastRowNum(); i++) {
-      Row row = sheet.getRow(i);
-      if (row != null) {
-        Cell cell = row.getCell(0);
-        if (cell != null && cell.getCellType() == CellType.STRING) {
-          String val = cell.getStringCellValue().trim();
-          if (val.toLowerCase().contains("map")) {
-            try {
-              String[] parts = val.split("\\s+");
-              int num = Integer.parseInt(parts[0]);
-              if (num > max) {
-                max = num;
-              }
-            } catch (NumberFormatException e) {
-              log.warn("Неверный формат в getGlobalNextMatchNumber");
-              // Игнорировать неверный формат
-            }
+    int lastMapRow = sheet.getLastRowNum() - 1;
+    int lastMapNumber = 0;
+    Row row = sheet.getRow(lastMapRow);
+    if (row != null) {
+      Cell cell = row.getCell(0);
+      if (cell != null && cell.getCellType() == CellType.STRING) {
+        String val = cell.getStringCellValue().trim();
+        if (val.toLowerCase().contains("map")) {
+          try {
+            String[] parts = val.split("\\s+");
+            lastMapNumber =  Integer.parseInt(parts[0]);
+          } catch (NumberFormatException e) {
+            log.warn("Неверный формат в getGlobalNextMatchNumber");
+            // Игнорировать неверный формат
           }
         }
       }
     }
-    return max;
+    return lastMapNumber;
   }
 
 }

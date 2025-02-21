@@ -14,7 +14,7 @@ import com.cs.doceho.stats.bot.v2.leetify.dto.GameHistoryResponse.GameIdWrapper;
 import com.cs.doceho.stats.bot.v2.leetify.dto.MatchKey;
 import com.cs.doceho.stats.bot.v2.leetify.dto.OpeningDuel;
 import com.cs.doceho.stats.bot.v2.leetify.dto.PlayerStat;
-import com.cs.doceho.stats.bot.v2.service.ChangingExcelService;
+import com.cs.doceho.stats.bot.v2.excel.ChangingExcelService;
 import com.cs.doceho.stats.bot.v2.service.utils.DateService;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -44,7 +44,7 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 3;
+  static Integer LIMIT = 1;
 
   public void processMatches() throws IOException {
     List<String> tokens = apiClient.getAllTokens(leetifyProperties.getAccounts());
