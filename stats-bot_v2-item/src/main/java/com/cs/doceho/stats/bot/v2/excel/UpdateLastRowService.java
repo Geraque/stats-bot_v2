@@ -21,7 +21,6 @@ public class UpdateLastRowService {
     }
 
     // Выбор диапазона столбцов в зависимости от названия листа
-    log.info("sheet.getSheetName(): {}", sheet.getSheetName());
     List<String> symbols = sheet.getSheetName().contains("2x2")
         ? List.of("B", "C", "D", "E")
         : generateColumnSymbols("B", "BS");
