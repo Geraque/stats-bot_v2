@@ -16,4 +16,8 @@ public class PlayerStat {
   Integer multi5k;
   Integer flashAssist;
   Integer tradeKillsSucceeded;
+  Integer totalKills;
+  Integer totalDeaths;
+  Integer dpr;
+  Integer dpr;
 }

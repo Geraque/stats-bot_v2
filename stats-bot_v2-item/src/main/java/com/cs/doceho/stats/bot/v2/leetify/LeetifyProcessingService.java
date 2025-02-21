@@ -14,6 +14,7 @@ import com.cs.doceho.stats.bot.v2.leetify.dto.GameHistoryResponse.GameIdWrapper;
 import com.cs.doceho.stats.bot.v2.leetify.dto.MatchKey;
 import com.cs.doceho.stats.bot.v2.leetify.dto.OpeningDuel;
 import com.cs.doceho.stats.bot.v2.leetify.dto.PlayerStat;
+import com.cs.doceho.stats.bot.v2.service.CalculateRatingService;
 import com.cs.doceho.stats.bot.v2.service.ChangingExcelService;
 import com.cs.doceho.stats.bot.v2.service.utils.DateService;
 import java.io.IOException;
@@ -42,6 +43,7 @@ public class LeetifyProcessingService {
   MatchRepository matchRepository;
   ChangingExcelService changingExcelService;
   DateService dateService;
+  CalculateRatingService calculateRatingService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
   static Integer LIMIT = 3;
@@ -105,7 +107,6 @@ public class LeetifyProcessingService {
         MatchItem matchItem = MatchItem.builder()
             .playerName(playerName)
             .date(finishedAt)
-            .rating(rating)
             .threeKill(stat.getMulti3k())
             .fourKill(stat.getMulti4k())
             .ace(stat.getMulti5k())
@@ -121,6 +122,7 @@ public class LeetifyProcessingService {
 
         setType(matchItem, matchType, gameDetail.getMatchmakingGameStats().get(0).getRank()); //Можно использовать любой ранг
         matchItem = setClutch(matchItem, clutches, stat.getSteam64Id());
+        matchItem.setRating(calculateRatingService.apply(matchItem));
         log.info("Сохранение матча: {}", matchItem);
         addedMatches.add(matchItem);
         matchRepository.save(matchItem);
