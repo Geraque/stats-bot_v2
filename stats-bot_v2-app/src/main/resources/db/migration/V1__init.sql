@@ -49,6 +49,7 @@ DO $$ BEGIN
         'EDIN',
         'WHISTLE',
         'PALAIS',
+        'BASALT',
         'OVERPASS'
     );
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует

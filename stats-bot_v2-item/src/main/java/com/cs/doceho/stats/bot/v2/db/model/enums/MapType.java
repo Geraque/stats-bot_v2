@@ -22,6 +22,7 @@ public enum MapType {
   EDIN("edin", "de_edin"),
   WHISTLE("whi", "de_whistle"),
   PALAIS("pal", "de_palais"),
+  BASALT("bas", "de_basalt"),
   OVERPASS("over", "de_overpass");
 
   String name;
