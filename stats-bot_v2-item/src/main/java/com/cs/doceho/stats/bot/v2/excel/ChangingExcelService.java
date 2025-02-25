@@ -65,7 +65,7 @@ public class ChangingExcelService {
           new SimpleEntry<>("OVERPASS", "CU4"),
           new SimpleEntry<>("BASALT", "CZ1")
       )),
-      new SimpleEntry<>("Faceit 2025", Map.ofEntries(
+      new SimpleEntry<>("2х2 2025", Map.ofEntries(
           new SimpleEntry<>("INFERNO", "H3"),
           new SimpleEntry<>("NUKE", "L3"),
           new SimpleEntry<>("WHISTLE", "P3"),
