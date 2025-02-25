@@ -2,6 +2,7 @@ package com.cs.doceho.stats.bot.v2.excel;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
@@ -74,6 +75,11 @@ public class ChangingExcelService {
       ))
   );
 
+  static Map<MatchType, String> SHEET_NAME_MAP = Map.of(MatchType.WINGMAN, "2х2 2025",
+      MatchType.MATCH_MAKING, "2025 mm",
+      MatchType.PREMIER, "Premier 2025",
+      MatchType.FACEIT, "Faceit 2025");
+
 
   public void addMatches(List<MatchItem> matchList) throws IOException {
     XSSFWorkbook workbook = excelWriter.readWorkbook(FILE_PATH);
@@ -112,7 +118,7 @@ public class ChangingExcelService {
    */
   private void updateMapStatistics(XSSFWorkbook workbook, List<MatchItem> matchList) {
     for (MatchItem match : matchList) {
-      String sheetName = match.getType().name();
+      String sheetName = SHEET_NAME_MAP.get(match.getType());
       String mapName = match.getMap().name();
       
       // Проверяем, есть ли такой лист и карта в нашем маппинге
