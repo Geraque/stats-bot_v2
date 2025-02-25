@@ -90,6 +90,7 @@ public class LeetifyProcessingService {
               openKillCounts.getOrDefault(duel.getAttackerName(), 0) + 1);
         }
       }
+
       for (PlayerStat stat : gameDetail.getPlayerStats()) {
         PlayerName playerName = PlayerName.fromId(stat.getSteam64Id());
         if (playerName == null) {

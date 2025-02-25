@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum MatchType {
+public enum MatchType implements NameIdentifiable<MatchType>, LeetifyNameIdentifiable<MatchType> {
   MATCH_MAKING("ММ", "matchmaking"),
   WINGMAN("Напарники", "matchmaking_wingman"),
   PREMIER("Премьер", "premier"),
@@ -18,21 +18,11 @@ public enum MatchType {
   String leetifyName;
 
   public static MatchType fromName(String name) {
-    for (MatchType matchName : MatchType.values()) {
-      if (matchName.name.equals(name)) {
-        return matchName;
-      }
-    }
-    return null;
+    return NameIdentifiable.fromName(MatchType.class, name);
   }
 
   public static MatchType fromLeetifyName(String name) {
-    for (MatchType matchName : MatchType.values()) {
-      if (matchName.leetifyName.equals(name)) {
-        return matchName;
-      }
-    }
-    return null;
+    return LeetifyNameIdentifiable.fromLeetifyName(MatchType.class, name);
   }
 
 }

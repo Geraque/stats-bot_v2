@@ -8,20 +8,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum MatchResult {
+public enum MatchResult implements NameIdentifiable<MatchResult> {
   WIN("Победа"),
   LOSE("Поражение"),
   DRAW("Ничья");
 
   String name;
 
-  public static MapType fromName(String name) {
-    for (MapType matchName : MapType.values()) {
-      if (matchName.getName().equals(name)) {
-        return matchName;
-      }
-    }
-    return null;
+  public static MatchResult fromName(String name) {
+    return NameIdentifiable.fromName(MatchResult.class, name);
   }
 
 }

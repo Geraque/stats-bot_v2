@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum MapType {
+public enum MapType implements NameIdentifiable<MapType>, LeetifyNameIdentifiable<MapType> {
   DUST_II("dust", "de_dust2"),
   MIRAGE("mir", "de_mirage"),
   INFERNO("inf", "de_inferno"),
@@ -29,21 +29,10 @@ public enum MapType {
   String leetifyName;
 
   public static MapType fromName(String name) {
-    for (MapType matchName : MapType.values()) {
-      if (matchName.name.equals(name)) {
-        return matchName;
-      }
-    }
-    return null;
+    return NameIdentifiable.fromName(MapType.class, name);
   }
 
   public static MapType fromLeetifyName(String name) {
-    for (MapType matchName : MapType.values()) {
-      if (matchName.leetifyName.equals(name)) {
-        return matchName;
-      }
-    }
-    return null;
+    return LeetifyNameIdentifiable.fromLeetifyName(MapType.class, name);
   }
-
 }

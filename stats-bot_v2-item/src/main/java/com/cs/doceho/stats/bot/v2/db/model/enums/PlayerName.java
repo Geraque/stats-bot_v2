@@ -11,14 +11,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum PlayerName {
-  DESMOND("Desmond\uD83C\uDFB4", Arrays.asList("76561198113198660", "76561198815456644", "76561198093023765")),
+public enum PlayerName implements NameIdentifiable<PlayerName> {
+  DESMOND("Desmond\uD83C\uDFB4",
+      Arrays.asList("76561198113198660", "76561198815456644", "76561198093023765")),
   GLOXINIA("Gloxinia", Collections.singletonList("76561198182310891")),
   BLACK_VISION("BlackVision", Collections.singletonList("76561198342639103")),
   KOPFIRE("Kopfire", Collections.singletonList("76561198154347514")),
-  B4ONE("B4one",Collections.singletonList("76561198158794811")),
-  NEKIT("221w33",Collections.singletonList("76561198096869637")),
-  MVFOREVER01("MVforever01",Collections.singletonList("notFound")),
+  B4ONE("B4one", Collections.singletonList("76561198158794811")),
+  NEKIT("221w33", Collections.singletonList("76561198096869637")),
+  MVFOREVER01("MVforever01", Collections.singletonList("notFound")),
   WOLF_SMXL("Wolf_SMXL", Collections.singletonList("76561198341666571")),
   GLEB("C:\"", Collections.singletonList("76561198330586281"));
 
@@ -26,16 +27,13 @@ public enum PlayerName {
   List<String> ids;
 
   public static PlayerName fromName(String name) {
-    for (PlayerName playerName : PlayerName.values()) {
-      if (playerName.name.equals(name)) {
-        return playerName;
-      }
-    }
-    return null;
+    return NameIdentifiable.fromName(PlayerName.class, name);
   }
 
   public static PlayerName fromId(String id) {
-    if (id == null) return null;
+    if (id == null) {
+      return null;
+    }
     for (PlayerName player : values()) {
       if (player.getIds().contains(id)) {
         return player;
