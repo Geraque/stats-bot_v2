@@ -11,9 +11,6 @@ import com.cs.doceho.stats.bot.v2.service.utils.CalculationService;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AccessLevel;
@@ -207,17 +204,6 @@ public class MatchService {
           return player;
         })
         .collect(Collectors.toList());
-  }
-
-  private Player getTopPlayerByAggregator(Function<List<MatchItem>, Player> aggregatorFunction) {
-    List<MatchItem> matches = getAll();
-
-    return matches.stream()
-        .collect(Collectors.groupingBy(MatchItem::getPlayerName))
-        .values().stream()
-        .map(aggregatorFunction)
-        .max(Comparator.comparing(Player::getRating))
-        .orElse(null);
   }
 
 }
