@@ -35,7 +35,7 @@ public class ChangingExcelService {
 
   // Map of sheet names to map cell references for each map
   private static final Map<String, Map<String, String>> MAP_CELL_REFERENCES = Map.ofEntries(
-      new SimpleEntry<>("MATCH_MAKING", Map.ofEntries(
+      new SimpleEntry<>("2025 mm", Map.ofEntries(
           new SimpleEntry<>("DUST_II", "BV1"),
           new SimpleEntry<>("ANCIENT", "B4"),
           new SimpleEntry<>("MIRAGE", "CA1"),
@@ -50,7 +50,7 @@ public class ChangingExcelService {
           new SimpleEntry<>("OVERPASS", "CU4"),
           new SimpleEntry<>("BASALT", "CZ1")
       )),
-      new SimpleEntry<>("PREMIER", Map.ofEntries(
+      new SimpleEntry<>("Premier 2025", Map.ofEntries(
           new SimpleEntry<>("DUST_II", "BV1"),
           new SimpleEntry<>("ANCIENT", "B4"),
           new SimpleEntry<>("MIRAGE", "CA1"),
@@ -65,7 +65,7 @@ public class ChangingExcelService {
           new SimpleEntry<>("OVERPASS", "CU4"),
           new SimpleEntry<>("BASALT", "CZ1")
       )),
-      new SimpleEntry<>("WINGMAN", Map.ofEntries(
+      new SimpleEntry<>("Faceit 2025", Map.ofEntries(
           new SimpleEntry<>("INFERNO", "H3"),
           new SimpleEntry<>("NUKE", "L3"),
           new SimpleEntry<>("WHISTLE", "P3"),
