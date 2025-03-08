@@ -147,6 +147,14 @@ public class TelegramBot extends TelegramLongPollingBot {
           log.info("22 год");
           topYear(chatId, 2022);
           break;
+        case "23 год":
+          log.info("23 год");
+          topYear(chatId, 2023);
+          break;
+        case "24 год":
+          log.info("24 год");
+          topYear(chatId, 2024);
+          break;
         case "Матчи Desmond":
           log.info("Матчи Desmond");
           allMatchesByPlayer(chatId, "Desmond");
@@ -210,6 +218,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         case "Статистика Wolf_SMXL":
           log.info("Статистика Wolf_SMXL");
           allStatsByName(chatId, "Wolf_SMXL");
+          break;
+        case "Статистика Wesdia":
+          log.info("Статистика Wesdia");
+          allStatsByName(chatId, "Wesdia");
           break;
         case "Ну нажми, ну пожалуйста":
           log.info("Ну нажми, ну пожалуйста");
@@ -451,6 +463,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     row = new KeyboardRow();
     row.add("21 год");
     row.add("22 год");
+    row.add("23 год");
+
+    keyboardRows.add(row);
+
+    row = new KeyboardRow();
+    row.add("24 год");
 
     keyboardRows.add(row);
 
@@ -544,8 +562,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     row.add("Статистика MVforever01");
     row.add("Статистика Wolf_SMXL");
-    row.add("Ну нажми, ну пожалуйста");
+    row.add("Статистика Wesdia");
 
+    keyboardRows.add(row);
+
+    row = new KeyboardRow();
+    row.add("Ну нажми, ну пожалуйста");
     keyboardRows.add(row);
 
     keyboardMarkup.setKeyboard(keyboardRows);
