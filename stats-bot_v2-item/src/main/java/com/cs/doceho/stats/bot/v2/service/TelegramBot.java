@@ -181,7 +181,7 @@ public class TelegramBot extends TelegramLongPollingBot {
           break;
         case "Статистика Desmond":
           log.info("Статистика Desmond");
-          allStatsByName(chatId, "Desmond");
+          allStatsByName(chatId, "Desmond\uD83C\uDFB4");
           break;
         case "Статистика BlackVision":
           log.info("Статистика BlackVision");
