@@ -42,12 +42,12 @@ public class ExcelWriter {
       PlayerName.BLACK_VISION, 2,
       PlayerName.GLOXINIA, 3,
       PlayerName.WOLF_SMXL, 4,
-      PlayerName.GLEB, 5);
+      PlayerName.WESDIA, 5);
   static Map<PlayerName, Integer> NON_WINGMAN_STATS_START_COLUMN_MAP = Map.of(PlayerName.DESMOND, 6,
       PlayerName.BLACK_VISION, 19,
       PlayerName.GLOXINIA, 32,
       PlayerName.WOLF_SMXL, 45,
-      PlayerName.GLEB, 58);
+      PlayerName.WESDIA, 58);
 
   public XSSFWorkbook readWorkbook(String filePath) throws IOException {
     try (FileInputStream fis = new FileInputStream(filePath)) {

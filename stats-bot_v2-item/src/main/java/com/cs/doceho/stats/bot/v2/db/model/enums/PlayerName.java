@@ -20,7 +20,7 @@ public enum PlayerName {
   NEKIT("221w33",Collections.singletonList("76561198096869637")),
   MVFOREVER01("MVforever01",Collections.singletonList("notFound")),
   WOLF_SMXL("Wolf_SMXL", Collections.singletonList("76561198341666571")),
-  GLEB("C:\"", Collections.singletonList("76561198330586281"));
+  WESDIA("Wesdia", Collections.singletonList("76561198330586281"));
 
   String name;
   List<String> ids;
