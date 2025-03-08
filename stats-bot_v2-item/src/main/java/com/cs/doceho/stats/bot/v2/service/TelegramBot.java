@@ -36,6 +36,7 @@ public class TelegramBot extends TelegramLongPollingBot {
   MatchApi matchApi;
   TopApi topApi;
   CategoryApi categoryApi;
+  static String EXCEPTION_MESSAGE = "Error occurred:";
 
   public TelegramBot(BotConfig config, MatchApi matchApi, TopApi topApi, CategoryApi categoryApi) {
     this.config = config;
@@ -48,7 +49,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     try {
       this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
     } catch (TelegramApiException e) {
-      log.error("Error occurred: " + e.getMessage());
+      log.error("{} {}", EXCEPTION_MESSAGE, e.getMessage());
     }
   }
 
@@ -600,7 +601,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     try {
       execute(message);
     } catch (TelegramApiException e) {
-      log.error("Error occurred: " + e.getMessage());
+      log.error("{} {}", EXCEPTION_MESSAGE, e.getMessage());
     }
   }
 
@@ -648,7 +649,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     try {
       execute(sticker);
     } catch (TelegramApiException e) {
-      log.error("Error occurred: " + e.getMessage());
+      log.error("{} {}", EXCEPTION_MESSAGE, e.getMessage());
     }
   }
 }
