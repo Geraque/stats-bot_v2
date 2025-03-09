@@ -224,6 +224,10 @@ public class TelegramBot extends TelegramLongPollingBot {
           log.info("Статистика Wesdia");
           allStatsByName(chatId, "Wesdia");
           break;
+          case "Статистика Chelicopukich":
+          log.info("Статистика Chelicopukich");
+          allStatsByName(chatId, "Chelicopukich");
+          break;
         case "Ну нажми, ну пожалуйста":
           log.info("Ну нажми, ну пожалуйста");
           sendMessage(chatId, update.getMessage().getChat().getLastName() +
@@ -568,6 +572,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     keyboardRows.add(row);
 
     row = new KeyboardRow();
+    row.add("Статистика Chelicopukich");
     row.add("Ну нажми, ну пожалуйста");
     keyboardRows.add(row);
 

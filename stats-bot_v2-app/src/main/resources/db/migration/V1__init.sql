@@ -9,7 +9,9 @@ DO $$ BEGIN
         'KOPFIRE',
         'MVFOREVER01',
         'WOLF_SMXL',
-        'WESDIA'
+        'WESDIA',
+        'CHELIKOPUKICH'
+
     );
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует
 END $$;
