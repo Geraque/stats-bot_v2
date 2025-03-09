@@ -12,15 +12,27 @@ worksheet = workbook["2025 mm"]
 players = {
     "DESMOND": {
         "rating": 2,  # столбец B
-        "stats": list(range(5, 18))  # столбцы E (5) до Q (17)
+        "stats": list(range(8, 21))  # столбцы H (8) до T (20)
     },
     "BLACK_VISION": {
         "rating": 3,  # столбец C
-        "stats": list(range(18, 31))  # столбцы R (18) до AD (30)
+        "stats": list(range(21, 34))  # столбцы U (21) до AG (33)
     },
     "GLOXINIA": {
         "rating": 4,  # столбец D
-        "stats": list(range(31, 44))  # столбцы AE (31) до AQ (43)
+        "stats": list(range(34, 47))  # столбцы AH (34) до AT (46)
+    },
+    "WOLF_SMXL": {
+        "rating": 5,  # столбец E
+        "stats": list(range(47, 60))  # столбцы AU (47) до BG (59)
+    },
+    "WESDIA": {
+        "rating": 6,  # столбец F
+        "stats": list(range(60, 73))  # столбцы BH (60) до BT (72)
+    },
+    "CHELIKOPUKICH": {
+        "rating": 7,  # столбец G
+        "stats": list(range(73, 86))  # столбцы BU (73) до CG (85)
     }
 }
 # players = {
