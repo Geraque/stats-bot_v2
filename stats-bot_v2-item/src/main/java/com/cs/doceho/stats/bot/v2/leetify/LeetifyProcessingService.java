@@ -8,13 +8,13 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
+import com.cs.doceho.stats.bot.v2.excel.ChangingExcelService;
 import com.cs.doceho.stats.bot.v2.leetify.dto.ClutchData;
 import com.cs.doceho.stats.bot.v2.leetify.dto.GameDetail;
 import com.cs.doceho.stats.bot.v2.leetify.dto.GameHistoryResponse.GameIdWrapper;
 import com.cs.doceho.stats.bot.v2.leetify.dto.MatchKey;
 import com.cs.doceho.stats.bot.v2.leetify.dto.OpeningDuel;
 import com.cs.doceho.stats.bot.v2.leetify.dto.PlayerStat;
-import com.cs.doceho.stats.bot.v2.excel.ChangingExcelService;
 import com.cs.doceho.stats.bot.v2.service.utils.DateService;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -44,7 +43,7 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 3;
+  static Integer LIMIT = 13;
 
   public void processMatches() throws IOException {
     List<String> tokens = apiClient.getAllTokens(leetifyProperties.getAccounts());
@@ -115,11 +114,11 @@ public class LeetifyProcessingService {
             .wallBang(0)
             .openKill(openKillCounts.getOrDefault(stat.getName(), 0))
             .map(MapType.fromLeetifyName(gameDetail.getMapName()))
-            .result(calculateMapResult(gameDetail.getPlayerStats(), gameDetail.getTeamScores(),
-                matchType))
+            .result(calculateMapResult(gameDetail.getPlayerStats(), gameDetail.getTeamScores()))
             .build();
 
-        setType(matchItem, matchType, gameDetail.getMatchmakingGameStats().get(0).getRank()); //Можно использовать любой ранг
+        setType(matchItem, matchType,
+            gameDetail.getMatchmakingGameStats().get(0).getRank()); //Можно использовать любой ранг
         matchItem = setClutch(matchItem, clutches, stat.getSteam64Id());
         log.info("Сохранение матча: {}", matchItem);
         addedMatches.add(matchItem);
@@ -130,27 +129,24 @@ public class LeetifyProcessingService {
     changingExcelService.addMatches(addedMatches);
   }
 
-  private MatchResult calculateMapResult(List<PlayerStat> playerStats, List<Integer> teamScores,
-      MatchType type) {
-    int index = IntStream.range(0, playerStats.size())
-        .filter(i -> PlayerName.DESMOND.getIds().contains(playerStats.get(i).getSteam64Id()))
+
+  private MatchResult calculateMapResult(List<PlayerStat> playerStats, List<Integer> teamScores) {
+    PlayerStat playerStat = playerStats.stream()
+        .filter(player -> PlayerName.DESMOND.getIds().contains(player.getSteam64Id()))
         .findFirst()
-        .orElse(-1);
-    int teamId = 0;
-    switch (type) {
-      case WINGMAN:
-        teamId = index > 2 ? 1 : 0;
-        break;
-      case FACEIT:
-      case PREMIER:
-      case MATCH_MAKING:
-        teamId = index > 4 ? 1 : 0;
-        break;
-    }
-    int winRounds = teamScores.get(teamId);
-    int loseRounds = teamScores.get(teamId == 0 ? 1 : 0);
+        .get();
+
+    // Определяем индекс команды в teamScores
+    // teamScores[0] - команда с initialTeamNumber 3
+    // teamScores[1] - команда с initialTeamNumber 2
+    int teamIndex = (playerStat.getInitialTeamNumber() == 2) ? 1 : 0;
+
+    int winRounds = teamScores.get(teamIndex);
+    int loseRounds = teamScores.get(1 - teamIndex);
+
     return winRounds > loseRounds ? MatchResult.WIN :
-        winRounds == loseRounds ? MatchResult.DRAW : MatchResult.LOSE;
+        winRounds == loseRounds ? MatchResult.DRAW :
+            MatchResult.LOSE;
   }
 
   private MatchItem setClutch(MatchItem matchItem, List<ClutchData> clutches, String steamId) {
