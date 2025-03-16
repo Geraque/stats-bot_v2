@@ -1,6 +1,7 @@
 package com.cs.doceho.stats.bot.v2.excel;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.IOException;
 import java.util.List;
@@ -28,23 +29,30 @@ public class ChangingExcelService {
 
   public void addMatches(List<MatchItem> matchList) throws IOException {
     XSSFWorkbook workbook = excelWriter.readWorkbook(FILE_PATH);
+    for (MatchItem matchItem : matchList) {
+      matchItem.setMap(MapType.ANCIENT);
+    }
 
     // Группировка матчей
     Map<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> grouped = matchGroupingService.groupMatches(
         matchList);
 
     // Запись данных в Excel
-
-    grouped.forEach((sheetName, dayGroups) -> {
-      // Обновление статистики по картам для каждого матча
-      dayGroups.values().forEach(matchDayGroup ->
-          matchDayGroup.values().forEach(matchGroup ->
-              excelWriter.updateMapStatistics(workbook, matchGroup.values().iterator().next())
-          )
-      );
-      // Обработка листа Excel
+    for (Map.Entry<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> sheetEntry : grouped.entrySet()) {
+      String sheetName = sheetEntry.getKey();
+      Map<String, Map<String, Map<PlayerName, MatchItem>>> dayGroups = sheetEntry.getValue();
       excelWriter.processSheet(sheetName, workbook, dayGroups);
-    });
+    }
+//    grouped.forEach((sheetName, dayGroups) -> {
+//      // Обновление статистики по картам для каждого матча
+//      dayGroups.values().forEach(matchDayGroup ->
+//          matchDayGroup.values().forEach(matchGroup ->
+//              excelWriter.updateMapStatistics(workbook, matchGroup.values().iterator().next())
+//          )
+//      );
+//      // Обработка листа Excel
+//      excelWriter.processSheet(sheetName, workbook, dayGroups);
+//    });
 
 
     // Обновление формул
