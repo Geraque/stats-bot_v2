@@ -43,16 +43,6 @@ public class ChangingExcelService {
       Map<String, Map<String, Map<PlayerName, MatchItem>>> dayGroups = sheetEntry.getValue();
       excelWriter.processSheet(sheetName, workbook, dayGroups);
     }
-//    grouped.forEach((sheetName, dayGroups) -> {
-//      // Обновление статистики по картам для каждого матча
-//      dayGroups.values().forEach(matchDayGroup ->
-//          matchDayGroup.values().forEach(matchGroup ->
-//              excelWriter.updateMapStatistics(workbook, matchGroup.values().iterator().next())
-//          )
-//      );
-//      // Обработка листа Excel
-//      excelWriter.processSheet(sheetName, workbook, dayGroups);
-//    });
 
 
     // Обновление формул
