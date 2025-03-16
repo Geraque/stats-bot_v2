@@ -7,6 +7,7 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,7 +72,7 @@ public class ExcelWriter {
       Map.entry("BASALT",   new MapCellBlock(0, 1, 123))   // Общий: DT1, Индив.: DT2, Итог: DT3 (столбцы DT-DY)
   );
 
-  private static final Map<String, WingmanMapCellBlock> WINGMAN_MAP_CELL_BLOCK = Map.of(
+  static Map<String, WingmanMapCellBlock> WINGMAN_MAP_CELL_BLOCK = Map.of(
       "INFERNO", new WingmanMapCellBlock(2, 3, 7),   // H3-K3, H4-K4
       "NUKE",    new WingmanMapCellBlock(2, 3, 11),  // L3-O3, L4-O4
       "WHISTLE", new WingmanMapCellBlock(2, 3, 15),  // P3-S3, P4-S4
@@ -90,12 +91,28 @@ public class ExcelWriter {
       PlayerName.CHELIKOPUKICH, 5
   );
 
-  private static final Map<PlayerName, Integer> PLAYER_OFFSET_WINGMAN = Map.of(
+  static Map<PlayerName, Integer> PLAYER_OFFSET_WINGMAN = Map.of(
       PlayerName.DESMOND, 0,
       PlayerName.BLACK_VISION, 1,
       PlayerName.GLOXINIA, 2,
       PlayerName.WOLF_SMXL, 3
   );
+
+  static List<byte[]> MATCH_ROW_COLORS = List.of(
+      new byte[]{(byte) 198, (byte) 239, (byte) 206}, // H
+      new byte[]{(byte) 255, (byte) 255, (byte) 204}, // P
+      new byte[]{(byte) 255, (byte) 235, (byte) 156}, // U
+      new byte[]{(byte) 255, (byte) 255, (byte) 204}, // AC
+      new byte[]{(byte) 68,  (byte) 114, (byte) 196},  // AH
+      new byte[]{(byte) 255, (byte) 255, (byte) 204}, // AP
+      new byte[]{(byte) 255, (byte) 199, (byte) 206}, // AU
+      new byte[]{(byte) 255, (byte) 255, (byte) 204}, // BC
+      new byte[]{(byte) 226, (byte) 239, (byte) 217}, // BH
+      new byte[]{(byte) 255, (byte) 255, (byte) 204}, // BP
+      new byte[]{(byte) 217, (byte) 225, (byte) 242}, // BU
+      new byte[]{(byte) 255, (byte) 255, (byte) 204}  // CC
+  );
+
 
 
   public XSSFWorkbook readWorkbook(String filePath) throws IOException {
@@ -183,7 +200,7 @@ public class ExcelWriter {
     mapCell.setCellValue(matchIdentifier);
     mapCell.setCellStyle(mapCellStyle);
 
-    fillPlayerData(matchRow, sampleMatch.getType(), matchData);
+    fillPlayerData(workbook, matchRow, sampleMatch.getType(), matchData);
   }
 
   private CellStyle createCellStyle(XSSFWorkbook workbook, XSSFColor color) {
@@ -194,47 +211,69 @@ public class ExcelWriter {
   }
 
 
-  private void fillPlayerData(Row matchRow, MatchType matchType,
+  private void fillPlayerData(XSSFWorkbook workbook, Row matchRow, MatchType matchType,
       Map<PlayerName, MatchItem> matchData) {
     if (matchType == MatchType.WINGMAN) {
-      for (Map.Entry<PlayerName, MatchItem> entry : matchData.entrySet()) {
-        int targetCol = WINGMAN_RATING_COLUMN_MAP.get(entry.getKey());
-        if (targetCol != -1 && entry.getValue().getRating() != null) {
-          Cell cell = matchRow.createCell(targetCol);
-          cell.setCellValue(entry.getValue().getRating());
-        }
-      }
+      matchData.forEach((playerName, matchItem) -> {
+        int targetCol = WINGMAN_RATING_COLUMN_MAP.get(playerName);
+        setCellValueIfNotNull(matchRow, targetCol, matchItem.getRating());
+      });
     } else {
-      for (Map.Entry<PlayerName, MatchItem> entry : matchData.entrySet()) {
-        int ratingCol = NON_WINGMAN_RATING_COLUMN_MAP.get(entry.getKey());
-        if (ratingCol != -1 && entry.getValue().getRating() != null) {
-          Cell cell = matchRow.createCell(ratingCol);
-          cell.setCellValue(entry.getValue().getRating());
-        }
-        int statsStartCol = NON_WINGMAN_STATS_START_COLUMN_MAP.get(entry.getKey());
+      matchData.forEach((playerName, matchItem) -> {
+        int ratingCol = NON_WINGMAN_RATING_COLUMN_MAP.get(playerName);
+        setCellValueIfNotNull(matchRow, ratingCol, matchItem.getRating());
+
+        int statsStartCol = NON_WINGMAN_STATS_START_COLUMN_MAP.get(playerName);
         if (statsStartCol != -1) {
-          MatchItem mi = entry.getValue();
-          int[] stats = new int[13];
-          stats[0] = (mi.getSmokeKill() != null) ? mi.getSmokeKill() : 0;
-          stats[1] = (mi.getOpenKill() != null) ? mi.getOpenKill() : 0;
-          stats[2] = (mi.getThreeKill() != null) ? mi.getThreeKill() : 0;
-          stats[3] = (mi.getFourKill() != null) ? mi.getFourKill() : 0;
-          stats[4] = (mi.getAce() != null) ? mi.getAce() : 0;
-          stats[5] = (mi.getFlash() != null) ? mi.getFlash() : 0;
-          stats[6] = (mi.getTrade() != null) ? mi.getTrade() : 0;
-          stats[7] = (mi.getWallBang() != null) ? mi.getWallBang() : 0;
-          stats[8] = (mi.getClutchOne() != null) ? mi.getClutchOne() : 0;
-          stats[9] = (mi.getClutchTwo() != null) ? mi.getClutchTwo() : 0;
-          stats[10] = (mi.getClutchThree() != null) ? mi.getClutchThree() : 0;
-          stats[11] = (mi.getClutchFour() != null) ? mi.getClutchFour() : 0;
-          stats[12] = (mi.getClutchFive() != null) ? mi.getClutchFive() : 0;
+          int[] stats = new int[] {
+              getStatValue(matchItem.getSmokeKill()),
+              getStatValue(matchItem.getOpenKill()),
+              getStatValue(matchItem.getThreeKill()),
+              getStatValue(matchItem.getFourKill()),
+              getStatValue(matchItem.getAce()),
+              getStatValue(matchItem.getFlash()),
+              getStatValue(matchItem.getTrade()),
+              getStatValue(matchItem.getWallBang()),
+              getStatValue(matchItem.getClutchOne()),
+              getStatValue(matchItem.getClutchTwo()),
+              getStatValue(matchItem.getClutchThree()),
+              getStatValue(matchItem.getClutchFour()),
+              getStatValue(matchItem.getClutchFive())
+          };
           for (int i = 0; i < stats.length; i++) {
             Cell cell = matchRow.createCell(statsStartCol + i);
             cell.setCellValue(stats[i]);
           }
         }
+      });
+
+      // Массив с информацией о столбцах для установки стилей
+      int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80};
+      for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
+        applyColorStyle(workbook, matchRow, MATCH_ROW_COLORS.get(i), styleColumns[i]);
       }
     }
+  }
+
+  // Метод для установки значения ячейки, если значение не null и индекс допустим
+  private void setCellValueIfNotNull(Row row, int colIndex, Number value) {
+    if (colIndex != -1 && value != null) {
+      Cell cell = row.createCell(colIndex);
+      cell.setCellValue(value.doubleValue());
+    }
+  }
+
+  // Метод для получения значения статистики с заменой null на 0
+  private int getStatValue(Integer stat) {
+    return stat != null ? stat : 0;
+  }
+
+  // Метод для применения стиля с заданным цветом для ячейки в указанном столбце
+  private void applyColorStyle(XSSFWorkbook workbook, Row row, byte[] color, int colIndex) {
+    XSSFColor xssfColor = new XSSFColor(color, null);
+    CellStyle style = createCellStyle(workbook, xssfColor);
+    Cell cell = row.createCell(colIndex);
+    cell.setCellStyle(style);
   }
 
   public void updateMapAndPlayerStatistics(XSSFWorkbook workbook, MatchItem match, int matchRowIndex) {
