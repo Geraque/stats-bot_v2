@@ -9,24 +9,25 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum MapType {
-  DUST_II("dust", "de_dust2"),
-  MIRAGE("mir", "de_mirage"),
-  INFERNO("inf", "de_inferno"),
-  ANCIENT("anc", "de_ancient"),
-  OFFICE("off", "cs_office"),
-  VERTIGO("vert", "de_vertigo"),
-  TRAIN("train", "de_train"),
-  ANUBIS("anu", "de_anubis"),
-  NUKE("nuke", "de_nuke"),
-  ITALY("italy", "cs_italy"),
-  EDIN("edin", "de_edin"),
-  WHISTLE("whi", "de_whistle"),
-  PALAIS("pal", "de_palais"),
-  BASALT("bas", "de_basalt"),
-  OVERPASS("over", "de_overpass");
+  DUST_II("dust", "de_dust2", "Dust"),
+  MIRAGE("mir", "de_mirage", "Mirage"),
+  INFERNO("inf", "de_inferno", "Inferno"),
+  ANCIENT("anc", "de_ancient", "Ancient"),
+  OFFICE("off", "cs_office", "Office"),
+  VERTIGO("vert", "de_vertigo", "Vertigo"),
+  TRAIN("train", "de_train", "Train"),
+  ANUBIS("anu", "de_anubis", "Anubis"),
+  NUKE("nuke", "de_nuke", "Nuke"),
+  ITALY("italy", "cs_italy", "Italy"),
+  EDIN("edin", "de_edin", "Edin"),
+  WHISTLE("whi", "de_whistle", "Whistle"),
+  PALAIS("pal", "de_palais", "Palais"),
+  BASALT("bas", "de_basalt", "Basalt"),
+  OVERPASS("over", "de_overpass", "Overpass");
 
   String name;
   String leetifyName;
+  String fullName;
 
   public static MapType fromName(String name) {
     for (MapType matchName : MapType.values()) {

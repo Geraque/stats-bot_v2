@@ -55,29 +55,29 @@ public class ExcelWriter {
       PlayerName.WESDIA, 59,
       PlayerName.CHELIKOPUKICH, 72);
 
-  static Map<String, CellCoordinate> MAP_CELL_COORDINATE = Map.ofEntries(
-      Map.entry("DUST", new CellCoordinate(0, 87)),       // ячейка CJ1 (row 0, col 87)
-      Map.entry("ANCIENT", new CellCoordinate(3, 87)),      // ячейка CJ4 (row 3, col 87)
-      Map.entry("MIRAGE", new CellCoordinate(0, 93)),       // ячейка CP1 (row 0, col 93)
-      Map.entry("OFFICE", new CellCoordinate(3, 93)),       // ячейка CP4 (row 3, col 93)
-      Map.entry("INFERNO", new CellCoordinate(0, 99)),      // ячейка CV1 (row 0, col 99)
-      Map.entry("VERTIGE", new CellCoordinate(3, 99)),      // ячейка CV4 (row 3, col 99)
-      Map.entry("TRAIN", new CellCoordinate(0, 105)),       // ячейка DB1 (row 0, col 105)
-      Map.entry("ANUBIS", new CellCoordinate(3, 105)),      // ячейка DB4 (row 3, col 105)
-      Map.entry("NUKE", new CellCoordinate(0, 111)),        // ячейка DH1 (row 0, col 111)
-      Map.entry("ITALY", new CellCoordinate(3, 111)),       // ячейка DH4 (row 3, col 111)
-      Map.entry("EDIN", new CellCoordinate(0, 117)),        // ячейка DN1 (row 0, col 117)
-      Map.entry("OVERPASS", new CellCoordinate(3, 117)),    // ячейка DN4 (row 3, col 117)
-      Map.entry("BASALT", new CellCoordinate(0, 123))       // ячейка DT1 (row 0, col 123)
+  static Map<String, MapCellBlock> MAP_CELL_BLOCK = Map.ofEntries(
+      Map.entry("DUST",     new MapCellBlock(0, 1, 87)),   // Общий: CJ1, Индив.: CJ2, Итог: CJ3 (столбцы CJ-CO)
+      Map.entry("ANCIENT",  new MapCellBlock(3, 4, 87)),   // Общий: CJ4, Индив.: CJ5, Итог: CJ6
+      Map.entry("MIRAGE",   new MapCellBlock(0, 1, 93)),   // Общий: CP1, Индив.: CP2, Итог: CP3 (столбцы CP-CU)
+      Map.entry("OFFICE",   new MapCellBlock(3, 4, 93)),   // Общий: CP4, Индив.: CP5, Итог: CP6
+      Map.entry("INFERNO",  new MapCellBlock(0, 1, 99)),   // Общий: CV1, Индив.: CV2, Итог: CV3 (столбцы CV-DA)
+      Map.entry("VERTIGO",  new MapCellBlock(3, 4, 99)),   // Общий: CV4, Индив.: CV5, Итог: CV6
+      Map.entry("TRAIN",    new MapCellBlock(0, 1, 105)),  // Общий: DB1, Индив.: DB2, Итог: DB3 (столбцы DB-DG)
+      Map.entry("ANUBIS",   new MapCellBlock(3, 4, 105)),  // Общий: DB4, Индив.: DB5, Итог: DB6
+      Map.entry("NUKE",     new MapCellBlock(0, 1, 111)),  // Общий: DH1, Индив.: DH2, Итог: DH3 (столбцы DH-DM)
+      Map.entry("ITALY",    new MapCellBlock(3, 4, 111)),  // Общий: DH4, Индив.: DH5, Итог: DH6
+      Map.entry("EDIN",     new MapCellBlock(0, 1, 117)),  // Общий: DN1, Индив.: DN2, Итог: DN3 (столбцы DN-DS)
+      Map.entry("OVERPASS", new MapCellBlock(3, 4, 117)),  // Общий: DN4, Индив.: DN5, Итог: DN6
+      Map.entry("BASALT",   new MapCellBlock(0, 1, 123))   // Общий: DT1, Индив.: DT2, Итог: DT3 (столбцы DT-DY)
   );
 
-  static Map<PlayerName, Integer> MAP_SUMMARY_COLUMN_ORDER = Map.of(
-      PlayerName.DESMOND, 87,         // CJ
-      PlayerName.BLACK_VISION, 88,      // CK
-      PlayerName.GLOXINIA, 89,          // CL
-      PlayerName.WOLF_SMXL, 90,         // CM
-      PlayerName.WESDIA, 91,            // CN
-      PlayerName.CHELIKOPUKICH, 92      // CO
+  static Map<PlayerName, Integer> PLAYER_OFFSET = Map.of(
+      PlayerName.DESMOND, 0,          // первый столбец блока
+      PlayerName.BLACK_VISION, 1,
+      PlayerName.GLOXINIA, 2,
+      PlayerName.WOLF_SMXL, 3,
+      PlayerName.WESDIA, 4,
+      PlayerName.CHELIKOPUKICH, 5
   );
 
 
@@ -139,7 +139,7 @@ public class ExcelWriter {
       Row matchRow = sheet.createRow(insertRowIndex);
       insertMatchData(workbook, matchRow, nextMatchNumber, matchData);
 
-      // Вызов обновления общей статистики карты и статистики каждого игрока.
+      // Обновление общей статистики карты и статистики каждого игрока
       MatchItem sampleMatch = matchData.values().iterator().next();
       updateMapAndPlayerStatistics(workbook, sampleMatch, insertRowIndex);
     }
@@ -231,23 +231,26 @@ public class ExcelWriter {
       return;
     }
 
-    // Получение названия карты (приведение к верхнему регистру)
-    String mapName = match.getMap().getName().toUpperCase();
-    CellCoordinate summaryCoord = MAP_CELL_COORDINATE.get(mapName);
-    if (summaryCoord == null) {
+    // Приведение названия карты к верхнему регистру
+    String mapName = match.getMap().getFullName().toUpperCase();
+    MapCellBlock block = MAP_CELL_BLOCK.get(mapName);
+    if (block == null) {
+      // Если карта не найдена – выход
       return;
     }
 
-    // Обновление общего результата карты (ячейка в summaryCoord.row, summaryCoord.column)
-    Row overallRow = sheet.getRow(summaryCoord.row);
+    // --- Обновление общего результата карты ---
+    Row overallRow = sheet.getRow(block.overallRow);
     if (overallRow == null) {
-      overallRow = sheet.createRow(summaryCoord.row);
+      overallRow = sheet.createRow(block.overallRow);
     }
-    Cell overallCell = overallRow.getCell(summaryCoord.column);
+    // Ячейка с общим результатом берётся по начальному столбцу блока
+    Cell overallCell = overallRow.getCell(block.startColumn);
     if (overallCell == null) {
-      overallCell = overallRow.createCell(summaryCoord.column);
+      overallCell = overallRow.createCell(block.startColumn);
       overallCell.setCellValue(mapName + " (0/0/0)");
     }
+    // Чтение текущего результата в формате "MAP (wins/loses/draws)"
     String currentText = overallCell.getStringCellValue();
     int wins = 0, losses = 0, draws = 0;
     Pattern pattern = Pattern.compile("\\((\\d+)/(\\d+)/(\\d+)\\)");
@@ -257,6 +260,7 @@ public class ExcelWriter {
       losses = Integer.parseInt(matcher.group(2));
       draws = Integer.parseInt(matcher.group(3));
     }
+    // Обновление в зависимости от результата матча
     switch (match.getResult()) {
       case WIN:
         wins++;
@@ -272,55 +276,46 @@ public class ExcelWriter {
     }
     overallCell.setCellValue(mapName + " (" + wins + "/" + losses + "/" + draws + ")");
 
-    // Обновление сводных формул для каждого игрока.
-    // Предполагается, что:
-    // - Строка summaryCoord.row + 1 содержит формулы индивидуальной статистики (СРЗНАЧ)
-    // - Строка summaryCoord.row + 2 содержит итоговую сумму (СУММ)
-    int summaryPlayerRowIndex = summaryCoord.row + 1;
-    int summaryTotalRowIndex = summaryCoord.row + 2;
-    Row summaryPlayerRow = sheet.getRow(summaryPlayerRowIndex);
-    if (summaryPlayerRow == null) {
-      summaryPlayerRow = sheet.createRow(summaryPlayerRowIndex);
-    }
-    Row summaryTotalRow = sheet.getRow(summaryTotalRowIndex);
-    if (summaryTotalRow == null) {
-      summaryTotalRow = sheet.createRow(summaryTotalRowIndex);
-    }
-
-    // Выбор карты столбцов для рейтинговых ячеек в матче (уже существующие мапы)
+    // --- Обновление статистики игроков ---
+    // Получение рейтинговой ячейки нового матча для игрока осуществляется через уже существующую мапу:
     Map<PlayerName, Integer> ratingColumnMap = (match.getType() == MatchType.WINGMAN)
         ? WINGMAN_RATING_COLUMN_MAP
         : NON_WINGMAN_RATING_COLUMN_MAP;
 
-    // Для каждого игрока обновление формул.
-    for (Map.Entry<PlayerName, Integer> entry : MAP_SUMMARY_COLUMN_ORDER.entrySet()) {
+    // Итерация по игрокам, для которых рассчитываются формулы
+    for (Map.Entry<PlayerName, Integer> entry : PLAYER_OFFSET.entrySet()) {
       PlayerName player = entry.getKey();
-      int summaryCol = entry.getValue();
+      int offset = entry.getValue();
 
-      // Получение рейтинговой ячейки нового матча для игрока.
+      // Вычисление номера столбца в блоке для данного игрока
+      int summaryCol = block.startColumn + offset;
+
+      // Получение рейтинговой ячейки нового матча
       int matchRatingCol = ratingColumnMap.getOrDefault(player, -1);
       if (matchRatingCol == -1) continue;
       Row matchRow = sheet.getRow(matchRowIndex);
       if (matchRow == null) continue;
       Cell matchRatingCell = matchRow.getCell(matchRatingCol);
       if (matchRatingCell == null) continue;
-      // Вычисление адреса ячейки нового результата (например, "B4")
+      // Получение адреса ячейки (например, "CV2" или "DB5") для нового результата
       String newCellRef = new CellReference(matchRowIndex, matchRatingCol).formatAsString();
 
-      // Обновление формулы ячейки индивидуальной статистики игрока (СРЗНАЧ)
-      Cell playerSummaryCell = summaryPlayerRow.getCell(summaryCol);
+      // --- Обновление формулы для индивидуальной статистики (СРЗНАЧ) ---
+      Row individualRow = sheet.getRow(block.individualRow);
+      if (individualRow == null) {
+        individualRow = sheet.createRow(block.individualRow);
+      }
+      Cell playerSummaryCell = individualRow.getCell(summaryCol);
       if (playerSummaryCell == null) {
-        playerSummaryCell = summaryPlayerRow.createCell(summaryCol);
+        playerSummaryCell = individualRow.createCell(summaryCol);
         playerSummaryCell.setCellFormula("СРЗНАЧ(" + newCellRef + ")");
       } else {
         String formula = playerSummaryCell.getCellFormula();
-        // Если формула заканчивается на ")", удалить его и добавить новый адрес
         if (formula.endsWith(")")) {
           formula = formula.substring(0, formula.length() - 1) + "," + newCellRef + ")";
         } else {
           formula = "СРЗНАЧ(" + newCellRef + ")";
         }
-        log.info("formula123: {}", formula);
         playerSummaryCell.setCellFormula(formula);
       }
     }
@@ -328,9 +323,10 @@ public class ExcelWriter {
 
 
   @AllArgsConstructor
-  private static class CellCoordinate {
-    int row;
-    int column;
+  private static class MapCellBlock {
+    int overallRow;     // Яндекс для общего результата карты (0-индексирован)
+    int individualRow;  // Яндекс для ячеек индивидуальной статистики игроков
+    int startColumn;    // Номер столбца для первого игрока в блоке
   }
 
 
