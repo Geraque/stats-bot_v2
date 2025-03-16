@@ -35,20 +35,17 @@ public class ChangingExcelService {
 
     // Запись данных в Excel
 
-    for (Entry<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> sheetEntry : grouped.entrySet()) {
-      // Для каждого листа (например, "2025 mm" или "Premier 2025")
-      for (Map<String, Map<PlayerName, MatchItem>> dayGroup : sheetEntry.getValue().values()) {
-        for (Map<PlayerName, MatchItem> matchGroup : dayGroup.values()) {
-          // Выбор одного экземпляра MatchItem (группировка по одному матчу)
-          MatchItem sampleMatch = matchGroup.values().iterator().next();
-          // Обновление статистики по карте
-          excelWriter.updateMapStatistics(workbook, sampleMatch);
-        }
-      }
-      String sheetName = sheetEntry.getKey();
-      Map<String, Map<String, Map<PlayerName, MatchItem>>> dayGroups = sheetEntry.getValue();
+    grouped.forEach((sheetName, dayGroups) -> {
+      // Обновление статистики по картам для каждого матча
+      dayGroups.values().forEach(matchDayGroup ->
+          matchDayGroup.values().forEach(matchGroup ->
+              excelWriter.updateMapStatistics(workbook, matchGroup.values().iterator().next())
+          )
+      );
+      // Обработка листа Excel
       excelWriter.processSheet(sheetName, workbook, dayGroups);
-    }
+    });
+
 
     // Обновление формул
     for (String sheetName : grouped.keySet()) {
