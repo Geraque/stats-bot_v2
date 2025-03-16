@@ -1,10 +1,12 @@
 package com.cs.doceho.stats.bot.v2.excel;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +29,9 @@ public class ChangingExcelService {
 
   public void addMatches(List<MatchItem> matchList) throws IOException {
     XSSFWorkbook workbook = excelWriter.readWorkbook(FILE_PATH);
+    for (MatchItem matchItem : matchList) {
+      matchItem.setMap(MapType.ANCIENT);
+    }
 
     // Группировка матчей
     Map<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> grouped = matchGroupingService.groupMatches(
@@ -38,6 +43,7 @@ public class ChangingExcelService {
       Map<String, Map<String, Map<PlayerName, MatchItem>>> dayGroups = sheetEntry.getValue();
       excelWriter.processSheet(sheetName, workbook, dayGroups);
     }
+
 
     // Обновление формул
     for (String sheetName : grouped.keySet()) {
