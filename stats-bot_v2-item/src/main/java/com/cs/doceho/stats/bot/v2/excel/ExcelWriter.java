@@ -71,6 +71,16 @@ public class ExcelWriter {
       Map.entry("BASALT",   new MapCellBlock(0, 1, 123))   // Общий: DT1, Индив.: DT2, Итог: DT3 (столбцы DT-DY)
   );
 
+  private static final Map<String, WingmanMapCellBlock> WINGMAN_MAP_CELL_BLOCK = Map.of(
+      "INFERNO", new WingmanMapCellBlock(2, 3, 7),   // H3-K3, H4-K4
+      "NUKE",    new WingmanMapCellBlock(2, 3, 11),  // L3-O3, L4-O4
+      "WHISTLE", new WingmanMapCellBlock(2, 3, 15),  // P3-S3, P4-S4
+      "PALAIS",  new WingmanMapCellBlock(2, 3, 19),  // T3-V3, T4-W4
+      "OVERPASS",new WingmanMapCellBlock(2, 3, 23),  // X3-Z3, X4-AA4
+      "VERTIGO", new WingmanMapCellBlock(2, 3, 27)   // AB3-AE3, AB4-AE4
+  );
+
+
   static Map<PlayerName, Integer> PLAYER_OFFSET = Map.of(
       PlayerName.DESMOND, 0,          // первый столбец блока
       PlayerName.BLACK_VISION, 1,
@@ -78,6 +88,13 @@ public class ExcelWriter {
       PlayerName.WOLF_SMXL, 3,
       PlayerName.WESDIA, 4,
       PlayerName.CHELIKOPUKICH, 5
+  );
+
+  private static final Map<PlayerName, Integer> PLAYER_OFFSET_WINGMAN = Map.of(
+      PlayerName.DESMOND, 0,
+      PlayerName.BLACK_VISION, 1,
+      PlayerName.GLOXINIA, 2,
+      PlayerName.WOLF_SMXL, 3
   );
 
 
@@ -139,11 +156,16 @@ public class ExcelWriter {
       Row matchRow = sheet.createRow(insertRowIndex);
       insertMatchData(workbook, matchRow, nextMatchNumber, matchData);
 
-      // Обновление общей статистики карты и статистики каждого игрока
+      // Выбор вызова обновления статистики в зависимости от типа матча
       MatchItem sampleMatch = matchData.values().iterator().next();
-      updateMapAndPlayerStatistics(workbook, sampleMatch, insertRowIndex);
+      if (sampleMatch.getType() == MatchType.WINGMAN) {
+        updateWingmanPlayerStatistics(workbook, sampleMatch, insertRowIndex);
+      } else {
+        updateMapAndPlayerStatistics(workbook, sampleMatch, insertRowIndex);
+      }
     }
   }
+
 
 
   private void insertMatchData(XSSFWorkbook workbook, Row matchRow, int nextMatchNumber,
@@ -322,11 +344,95 @@ public class ExcelWriter {
   }
 
 
+  public void updateWingmanPlayerStatistics(XSSFWorkbook workbook, MatchItem match, int matchRowIndex) {
+    // Определение листа для WINGMAN
+    String sheetName = "2х2 2025";
+    Sheet sheet = workbook.getSheet(sheetName);
+    if (sheet == null) {
+      return;
+    }
+
+    // Приведение названия карты к верхнему регистру
+    String mapName = match.getMap().getFullName().toUpperCase();
+    WingmanMapCellBlock block = WINGMAN_MAP_CELL_BLOCK.get(mapName);
+    if (block == null) {
+      return;
+    }
+
+    // --- Обновление общей ячейки блока ---
+    // Общая ячейка будет содержать название карты и количество сыгранных игр, например "DUST (20)"
+    Row overallRow = sheet.getRow(block.overallRow);
+    if (overallRow == null) {
+      overallRow = sheet.createRow(block.overallRow);
+    }
+    Cell overallCell = overallRow.getCell(block.startColumn);
+    if (overallCell == null) {
+      overallCell = overallRow.createCell(block.startColumn);
+      overallCell.setCellValue(mapName + " (1)");
+    } else {
+      String cellText = overallCell.getStringCellValue();
+      Pattern pattern = Pattern.compile("(.+)\\s*\\((\\d+)\\)");
+      Matcher matcher = pattern.matcher(cellText);
+      if (matcher.find()) {
+        String cellMapName = matcher.group(1).trim();
+        int count = Integer.parseInt(matcher.group(2));
+        count++;
+        overallCell.setCellValue(cellMapName + " (" + count + ")");
+      } else {
+        overallCell.setCellValue(mapName + " (1)");
+      }
+    }
+
+    // --- Обновление формул для индивидуальной статистики игроков ---
+    Map<PlayerName, Integer> ratingColumnMap = WINGMAN_RATING_COLUMN_MAP;
+    for (Map.Entry<PlayerName, Integer> entry : PLAYER_OFFSET_WINGMAN.entrySet()) {
+      PlayerName player = entry.getKey();
+      int offset = entry.getValue();
+      int summaryCol = block.startColumn + offset;
+
+      int matchRatingCol = ratingColumnMap.getOrDefault(player, -1);
+      if (matchRatingCol == -1) continue;
+      Row matchRow = sheet.getRow(matchRowIndex);
+      if (matchRow == null) continue;
+      Cell matchRatingCell = matchRow.getCell(matchRatingCol);
+      if (matchRatingCell == null) continue;
+      String newCellRef = new CellReference(matchRowIndex, matchRatingCol).formatAsString();
+
+      Row playerRow = sheet.getRow(block.playerRow);
+      if (playerRow == null) {
+        playerRow = sheet.createRow(block.playerRow);
+      }
+      Cell playerSummaryCell = playerRow.getCell(summaryCol);
+      if (playerSummaryCell == null) {
+        playerSummaryCell = playerRow.createCell(summaryCol);
+        playerSummaryCell.setCellFormula("СРЗНАЧ(" + newCellRef + ")");
+      } else {
+        String formula = playerSummaryCell.getCellFormula();
+        if (formula.endsWith(")")) {
+          formula = formula.substring(0, formula.length() - 1) + "," + newCellRef + ")";
+        } else {
+          formula = "СРЗНАЧ(" + newCellRef + ")";
+        }
+        playerSummaryCell.setCellFormula(formula);
+      }
+    }
+  }
+
+
+
+
   @AllArgsConstructor
   private static class MapCellBlock {
     int overallRow;     // Яндекс для общего результата карты (0-индексирован)
     int individualRow;  // Яндекс для ячеек индивидуальной статистики игроков
     int startColumn;    // Номер столбца для первого игрока в блоке
+  }
+
+  @AllArgsConstructor
+  private static class WingmanMapCellBlock {
+    int overallRow;   // Строка, где записано название карты (без формул)
+    int playerRow;    // Строка для ячеек со сводной статистикой игроков
+    int startColumn;  // Начальный столбец блока
   }
 
 

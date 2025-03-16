@@ -29,9 +29,6 @@ public class ChangingExcelService {
 
   public void addMatches(List<MatchItem> matchList) throws IOException {
     XSSFWorkbook workbook = excelWriter.readWorkbook(FILE_PATH);
-    for (MatchItem matchItem : matchList) {
-      matchItem.setMap(MapType.ANCIENT);
-    }
 
     // Группировка матчей
     Map<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> grouped = matchGroupingService.groupMatches(

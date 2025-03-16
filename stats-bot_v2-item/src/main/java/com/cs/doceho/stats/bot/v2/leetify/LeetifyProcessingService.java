@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -43,8 +44,9 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 1;
+  static Integer LIMIT = 2;
 
+  @Transactional
   public void processMatches() throws IOException {
     List<String> tokens = apiClient.getAllTokens(leetifyProperties.getAccounts());
     List<MatchItem> addedMatches = new ArrayList<>();
