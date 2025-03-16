@@ -43,7 +43,7 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 13;
+  static Integer LIMIT = 1;
 
   public void processMatches() throws IOException {
     List<String> tokens = apiClient.getAllTokens(leetifyProperties.getAccounts());

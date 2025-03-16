@@ -5,6 +5,7 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,7 +34,17 @@ public class ChangingExcelService {
         matchList);
 
     // Запись данных в Excel
-    for (Map.Entry<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> sheetEntry : grouped.entrySet()) {
+
+    for (Entry<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> sheetEntry : grouped.entrySet()) {
+      // Для каждого листа (например, "2025 mm" или "Premier 2025")
+      for (Map<String, Map<PlayerName, MatchItem>> dayGroup : sheetEntry.getValue().values()) {
+        for (Map<PlayerName, MatchItem> matchGroup : dayGroup.values()) {
+          // Выбор одного экземпляра MatchItem (группировка по одному матчу)
+          MatchItem sampleMatch = matchGroup.values().iterator().next();
+          // Обновление статистики по карте
+          excelWriter.updateMapStatistics(workbook, sampleMatch);
+        }
+      }
       String sheetName = sheetEntry.getKey();
       Map<String, Map<String, Map<PlayerName, MatchItem>>> dayGroups = sheetEntry.getValue();
       excelWriter.processSheet(sheetName, workbook, dayGroups);

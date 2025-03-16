@@ -8,7 +8,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +53,23 @@ public class ExcelWriter {
       PlayerName.WOLF_SMXL, 46,
       PlayerName.WESDIA, 59,
       PlayerName.CHELIKOPUKICH, 72);
+
+  static final Map<String, CellCoordinate> MAP_CELL_COORDINATE = Map.ofEntries(
+      Map.entry("DUST", new CellCoordinate(0, 87)),       // ячейка CJ1 (row 0, col 87)
+      Map.entry("ANCIENT", new CellCoordinate(3, 87)),      // ячейка CJ4 (row 3, col 87)
+      Map.entry("MIRAGE", new CellCoordinate(0, 93)),       // ячейка CP1 (row 0, col 93)
+      Map.entry("OFFICE", new CellCoordinate(3, 93)),       // ячейка CP4 (row 3, col 93)
+      Map.entry("INFERNO", new CellCoordinate(0, 99)),      // ячейка CV1 (row 0, col 99)
+      Map.entry("VERTIGE", new CellCoordinate(3, 99)),      // ячейка CV4 (row 3, col 99)
+      Map.entry("TRAIN", new CellCoordinate(0, 105)),       // ячейка DB1 (row 0, col 105)
+      Map.entry("ANUBIS", new CellCoordinate(3, 105)),      // ячейка DB4 (row 3, col 105)
+      Map.entry("NUKE", new CellCoordinate(0, 111)),        // ячейка DH1 (row 0, col 111)
+      Map.entry("ITALY", new CellCoordinate(3, 111)),       // ячейка DH4 (row 3, col 111)
+      Map.entry("EDIN", new CellCoordinate(0, 117)),        // ячейка DN1 (row 0, col 117)
+      Map.entry("OVERPASS", new CellCoordinate(3, 117)),    // ячейка DN4 (row 3, col 117)
+      Map.entry("BASALT", new CellCoordinate(0, 123))       // ячейка DT1 (row 0, col 123)
+  );
+
 
   public XSSFWorkbook readWorkbook(String filePath) throws IOException {
     try (FileInputStream fis = new FileInputStream(filePath)) {
@@ -179,4 +199,81 @@ public class ExcelWriter {
       }
     }
   }
+
+  public void updateMapStatistics(XSSFWorkbook workbook, MatchItem match) {
+    // Определение листа по типу матча (обновляется только для MATCH_MAKING и PREMIER)
+    String sheetName = null;
+    if (match.getType() == MatchType.MATCH_MAKING) {
+      sheetName = "2025 mm";
+    } else if (match.getType() == MatchType.PREMIER) {
+      sheetName = "Premier 2025";
+    }
+    if (sheetName == null) {
+      // Если тип матча не соответствует, статистика не обновляется
+      return;
+    }
+    Sheet sheet = workbook.getSheet(sheetName);
+    if (sheet == null) {
+      return;
+    }
+
+    // Получение названия карты (приведение к верхнему регистру для сопоставления)
+    String mapName = match.getMap().getName().toUpperCase();
+    CellCoordinate coordinate = MAP_CELL_COORDINATE.get(mapName);
+    if (coordinate == null) {
+      // Если карта не найдена в мапе, обновление не производится
+      return;
+    }
+
+    // Получение строки и ячейки по координатам
+    Row row = sheet.getRow(coordinate.row);
+    if (row == null) {
+      row = sheet.createRow(coordinate.row);
+    }
+    Cell cell = row.getCell(coordinate.column);
+    if (cell == null) {
+      cell = row.createCell(coordinate.column);
+      // Инициализация ячейки, если статистика ещё не задана
+      cell.setCellValue(mapName + " (0/0/0)");
+    }
+
+    // Чтение текущей статистики. Формат ожидается: "MAP (wins/loses/draws)"
+    String currentText = cell.getStringCellValue();
+    int wins = 0, losses = 0, draws = 0;
+    // Использование регулярного выражения для извлечения чисел
+    Pattern pattern = Pattern.compile("\\((\\d+)/(\\d+)/(\\d+)\\)");
+    Matcher matcher = pattern.matcher(currentText);
+    if (matcher.find()) {
+      wins = Integer.parseInt(matcher.group(1));
+      losses = Integer.parseInt(matcher.group(2));
+      draws = Integer.parseInt(matcher.group(3));
+    }
+
+    // Обновление статистики в зависимости от результата матча
+    switch (match.getResult()) {
+      case WIN:
+        wins++;
+        break;
+      case LOSE:
+        losses++;
+        break;
+      case DRAW:
+        draws++;
+        break;
+      default:
+        break;
+    }
+
+    // Формирование нового текста и запись в ячейку
+    String newText = mapName + " (" + wins + "/" + losses + "/" + draws + ")";
+    cell.setCellValue(newText);
+  }
+
+  @AllArgsConstructor
+  private static class CellCoordinate {
+    int row;
+    int column;
+  }
+
+
 }
