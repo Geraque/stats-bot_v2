@@ -462,8 +462,8 @@ public class ExcelWriter {
 
   @AllArgsConstructor
   private static class MapCellBlock {
-    int overallRow;     // Яндекс для общего результата карты (0-индексирован)
-    int individualRow;  // Яндекс для ячеек индивидуальной статистики игроков
+    int overallRow;     // Индекс для общего результата карты (0-индексирован)
+    int individualRow;  // Индекс для ячеек индивидуальной статистики игроков
     int startColumn;    // Номер столбца для первого игрока в блоке
   }
 
