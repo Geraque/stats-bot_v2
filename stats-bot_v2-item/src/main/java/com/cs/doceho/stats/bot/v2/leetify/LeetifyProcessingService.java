@@ -44,7 +44,7 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 10;
+  static Integer LIMIT = 16;
 
   @Transactional
   public void processMatches() throws IOException {
