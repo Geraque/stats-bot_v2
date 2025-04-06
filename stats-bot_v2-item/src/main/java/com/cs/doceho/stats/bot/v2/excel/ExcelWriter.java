@@ -248,10 +248,10 @@ public class ExcelWriter {
       });
 
       // Массив с информацией о столбцах для установки стилей
-      int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80};
-      for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
-        applyColorStyle(workbook, matchRow, MATCH_ROW_COLORS.get(i), styleColumns[i]);
-      }
+//      int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80}; TODO цвета проставляются, но значение убирается
+//      for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
+//        applyColorStyle(workbook, matchRow, MATCH_ROW_COLORS.get(i), styleColumns[i]);
+//      }
     }
   }
 
@@ -362,6 +362,7 @@ public class ExcelWriter {
       String newCellRef = new CellReference(matchRowIndex, matchRatingCol).formatAsString();
 
       // --- Обновление формулы для индивидуальной статистики (СРЗНАЧ) ---
+      // TODO Сделать так, что если в стате 0, а не AVG, то не ломалось бы
       Row individualRow = sheet.getRow(block.individualRow);
       if (individualRow == null) {
         individualRow = sheet.createRow(block.individualRow);
