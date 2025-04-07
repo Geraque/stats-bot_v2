@@ -22,7 +22,7 @@ public class UpdateLastRowService {
 
     List<String> symbols = sheet.getSheetName().contains("2x2")
         ? List.of("B", "C", "D", "E")
-        : generateColumnSymbols("B", "BS");
+        : generateColumnSymbols("B", "CG");
 
     for (int i = 0; i < symbols.size(); i++) {
       Cell avgCell = averageRow.getCell(i + 1);
@@ -37,7 +37,7 @@ public class UpdateLastRowService {
 
   /**
    * Генерация списка Excel-столбцов от начального до конечного (включительно). Пример:
-   * generateColumnSymbols("B", "BE") вернёт список всех столбцов от B до BE.
+   * generateColumnSymbols("B", "CG") вернёт список всех столбцов от B до CG.
    */
   private List<String> generateColumnSymbols(String start, String end) {
     List<String> symbols = new ArrayList<>();

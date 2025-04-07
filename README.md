@@ -22,3 +22,10 @@ CS Match Tracker is an application designed for storing and managing data about 
 3. **Telegram Bot**:
     - The integrated Telegram bot provides an easy way to access match history.
     - Users can query match data or get updates through an intuitive chat interface.
+
+
+TODO
+1)Проверку, что матч загружен
+2)Что 0, вместо avg
+3)Исправить вычисление порядка карт (плавающий)
+4)Узнать можно ли получать workbook из sheet, если да, то переписать

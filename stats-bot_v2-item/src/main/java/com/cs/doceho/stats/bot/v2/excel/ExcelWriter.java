@@ -16,11 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -139,18 +135,24 @@ public class ExcelWriter {
     for (Map.Entry<String, Map<String, Map<PlayerName, MatchItem>>> dayEntry : dayGroups.entrySet()) {
       String dayKey = dayEntry.getKey();
       int dateRowIndex = finderUtils.findDateRowIndex(sheet, dayKey);
-      dateRowIndex = createDateRowIfAbsent(sheet, dateRowIndex, dayKey);
+      dateRowIndex = createDateRowIfAbsent(workbook, sheet, dateRowIndex, dayKey);
 
       processMatchRows(workbook, sheet, dayEntry.getValue(), dateRowIndex, globalCounter);
     }
   }
 
-  private int createDateRowIfAbsent(Sheet sheet, int dateRowIndex, String dayKey) {
+  private int createDateRowIfAbsent(XSSFWorkbook workbook, Sheet sheet, int dateRowIndex, String dayKey) {
     if (dateRowIndex == -1) {
       int insertRowIndex = finderUtils.getInsertRowIndex(sheet);
       sheet.shiftRows(insertRowIndex, sheet.getLastRowNum(), 1);
       Row dateRow = sheet.createRow(insertRowIndex);
       dateRow.createCell(0).setCellValue(dayKey);
+
+      int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80};
+      for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
+        applyColorStyle(workbook, dateRow, MATCH_ROW_COLORS.get(i), styleColumns[i]);
+      }
+
       log.info("Добавлена строка с датой: {} в строке {}", dayKey, insertRowIndex);
       dateRowIndex = insertRowIndex;
     }
@@ -248,10 +250,10 @@ public class ExcelWriter {
       });
 
       // Массив с информацией о столбцах для установки стилей
-//      int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80}; TODO цвета проставляются, но значение убирается
-//      for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
-//        applyColorStyle(workbook, matchRow, MATCH_ROW_COLORS.get(i), styleColumns[i]);
-//      }
+      int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80};
+      for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
+        applyColorStyle(workbook, matchRow, MATCH_ROW_COLORS.get(i), styleColumns[i]);
+      }
     }
   }
 
@@ -272,8 +274,37 @@ public class ExcelWriter {
   private void applyColorStyle(XSSFWorkbook workbook, Row row, byte[] color, int colIndex) {
     XSSFColor xssfColor = new XSSFColor(color, null);
     CellStyle style = createCellStyle(workbook, xssfColor);
-    Cell cell = row.createCell(colIndex);
+    applyBordersIfNecessary(style, color);
+    Cell cell = row.getCell(colIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
     cell.setCellStyle(style);
+  }
+
+  /**
+   * Добавляет стандартную тонкую черную рамку к стилю ячейки,
+   * если цвет ячейки соответствует предопределенному целевому цвету.
+   *
+   * @param style Стиль ячейки (CellStyle), к которому нужно применить рамку.
+   * @param color Цвет ячейки в виде массива байт для проверки.
+   */
+  private void applyBordersIfNecessary(CellStyle style, byte[] color) {
+    // Целевой цвет для добавления рамки
+    byte[] targetColor = new byte[]{(byte) 255, (byte) 255, (byte) 204};
+
+    // Проверяем, совпадает ли текущий цвет с целевым цветом для рамки
+    if (java.util.Arrays.equals(color, targetColor)) {
+      // Добавляем тонкую рамку со всех сторон
+      style.setBorderTop(BorderStyle.THIN);
+      style.setBorderBottom(BorderStyle.THIN);
+      style.setBorderLeft(BorderStyle.THIN);
+      style.setBorderRight(BorderStyle.THIN);
+
+      // Устанавливаем цвет рамки (светло-серый, аналог стиля "Примечание")
+      short borderColor = IndexedColors.GREY_25_PERCENT.getIndex();
+      style.setTopBorderColor(borderColor);
+      style.setBottomBorderColor(borderColor);
+      style.setLeftBorderColor(borderColor);
+      style.setRightBorderColor(borderColor);
+    }
   }
 
   public void updateMapAndPlayerStatistics(XSSFWorkbook workbook, MatchItem match, int matchRowIndex) {
