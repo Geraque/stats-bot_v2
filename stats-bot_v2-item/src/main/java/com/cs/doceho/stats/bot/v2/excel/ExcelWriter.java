@@ -79,26 +79,26 @@ public class ExcelWriter {
     for (Map.Entry<String, Map<String, Map<PlayerName, MatchItem>>> dayEntry : dayGroups.entrySet()) {
       String dayKey = dayEntry.getKey();
       int dateRowIndex = finderUtils.findDateRowIndex(sheet, dayKey);
-      dateRowIndex = createDateRowIfAbsent(workbook, sheet, dateRowIndex, dayKey);
+      dateRowIndex = createDateRowIfAbsent(sheet, dateRowIndex, dayKey);
 
-      processMatchRows(workbook, sheet, dayEntry.getValue(), dateRowIndex, globalCounter);
+      processMatchRows(sheet, dayEntry.getValue(), dateRowIndex, globalCounter);
     }
   }
 
-  private int createDateRowIfAbsent(XSSFWorkbook workbook, Sheet sheet, int dateRowIndex, String dayKey) {
+  private int createDateRowIfAbsent(Sheet sheet, int dateRowIndex, String dayKey) {
     if (dateRowIndex == -1) {
       int insertRowIndex = finderUtils.getInsertRowIndex(sheet);
       sheet.shiftRows(insertRowIndex, sheet.getLastRowNum(), 1);
       Row dateRow = sheet.createRow(insertRowIndex);
       dateRow.createCell(0).setCellValue(dayKey);
-      createCellStyle.applyColorStyle(workbook, dateRow);
+      createCellStyle.applyColorStyle(sheet.getWorkbook(), dateRow);
       log.info("Добавлена строка с датой: {} в строке {}", dayKey, insertRowIndex);
       dateRowIndex = insertRowIndex;
     }
     return dateRowIndex;
   }
 
-  private void processMatchRows(XSSFWorkbook workbook, Sheet sheet,
+  private void processMatchRows(Sheet sheet,
       Map<String, Map<PlayerName, MatchItem>> matchGroups,
       int dateRowIndex, int globalCounter) {
     for (Map.Entry<String, Map<PlayerName, MatchItem>> matchEntry : matchGroups.entrySet()) {
@@ -112,19 +112,19 @@ public class ExcelWriter {
 
       sheet.shiftRows(insertRowIndex, sheet.getLastRowNum(), 1);
       Row matchRow = sheet.createRow(insertRowIndex);
-      insertMatchData(workbook, matchRow, nextMatchNumber, matchData);
+      insertMatchData(sheet.getWorkbook(), matchRow, nextMatchNumber, matchData);
 
       // Выбор вызова обновления статистики в зависимости от типа матча
       MatchItem sampleMatch = matchData.values().iterator().next();
       if (sampleMatch.getType() == MatchType.WINGMAN) {
-        updateMapAndPlayerStatistics.wingman(workbook, sampleMatch, insertRowIndex);
+        updateMapAndPlayerStatistics.wingman(sheet.getWorkbook(), sampleMatch, insertRowIndex);
       } else {
-        updateMapAndPlayerStatistics.matchmaking(workbook, sampleMatch, insertRowIndex);
+        updateMapAndPlayerStatistics.matchmaking(sheet.getWorkbook(), sampleMatch, insertRowIndex);
       }
     }
   }
 
-  private void insertMatchData(XSSFWorkbook workbook, Row matchRow, int nextMatchNumber,
+  private void insertMatchData(Workbook workbook, Row matchRow, int nextMatchNumber,
       Map<PlayerName, MatchItem> matchData) {
     MatchItem sampleMatch = matchData.values().iterator().next();
     String mapName = sampleMatch.getMap().getName();
@@ -142,7 +142,7 @@ public class ExcelWriter {
     fillPlayerData(workbook, matchRow, sampleMatch.getType(), matchData);
   }
 
-  private void fillPlayerData(XSSFWorkbook workbook, Row matchRow, MatchType matchType,
+  private void fillPlayerData(Workbook workbook, Row matchRow, MatchType matchType,
       Map<PlayerName, MatchItem> matchData) {
     if (matchType == MatchType.WINGMAN) {
       matchData.forEach((playerName, matchItem) -> {

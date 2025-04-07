@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -77,7 +78,7 @@ public class UpdateMapAndPlayerStatistics {
         PlayerName.WOLF_SMXL, 3
     );
 
-    public void matchmaking(XSSFWorkbook workbook, MatchItem match, int matchRowIndex) {
+    public void matchmaking(Workbook workbook, MatchItem match, int matchRowIndex) {
         // Определение листа по типу матча (обновление для MATCH_MAKING и PREMIER)
         String sheetName = null;
         if (match.getType() == MatchType.MATCH_MAKING) {
@@ -184,7 +185,7 @@ public class UpdateMapAndPlayerStatistics {
         }
     }
 
-    public void wingman(XSSFWorkbook workbook, MatchItem match, int matchRowIndex) {
+    public void wingman(Workbook workbook, MatchItem match, int matchRowIndex) {
         // Определение листа для WINGMAN
         String sheetName = "2х2 2025";
         Sheet sheet = workbook.getSheet(sheetName);

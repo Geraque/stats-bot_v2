@@ -32,14 +32,14 @@ public class CellStyleService {
         new byte[]{(byte) 255, (byte) 255, (byte) 204}  // CC
     );
 
-    public CellStyle createCellStyle(XSSFWorkbook workbook, XSSFColor color) {
+    public CellStyle createCellStyle(Workbook workbook, XSSFColor color) {
         CellStyle mapCellStyle = workbook.createCellStyle();
         mapCellStyle.setFillForegroundColor(color);
         mapCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return mapCellStyle;
     }
 
-    public void applyColorStyle(XSSFWorkbook workbook, Row row) {
+    public void applyColorStyle(Workbook workbook, Row row) {
         int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80};
         for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
             applyColorStyleCell(workbook, row, MATCH_ROW_COLORS.get(i), styleColumns[i]);
@@ -47,7 +47,7 @@ public class CellStyleService {
     }
 
     // Метод для применения стиля с заданным цветом для ячейки в указанном столбце
-    private void applyColorStyleCell(XSSFWorkbook workbook, Row row, byte[] color, int colIndex) {
+    private void applyColorStyleCell(Workbook workbook, Row row, byte[] color, int colIndex) {
         XSSFColor xssfColor = new XSSFColor(color, null);
         CellStyle style = createCellStyle(workbook, xssfColor);
         applyBordersIfNecessary(style, color);
