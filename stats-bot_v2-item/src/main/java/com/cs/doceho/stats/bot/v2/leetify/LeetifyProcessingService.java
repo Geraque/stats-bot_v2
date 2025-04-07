@@ -55,7 +55,7 @@ public class LeetifyProcessingService {
     Set<MatchKey> existingMatchKeys = new HashSet<>();
     for (MatchItem match : existingMatches) {
       existingMatchKeys.add(
-          new MatchKey(match.getDate(), match.getPlayerName(), match.getRating()));
+          new MatchKey(match.getDate(), match.getPlayerName(), match.getMap()));
     }
 
     // Шаг 2. Получение истории игр и формирование списка gameId
@@ -97,8 +97,8 @@ public class LeetifyProcessingService {
           continue;
         }
         LocalDateTime finishedAt = dateService.parseDate(gameDetail.getFinishedAt());
-        Double rating = stat.getHltvRating();
-        MatchKey key = new MatchKey(finishedAt, playerName, rating);
+        MapType mapType = MapType.fromLeetifyName(gameDetail.getMapName());
+        MatchKey key = new MatchKey(finishedAt, playerName, mapType);
         if (existingMatchKeys.contains(key)) {
           continue;
         }
@@ -106,7 +106,7 @@ public class LeetifyProcessingService {
         MatchItem matchItem = MatchItem.builder()
             .playerName(playerName)
             .date(finishedAt)
-            .rating(rating)
+            .rating(stat.getHltvRating())
             .threeKill(stat.getMulti3k())
             .fourKill(stat.getMulti4k())
             .ace(stat.getMulti5k())
