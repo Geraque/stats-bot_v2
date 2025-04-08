@@ -1,4 +1,4 @@
-package com.cs.doceho.stats.bot.v2.excel;
+package com.cs.doceho.stats.bot.v2.excel.utils;
 
 import com.cs.doceho.stats.bot.v2.db.model.MatchItem;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;

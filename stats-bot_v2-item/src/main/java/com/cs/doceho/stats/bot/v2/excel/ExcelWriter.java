@@ -7,17 +7,16 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import com.cs.doceho.stats.bot.v2.excel.utils.CellStyleService;
+import com.cs.doceho.stats.bot.v2.excel.utils.FinderUtils;
+import com.cs.doceho.stats.bot.v2.excel.utils.UpdateMapAndPlayerStatistics;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -74,9 +73,8 @@ public class ExcelWriter {
       sheet = workbook.createSheet(sheetName);
     }
 
-    int globalCounter = finderUtils.getGlobalNextMatchNumber(sheet);
-
     for (Map.Entry<String, Map<String, Map<PlayerName, MatchItem>>> dayEntry : dayGroups.entrySet()) {
+      int globalCounter = finderUtils.getGlobalNextMatchNumber(sheet);
       String dayKey = dayEntry.getKey();
       int dateRowIndex = finderUtils.findDateRowIndex(sheet, dayKey);
       dateRowIndex = createDateRowIfAbsent(sheet, dateRowIndex, dayKey);

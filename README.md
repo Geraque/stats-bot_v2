@@ -25,4 +25,4 @@ CS Match Tracker is an application designed for storing and managing data about 
 
 
 TODO
-1)Исправить вычисление порядка карт (когда несколько дней за раз записываются)
+1) Закрашивать дату в нужный цвет, в зависимости от моего рейтинга за день
