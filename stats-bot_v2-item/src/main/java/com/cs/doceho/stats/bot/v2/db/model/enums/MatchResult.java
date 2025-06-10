@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum MatchResult {
-  WIN("Победа"),
+  WIN("Победа"), //TODO Неправильно подсчитывается, если кто-то сдаётся при одинаковом счёте
   LOSE("Поражение"),
   DRAW("Ничья");
 
