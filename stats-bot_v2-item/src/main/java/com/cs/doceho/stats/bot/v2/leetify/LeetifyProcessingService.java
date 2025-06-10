@@ -19,12 +19,7 @@ import com.cs.doceho.stats.bot.v2.service.utils.DateService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AccessLevel;
@@ -44,7 +39,7 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 16;
+  static Integer LIMIT = 20;
 
   @Transactional
   public void processMatches() throws IOException {
@@ -120,7 +115,11 @@ public class LeetifyProcessingService {
             .build();
 
         setType(matchItem, matchType,
-            gameDetail.getMatchmakingGameStats().get(0).getRank()); //Можно использовать любой ранг
+            gameDetail.getMatchmakingGameStats()
+                .stream()
+                .map(GameDetail.PlayerRank::getRank)
+                .max(Comparator.naturalOrder())
+                .get()); //TODO может не правильно работать, если ни у кого нет ранга
         matchItem = setClutch(matchItem, clutches, stat.getSteam64Id());
         log.info("Сохранение матча: {}", matchItem);
         addedMatches.add(matchItem);
