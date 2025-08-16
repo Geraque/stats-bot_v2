@@ -39,7 +39,9 @@ public class UpdateMapAndPlayerStatistics {
         Map.entry("ITALY", new MapCellBlock(3, 4, 111)),  // Общий: DH4, Индив.: DH5, Итог: DH6
         Map.entry("EDIN", new MapCellBlock(0, 1, 117)),  // Общий: DN1, Индив.: DN2, Итог: DN3 (столбцы DN-DS)
         Map.entry("OVERPASS", new MapCellBlock(3, 4, 117)),  // Общий: DN4, Индив.: DN5, Итог: DN6
-        Map.entry("BASALT", new MapCellBlock(0, 1, 123))   // Общий: DT1, Индив.: DT2, Итог: DT3 (столбцы DT-DY)
+        Map.entry("BASALT", new MapCellBlock(0, 1, 123)),   // Общий: DT1, Индив.: DT2, Итог: DT3 (столбцы DT-DY)
+        Map.entry("AGENCY", new MapCellBlock(3, 4, 123)),   // Общий: DT4, Индив.: DT5, Итог: DT6
+        Map.entry("GRAIL", new MapCellBlock(0, 1, 129))   // Общий: DZ1, Индив.: DZ2, Итог: DZ6
     );
 
     static Map<String, WingmanMapCellBlock> WINGMAN_MAP_CELL_BLOCK = Map.of(
@@ -48,7 +50,9 @@ public class UpdateMapAndPlayerStatistics {
         "WHISTLE", new WingmanMapCellBlock(2, 3, 15),  // P3-S3, P4-S4
         "PALAIS",  new WingmanMapCellBlock(2, 3, 19),  // T3-V3, T4-W4
         "OVERPASS",new WingmanMapCellBlock(2, 3, 23),  // X3-Z3, X4-AA4
-        "VERTIGO", new WingmanMapCellBlock(2, 3, 27)   // AB3-AE3, AB4-AE4
+        "VERTIGO", new WingmanMapCellBlock(2, 3, 27),   // AB3-AE3, AB4-AE4
+        "BREWERY", new WingmanMapCellBlock(2, 3, 27),   // AF3-AI3, AF4-AI4
+        "DOGTOWN", new WingmanMapCellBlock(2, 3, 27)   // AJ3-AM3, AJ4-AM4
     );
 
     static Map<PlayerName, Integer> WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,

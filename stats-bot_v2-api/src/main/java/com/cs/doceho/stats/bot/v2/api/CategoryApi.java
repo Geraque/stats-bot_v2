@@ -11,49 +11,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/category")
 public interface CategoryApi {
 
-  @ApiOperation(value = "Получение топ 1 по рейтингу",
-      nickname = "getRating", tags = {"category"})
-  @GetMapping("/rating")
-  ResponseEntity<Player> getRating();
+    @ApiOperation(value = "Получение топ 1 по рейтингу",
+        nickname = "getRating", tags = {"category"})
+    @GetMapping("/rating")
+    ResponseEntity<Player> getRating();
 
-  @ApiOperation(value = "Получение топ 1 по опен киллам",
-      nickname = "getOpenKill", tags = {"category"})
-  @GetMapping("/open-kill")
-  ResponseEntity<Player> getOpenKill();
+    @ApiOperation(value = "Получение топ 1 по опен киллам",
+        nickname = "getOpenKill", tags = {"category"})
+    @GetMapping("/open-kill")
+    ResponseEntity<Player> getOpenKill();
 
-  @ApiOperation(value = "Получение топ 1 по флешкам",
-      nickname = "getFlash", tags = {"category"})
-  @GetMapping("/flash")
-  ResponseEntity<Player> getFlash();
+    @ApiOperation(value = "Получение топ 1 по флешкам",
+        nickname = "getFlash", tags = {"category"})
+    @GetMapping("/flash")
+    ResponseEntity<Player> getFlash();
 
-  @ApiOperation(value = "Получение топ 1 по размену",
-      nickname = "getTrade", tags = {"category"})
-  @GetMapping("/trade")
-  ResponseEntity<Player> getTrade();
+    @ApiOperation(value = "Получение топ 1 по размену",
+        nickname = "getTrade", tags = {"category"})
+    @GetMapping("/trade")
+    ResponseEntity<Player> getTrade();
 
-  @ApiOperation(value = "Получение топ 1 по прострелам",
-      nickname = "getWallBang", tags = {"category"})
-  @GetMapping("/wall-bang")
-  ResponseEntity<Player> getWallBang();
+    @ApiOperation(value = "Получение топ 1 по прострелам",
+        nickname = "getWallBang", tags = {"category"})
+    @GetMapping("/wall-bang")
+    ResponseEntity<Player> getWallBang();
 
-  @ApiOperation(value = "Получение топ 1 по трипл киллам",
-      nickname = "getThreeKill", tags = {"category"})
-  @GetMapping("/three-kill")
-  ResponseEntity<Player> getThreeKill();
+    @ApiOperation(value = "Получение топ 1 по трипл киллам",
+        nickname = "getThreeKill", tags = {"category"})
+    @GetMapping("/three-kill")
+    ResponseEntity<Player> getThreeKill();
 
-  @ApiOperation(value = "Получение топ 1 по квадро киллам",
-      nickname = "getFourKill", tags = {"category"})
-  @GetMapping("/four-kill")
-  ResponseEntity<Player> getFourKill();
+    @ApiOperation(value = "Получение топ 1 по квадро киллам",
+        nickname = "getFourKill", tags = {"category"})
+    @GetMapping("/four-kill")
+    ResponseEntity<Player> getFourKill();
 
-  @ApiOperation(value = "Получение топ 1 по эйсам",
-      nickname = "getAce", tags = {"category"})
-  @GetMapping("/ace")
-  ResponseEntity<Player> getAce();
+    @ApiOperation(value = "Получение топ 1 по эйсам",
+        nickname = "getAce", tags = {"category"})
+    @GetMapping("/ace")
+    ResponseEntity<Player> getAce();
 
-  @ApiOperation(value = "Получение топ 1 по клатчам",
-      nickname = "getClutches", tags = {"category"})
-  @GetMapping("/clutches")
-  ResponseEntity<Player> getClutches();
+    @ApiOperation(value = "Получение топ 1 по клатчам",
+        nickname = "getClutches", tags = {"category"})
+    @GetMapping("/clutches")
+    ResponseEntity<Player> getClutches();
 
 }

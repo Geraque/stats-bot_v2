@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum MatchType {
-  MATCH_MAKING("ММ", "matchmaking"),
+  MATCH_MAKING("ММ", "matchmaking_competitive"),
   WINGMAN("Напарники", "matchmaking_wingman"),
-  PREMIER("Премьер", "premier"),
+  PREMIER("Премьер", "matchmaking"),
   FACEIT("Faceit", "faceit");
 
   String name;

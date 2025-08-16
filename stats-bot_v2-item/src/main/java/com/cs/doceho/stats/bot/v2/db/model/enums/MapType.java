@@ -23,6 +23,10 @@ public enum MapType {
   WHISTLE("whi", "de_whistle", "Whistle"),
   PALAIS("pal", "de_palais", "Palais"),
   BASALT("bas", "de_basalt", "Basalt"),
+  BREWERY("bre", "de_brewery", "Brewery"),
+  GRAIL("gra", "de_grail", "Grail"),
+  AGENCY("age", "cs_agency", "Agency"),
+  DOGTOWN("dog", "de_dogtown", "Dogtown"),
   OVERPASS("over", "de_overpass", "Overpass");
 
   String name;

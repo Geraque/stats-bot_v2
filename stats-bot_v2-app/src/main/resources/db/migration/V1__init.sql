@@ -52,6 +52,10 @@ DO $$ BEGIN
         'WHISTLE',
         'PALAIS',
         'BASALT',
+        'BREWERY',
+        'GRAIL',
+        'AGENCY',
+        'DOGTOWN',
         'OVERPASS'
     );
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует
