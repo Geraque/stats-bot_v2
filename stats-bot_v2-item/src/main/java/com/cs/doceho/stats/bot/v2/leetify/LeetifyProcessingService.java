@@ -9,24 +9,21 @@ import com.cs.doceho.stats.bot.v2.db.model.enums.MatchType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.db.repository.MatchRepository;
 import com.cs.doceho.stats.bot.v2.excel.ChangingExcelService;
-import com.cs.doceho.stats.bot.v2.leetify.dto.ClutchData;
-import com.cs.doceho.stats.bot.v2.leetify.dto.GameDetail;
+import com.cs.doceho.stats.bot.v2.leetify.dto.*;
 import com.cs.doceho.stats.bot.v2.leetify.dto.GameHistoryResponse.GameIdWrapper;
-import com.cs.doceho.stats.bot.v2.leetify.dto.MatchKey;
-import com.cs.doceho.stats.bot.v2.leetify.dto.OpeningDuel;
-import com.cs.doceho.stats.bot.v2.leetify.dto.PlayerStat;
 import com.cs.doceho.stats.bot.v2.service.utils.DateService;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +36,7 @@ public class LeetifyProcessingService {
   DateService dateService;
   LeetifyApiClient apiClient;
   LeetifyProperties leetifyProperties;
-  static Integer LIMIT = 20;
+  static Integer LIMIT = 5;
 
   @Transactional
   public void processMatches() throws IOException {
@@ -114,12 +111,15 @@ public class LeetifyProcessingService {
             .result(calculateMapResult(gameDetail.getPlayerStats(), gameDetail.getTeamScores()))
             .build();
 
-        setType(matchItem, matchType,
+        setType(
+            matchItem,
+            matchType,
             gameDetail.getMatchmakingGameStats()
                 .stream()
                 .map(GameDetail.PlayerRank::getRank)
                 .max(Comparator.naturalOrder())
-                .get()); //TODO может не правильно работать, если ни у кого нет ранга
+                .get() //TODO может не правильно работать, если ни у кого нет ранга
+        );
         matchItem = setClutch(matchItem, clutches, stat.getSteam64Id());
         log.info("Сохранение матча: {}", matchItem);
         addedMatches.add(matchItem);
@@ -187,12 +187,12 @@ public class LeetifyProcessingService {
         .build();
   }
 
-  private void setType(MatchItem matchItem, MatchType matchType, Integer randomRank) {
+  private void setType(MatchItem matchItem, MatchType matchType, Integer highestRank) {
     matchItem.setType(matchType);
-    if (MatchType.MATCH_MAKING.equals(matchItem.getType())
-        && randomRank > 100) {
-      matchItem.setType(MatchType.PREMIER);
-    }
+//    if (MatchType.MATCH_MAKING.equals(matchItem.getType())
+//        && highestRank > 100) {
+//      matchItem.setType(MatchType.PREMIER);
+//    }
   }
 
 }
