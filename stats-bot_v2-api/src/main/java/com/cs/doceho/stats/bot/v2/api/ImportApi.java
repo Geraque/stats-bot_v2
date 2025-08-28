@@ -12,8 +12,11 @@ import java.io.IOException;
 @RequestMapping("/import")
 public interface ImportApi {
 
-    @ApiOperation(value = "Получение данных изи leetify",
-        nickname = "getFromLeetify", tags = {"import"})
+    @ApiOperation(value = "Получение данных из leetify")
     @PostMapping("/leetify")
     ResponseEntity<?> getFromLeetify() throws IOException;
+
+    @ApiOperation(value = "Получение данных из scopegg")
+    @PostMapping("/scopegg")
+    ResponseEntity<?> getFromScopeGG();
 }
