@@ -30,7 +30,7 @@ public enum MapType {
   OVERPASS("over", "de_overpass", "Overpass");
 
   String name;
-  String leetifyName;
+  String csName;
   String fullName;
 
   public static MapType fromName(String name) {
@@ -42,9 +42,9 @@ public enum MapType {
     return null;
   }
 
-  public static MapType fromLeetifyName(String name) {
+  public static MapType fromCSName(String name) {
     for (MapType matchName : MapType.values()) {
-      if (matchName.leetifyName.equals(name)) {
+      if (matchName.csName.equals(name)) {
         return matchName;
       }
     }

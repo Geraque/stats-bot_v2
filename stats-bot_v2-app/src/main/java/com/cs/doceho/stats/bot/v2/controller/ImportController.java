@@ -28,7 +28,7 @@ public class ImportController implements ImportApi {
     }
 
     @Override
-    public ResponseEntity<?> getFromScopeGG() {
+    public ResponseEntity<?> getFromScopeGG() throws IOException {
         scopeGGProcessingService.processMatches();
         return ResponseEntity.ok().build();
     }

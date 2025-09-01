@@ -1,5 +1,6 @@
-package com.cs.doceho.stats.bot.v2.scopegg;
+package com.cs.doceho.stats.bot.v2.scopegg.dto;
 
+import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,6 @@ import lombok.AccessLevel;
 public class ScopeGGMatch {
     String id;          // из MatchID
     String finishedAt;  // из MatchTime (строка)
+    MatchResult result;
 }
 

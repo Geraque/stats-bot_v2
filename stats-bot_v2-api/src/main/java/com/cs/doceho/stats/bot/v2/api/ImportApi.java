@@ -18,5 +18,5 @@ public interface ImportApi {
 
     @ApiOperation(value = "Получение данных из scopegg")
     @PostMapping("/scopegg")
-    ResponseEntity<?> getFromScopeGG();
+    ResponseEntity<?> getFromScopeGG() throws IOException;
 }
