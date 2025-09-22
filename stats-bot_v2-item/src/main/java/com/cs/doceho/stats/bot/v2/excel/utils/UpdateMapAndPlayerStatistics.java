@@ -89,6 +89,8 @@ public class UpdateMapAndPlayerStatistics {
             sheetName = "2025 mm";
         } else if (match.getType() == MatchType.PREMIER) {
             sheetName = "Premier 2025";
+        } else if (match.getType() == MatchType.FACEIT) {
+            sheetName = "Faceit 2025";
         }
         if (sheetName == null) {
             return;

@@ -12,7 +12,7 @@ public enum MatchType {
     MATCH_MAKING("ММ", "matchmaking_competitive", "competitive"),
     WINGMAN("Напарники", "matchmaking_wingman", "scrimcomp2v2"),
     PREMIER("Премьер", "matchmaking", "premier"),
-    FACEIT("Faceit", "faceit", "faceit");
+    FACEIT("Faceit", "faceit", "");
 
     String name;
     String leetifyName;
