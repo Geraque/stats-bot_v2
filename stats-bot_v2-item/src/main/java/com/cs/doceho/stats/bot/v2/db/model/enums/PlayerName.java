@@ -13,7 +13,7 @@ import java.util.List;
 public enum PlayerName {
     DESMOND("Desmond\uD83C\uDFB4", List.of("76561198113198660", "76561198815456644", "76561198093023765"), List.of("152932932", "132758037", "855190916")),
     GLOXINIA("Gloxinia", List.of("76561198182310891"), List.of("222045163")),
-    BLACK_VISION("BlackVision", List.of("76561198342639103"), List.of("382373375")),
+    BLACK_VISION("BlackVision", List.of("76561198342639103"), List.of("382373375", "822489231")),
     KOPFIRE("Kopfire", List.of("76561198154347514"), List.of("заменить")),
     B4ONE("B4one", List.of("76561198158794811"), List.of("заменить")),
     NEKIT("221w33", List.of("76561198096869637"), List.of("заменить")),

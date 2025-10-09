@@ -27,6 +27,9 @@ public enum MapType {
   GRAIL("gra", "de_grail", "Grail"),
   AGENCY("age", "cs_agency", "Agency"),
   DOGTOWN("dog", "de_dogtown", "Dogtown"),
+  ROOFTOP("roof", "de_rooftop", "Rooftop"),
+  GOLDEN("gold", "de_golden", "Golden"),
+  PALACIO("pala", "de_palacio", "Palacio"),
   OVERPASS("over", "de_overpass", "Overpass");
 
   String name;
