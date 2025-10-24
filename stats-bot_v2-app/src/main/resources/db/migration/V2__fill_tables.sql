@@ -3025,3 +3025,61 @@ INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,th
 	 ('dbed5fc6-122d-48a2-96f4-4c215d594910'::uuid,'DESMOND'::public."player_names",'2025-10-17 19:45:56.000',1.0,0,1,2,0,0,0,2,0,1,0,0,0,0,'PREMIER'::public."match_types",'OVERPASS'::public."map_types",'LOSE'::public."match_results"),
 	 ('2f136bbc-f93d-4da9-9dfb-57ee9196fca7'::uuid,'DESMOND'::public."player_names",'2025-10-17 19:29:29.000',1.95,1,9,0,0,0,0,1,1,0,0,0,0,0,'WINGMAN'::public."match_types",'INFERNO'::public."map_types",'WIN'::public."match_results"),
 	 ('addad7d9-c31f-40e9-8a20-b1f1fdd9704d'::uuid,'BLACK_VISION'::public."player_names",'2025-10-17 19:29:29.000',0.87,0,1,0,0,0,0,0,0,0,0,0,0,0,'WINGMAN'::public."match_types",'INFERNO'::public."map_types",'WIN'::public."match_results");
+
+INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('3b8bbec4-8050-40e4-9412-bde904627ea3','GLOXINIA','2025-10-23 23:10:00.000',1.19,2,1,0,0,0,0,2,0,0,0,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('bb3d3a4f-a37d-4af5-8bdf-f49dd8b34685','DESMOND','2025-10-23 23:10:00.000',1.24,0,1,0,0,0,0,2,0,0,0,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('4353a1fd-3a3c-4cf0-86fb-621c93fbc6be','BLACK_VISION','2025-10-23 23:10:00.000',1.34,0,0,0,0,0,0,4,1,0,1,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('c33b9228-9356-4391-badb-da2edc58bcb7','DESMOND','2025-10-23 22:34:55.000',1.0,1,2,0,0,0,0,3,1,0,0,0,0,0,'MATCH_MAKING','ANUBIS','WIN'),
+	 ('a98b9462-d6e8-47ad-ba84-af49b8e85baf','GLOXINIA','2025-10-23 22:34:55.000',1.41,4,2,1,0,0,0,3,0,1,0,0,0,0,'MATCH_MAKING','ANUBIS','WIN'),
+	 ('89b4a6e8-8e07-44ef-92c4-32837c6ea2a1','BLACK_VISION','2025-10-23 22:34:55.000',1.55,0,0,0,1,0,0,4,2,0,0,0,0,0,'MATCH_MAKING','ANUBIS','WIN'),
+	 ('36712b6d-f76c-4fa4-8cef-ad52a905c8cf','DESMOND','2025-10-23 22:04:32.000',1.63,1,4,2,0,0,0,0,0,0,0,0,0,0,'MATCH_MAKING','VERTIGO','WIN'),
+	 ('c29e52aa-7682-4d3f-a6f6-281d07459b55','GLOXINIA','2025-10-23 22:04:32.000',1.3,0,2,2,0,0,2,4,0,0,0,0,0,0,'MATCH_MAKING','VERTIGO','WIN'),
+	 ('455ef42a-909b-465b-8c7a-16ca726fcf99','BLACK_VISION','2025-10-23 22:04:32.000',0.96,0,2,0,0,0,0,1,1,0,0,0,0,0,'MATCH_MAKING','VERTIGO','WIN'),
+	 ('209bae13-296d-4b1a-ae86-060ed974064c','GLOXINIA','2025-10-23 21:33:21.000',1.39,3,3,1,0,0,0,2,0,1,0,0,0,0,'MATCH_MAKING','OFFICE','WIN');
+INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('682b56bf-d24f-4c0e-a1d5-4b5e4ea61c03','DESMOND','2025-10-23 21:33:21.000',1.29,2,5,1,0,0,0,2,0,1,0,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('6f3be583-130e-46c2-bb62-f373f4b6c34d','BLACK_VISION','2025-10-23 21:33:21.000',1.16,0,0,0,0,0,0,2,0,2,1,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('62392925-0665-4098-a2ca-8641e91e0f9f','GLOXINIA','2025-10-23 21:09:02.000',1.19,0,2,0,0,0,0,2,1,1,0,0,0,0,'PREMIER','DUST_II','LOSE'),
+	 ('3774a7c0-deb4-4819-b83b-5eca00309894','DESMOND','2025-10-23 21:09:02.000',0.97,1,2,1,0,0,0,2,1,0,0,0,0,0,'PREMIER','DUST_II','LOSE'),
+	 ('dbe07806-c8eb-42bd-a004-8ee1b74ead20','BLACK_VISION','2025-10-23 21:09:02.000',0.64,0,0,0,0,0,0,2,0,0,0,0,0,0,'PREMIER','DUST_II','LOSE'),
+	 ('1cd3de57-7e44-4f34-a635-0b8528df3d25','DESMOND','2025-10-23 20:37:19.000',1.17,0,4,1,0,0,0,2,0,0,0,0,0,0,'PREMIER','DUST_II','WIN'),
+	 ('75f46a70-1c8b-481a-b511-dcc077b8dbe2','BLACK_VISION','2025-10-23 20:37:19.000',1.67,1,0,2,0,0,0,4,3,1,0,0,0,0,'PREMIER','DUST_II','WIN'),
+	 ('60de9b30-2cf0-480c-aefd-8ba0402ce244','GLOXINIA','2025-10-23 20:37:19.000',1.52,2,3,2,0,0,0,2,1,0,0,0,0,0,'PREMIER','DUST_II','WIN'),
+	 ('66a62def-c95c-46e5-8191-0dae889d8b42','GLOXINIA','2025-10-23 20:15:30.000',0.5,0,0,0,0,0,0,1,0,0,0,0,0,0,'MATCH_MAKING','NUKE','LOSE'),
+	 ('1969076a-ab66-4ddc-ac3a-8ae88118edbb','BLACK_VISION','2025-10-23 20:15:30.000',0.52,0,1,0,0,0,0,1,0,0,0,0,0,0,'MATCH_MAKING','NUKE','LOSE');
+INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('3788686c-eb62-4562-814c-1fe97a78a0d2','DESMOND','2025-10-23 20:15:30.000',0.92,0,1,1,0,0,0,3,0,0,0,0,0,0,'MATCH_MAKING','NUKE','LOSE'),
+	 ('5bcf71d2-66f4-4689-bcd1-d7429e30a301','DESMOND','2025-10-23 18:28:32.000',1.16,0,3,2,0,0,0,2,0,1,0,0,0,0,'PREMIER','TRAIN','LOSE'),
+	 ('00de4683-6dbc-4d82-9f98-550c4d4a4760','GLOXINIA','2025-10-23 18:28:32.000',1.04,0,3,1,0,0,0,6,0,1,0,0,0,0,'PREMIER','TRAIN','LOSE'),
+	 ('39c4e205-6a31-40f4-b4e8-9d7b9e60c237','BLACK_VISION','2025-10-23 18:28:32.000',0.73,0,0,1,0,0,1,3,0,2,0,0,0,0,'PREMIER','TRAIN','LOSE'),
+	 ('ec6166ca-5b5a-4793-befd-721e451a2cdc','GLOXINIA','2025-10-23 18:10:15.000',1.27,0,0,0,0,0,0,4,1,0,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('e2cbd583-73de-4dad-aa51-f34238831385','BLACK_VISION','2025-10-23 18:10:15.000',0.87,0,1,0,0,0,0,0,0,0,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('3763c835-0a15-4f42-8e82-970153186002','DESMOND','2025-10-23 18:10:15.000',1.42,0,0,0,0,0,0,3,0,1,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('fa421ee4-7d32-4c70-97d8-c8f14e790a7a','GLOXINIA','2025-10-23 17:33:56.000',1.39,1,2,0,1,0,0,1,1,1,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('37ec8c78-9751-4d8d-bdcd-ccf12120661d','BLACK_VISION','2025-10-23 17:33:56.000',0.9,0,1,1,0,0,1,4,2,1,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('3e9daa72-2dbe-4cbf-9a09-7b547dc798b7','DESMOND','2025-10-23 17:33:56.000',1.23,2,3,0,1,0,0,4,1,0,0,0,0,0,'PREMIER','MIRAGE','WIN');
+INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('1dff0b39-bb4a-49bb-909c-11b839ef4a8b','DESMOND','2025-10-23 16:56:05.000',1.61,1,3,1,1,0,0,2,1,0,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('189ac576-cae5-43be-b8b8-b28b908d9ea5','BLACK_VISION','2025-10-23 16:56:05.000',1.16,0,2,0,0,0,0,6,2,0,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('2760dcba-782f-44ba-a8ca-a2aa188c0547','GLOXINIA','2025-10-23 16:56:05.000',0.79,0,1,0,0,0,1,1,1,1,0,0,0,0,'PREMIER','MIRAGE','WIN'),
+	 ('c28e994d-c017-4435-b9de-8f030c98d9ea','BLACK_VISION','2025-10-23 16:18:14.000',1.29,1,3,2,0,0,0,3,0,1,0,0,0,0,'PREMIER','DUST_II','WIN'),
+	 ('1f6ce5ea-3efe-4419-b945-999a5346188a','GLOXINIA','2025-10-23 16:18:14.000',1.7,7,3,1,0,0,2,2,2,1,1,0,0,0,'PREMIER','DUST_II','WIN'),
+	 ('f141ce57-83cd-4cc3-9fff-18786253de5a','DESMOND','2025-10-23 16:18:14.000',0.98,0,2,0,0,0,1,1,1,0,0,0,0,0,'PREMIER','DUST_II','WIN'),
+	 ('d4a120af-c003-4c01-a579-e4bbc43e3e45','BLACK_VISION','2025-10-22 15:01:31.000',1.48,0,2,1,0,0,0,5,1,0,0,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('fff7912d-f0cb-48ca-ad63-638a5acd71a3','GLOXINIA','2025-10-22 15:01:31.000',1.3,4,3,2,0,0,0,2,0,1,0,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('ed63d450-9799-4027-8032-ba0788e4b4c7','DESMOND','2025-10-22 15:01:31.000',1.06,0,1,1,0,0,0,3,0,0,1,0,0,0,'MATCH_MAKING','OFFICE','WIN'),
+	 ('089918e6-d718-409c-93fe-988a450f7c86','DESMOND','2025-10-22 14:26:09.000',1.24,1,4,0,0,0,0,0,1,0,0,0,0,0,'PREMIER','INFERNO','WIN');
+INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('6a9a7a05-f4e8-44a0-ad47-c6d56363a8cb','GLOXINIA','2025-10-22 14:26:09.000',1.26,2,3,0,0,0,2,2,0,0,0,0,0,0,'PREMIER','INFERNO','WIN'),
+	 ('43c37951-cc26-4a3b-988c-a8a96cb635b3','BLACK_VISION','2025-10-22 14:26:09.000',1.64,0,1,2,0,0,0,2,1,0,1,0,0,0,'PREMIER','INFERNO','WIN'),
+	 ('78a69990-dbdd-4380-b26a-43d217f2c229','BLACK_VISION','2025-10-22 13:41:44.000',1.0,0,2,1,0,0,0,1,0,0,0,0,0,0,'PREMIER','OVERPASS','LOSE'),
+	 ('be82405b-32d1-4914-a93f-211217d4ec62','GLOXINIA','2025-10-22 13:41:44.000',1.65,0,3,3,1,0,1,5,0,0,0,0,0,0,'PREMIER','OVERPASS','LOSE'),
+	 ('1473a380-f9b5-477e-b102-0ef8da9c0808','DESMOND','2025-10-22 13:41:44.000',0.97,0,1,1,0,0,0,3,0,0,0,0,0,0,'PREMIER','OVERPASS','LOSE'),
+	 ('7e17bb4d-f966-49c0-96d3-e837899d26c6','GLOXINIA','2025-10-22 12:50:11.000',1.26,1,2,1,0,0,0,4,1,0,0,0,0,0,'MATCH_MAKING','OFFICE','LOSE'),
+	 ('889115b8-c383-40f8-8b85-41f55fd1ec6e','BLACK_VISION','2025-10-22 12:50:11.000',1.19,2,2,1,1,0,0,2,1,0,0,1,0,0,'MATCH_MAKING','OFFICE','LOSE'),
+	 ('54aa2a15-a3e9-456c-92fb-21d5293463c7','DESMOND','2025-10-22 12:50:11.000',1.02,0,6,1,0,0,0,1,0,0,0,0,0,0,'MATCH_MAKING','OFFICE','LOSE'),
+	 ('0a532b51-5108-4a39-9130-90a892f37c23','DESMOND','2025-10-22 12:10:26.000',0.87,2,3,1,0,0,0,4,0,0,0,0,0,0,'PREMIER','DUST_II','LOSE'),
+	 ('7c9e9310-e342-4cf4-80c6-22ba7609fbd8','GLOXINIA','2025-10-22 12:10:26.000',0.76,1,1,1,0,0,0,2,0,0,0,0,0,0,'PREMIER','DUST_II','LOSE');
+INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('f4b7356a-be17-427b-83c2-062fad25490a','BLACK_VISION','2025-10-22 12:10:26.000',1.2,1,2,2,0,0,0,6,0,1,0,0,0,0,'PREMIER','DUST_II','LOSE');
