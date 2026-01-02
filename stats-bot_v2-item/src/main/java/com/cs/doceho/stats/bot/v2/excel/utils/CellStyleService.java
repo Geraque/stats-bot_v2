@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class CellStyleService {
         new byte[]{(byte) 255, (byte) 255, (byte) 204}, // P
         new byte[]{(byte) 255, (byte) 235, (byte) 156}, // U
         new byte[]{(byte) 255, (byte) 255, (byte) 204}, // AC
-        new byte[]{(byte) 68,  (byte) 114, (byte) 196},  // AH
+        new byte[]{(byte) 68, (byte) 114, (byte) 196},  // AH
         new byte[]{(byte) 255, (byte) 255, (byte) 204}, // AP
         new byte[]{(byte) 255, (byte) 199, (byte) 206}, // AU
         new byte[]{(byte) 255, (byte) 255, (byte) 204}, // BC
@@ -40,7 +39,7 @@ public class CellStyleService {
     }
 
     public void applyColorStyle(Workbook workbook, Row row) {
-        int[] styleColumns = new int[] {7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80};
+        int[] styleColumns = new int[]{5, 13, 18, 26, 31, 39, 44, 52, 57, 65, 70, 78};
         for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
             applyColorStyleCell(workbook, row, MATCH_ROW_COLORS.get(i), styleColumns[i]);
         }

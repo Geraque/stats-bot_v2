@@ -25,10 +25,10 @@ public class MatchGroupingService {
   static DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
   static DateTimeFormatter fullFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy'T'HH:mm:ss");
 
-  static Map<MatchType, String> SHEET_NAME_MAP = Map.of(MatchType.WINGMAN, "2х2 2025",
-      MatchType.MATCH_MAKING, "2025 mm",
-      MatchType.PREMIER, "Premier 2025",
-      MatchType.FACEIT, "Faceit 2025");
+  static Map<MatchType, String> SHEET_NAME_MAP = Map.of(MatchType.WINGMAN, "2х2 2026",
+      MatchType.MATCH_MAKING, "2026 mm",
+      MatchType.PREMIER, "Premier 2026",
+      MatchType.FACEIT, "Faceit 2026");
 
   public Map<String, Map<String, Map<String, Map<PlayerName, MatchItem>>>> groupMatches(
       List<MatchItem> matchList) {

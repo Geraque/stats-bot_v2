@@ -30,70 +30,49 @@ public class UpdateMapAndPlayerStatistics {
         Map.entry("DUST", new MapCellBlock(0, 1, 87)),   // Общий: CJ1, Индив.: CJ2, Итог: CJ3 (столбцы CJ-CO)
         Map.entry("ANCIENT", new MapCellBlock(3, 4, 87)),   // Общий: CJ4, Индив.: CJ5, Итог: CJ6
         Map.entry("MIRAGE", new MapCellBlock(0, 1, 93)),   // Общий: CP1, Индив.: CP2, Итог: CP3 (столбцы CP-CU)
-        Map.entry("OFFICE", new MapCellBlock(3, 4, 93)),   // Общий: CP4, Индив.: CP5, Итог: CP6
+        Map.entry("VERTIGO", new MapCellBlock(3, 4, 93)),   // Общий: CP4, Индив.: CP5, Итог: CP6
         Map.entry("INFERNO", new MapCellBlock(0, 1, 99)),   // Общий: CV1, Индив.: CV2, Итог: CV3 (столбцы CV-DA)
-        Map.entry("VERTIGO", new MapCellBlock(3, 4, 99)),   // Общий: CV4, Индив.: CV5, Итог: CV6
+        Map.entry("ANUBIS", new MapCellBlock(3, 4, 99)),   // Общий: CV4, Индив.: CV5, Итог: CV6
         Map.entry("TRAIN", new MapCellBlock(0, 1, 105)),  // Общий: DB1, Индив.: DB2, Итог: DB3 (столбцы DB-DG)
-        Map.entry("ANUBIS", new MapCellBlock(3, 4, 105)),  // Общий: DB4, Индив.: DB5, Итог: DB6
-        Map.entry("NUKE", new MapCellBlock(0, 1, 111)),  // Общий: DH1, Индив.: DH2, Итог: DH3 (столбцы DH-DM)
-        Map.entry("ITALY", new MapCellBlock(3, 4, 111)),  // Общий: DH4, Индив.: DH5, Итог: DH6
-        Map.entry("EDIN", new MapCellBlock(0, 1, 117)),  // Общий: DN1, Индив.: DN2, Итог: DN3 (столбцы DN-DS)
-        Map.entry("OVERPASS", new MapCellBlock(3, 4, 117)),  // Общий: DN4, Индив.: DN5, Итог: DN6
-        Map.entry("BASALT", new MapCellBlock(0, 1, 123)),   // Общий: DT1, Индив.: DT2, Итог: DT3 (столбцы DT-DY)
-        Map.entry("AGENCY", new MapCellBlock(3, 4, 123)),   // Общий: DT4, Индив.: DT5, Итог: DT6
-        Map.entry("GRAIL", new MapCellBlock(0, 1, 129)),   // Общий: DZ1, Индив.: DZ2, Итог: DZ6
-        Map.entry("GOLDEN", new MapCellBlock(3, 4, 129)),
-        Map.entry("PALACIO", new MapCellBlock(0, 1, 135))
+        Map.entry("OVERPASS", new MapCellBlock(3, 4, 105)),  // Общий: DB4, Индив.: DB5, Итог: DB6
+        Map.entry("NUKE", new MapCellBlock(0, 1, 111))  // Общий: DH1, Индив.: DH2, Итог: DH3 (столбцы DH-DM)
     );
 
     static Map<String, WingmanMapCellBlock> WINGMAN_MAP_CELL_BLOCK = Map.of(
         "INFERNO", new WingmanMapCellBlock(2, 3, 7),   // H3-K3, H4-K4
         "NUKE",    new WingmanMapCellBlock(2, 3, 11),  // L3-O3, L4-O4
-        "WHISTLE", new WingmanMapCellBlock(2, 3, 15),  // P3-S3, P4-S4
-        "PALAIS",  new WingmanMapCellBlock(2, 3, 19),  // T3-V3, T4-W4
-        "OVERPASS",new WingmanMapCellBlock(2, 3, 23),  // X3-Z3, X4-AA4
-        "VERTIGO", new WingmanMapCellBlock(2, 3, 27),   // AB3-AE3, AB4-AE4
-        "BREWERY", new WingmanMapCellBlock(2, 3, 31),   // AF3-AI3, AF4-AI4
-        "DOGTOWN", new WingmanMapCellBlock(2, 3, 35),   // AJ3-AM3, AJ4-AM4
-        "ROOFTOP", new WingmanMapCellBlock(2, 3, 39)
+        "OVERPASS",new WingmanMapCellBlock(2, 3, 15),  // X3-Z3, X4-AA4
+        "VERTIGO", new WingmanMapCellBlock(2, 3, 19)   // AB3-AE3, AB4-AE4
     );
 
     static Map<PlayerName, Integer> WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
         PlayerName.BLACK_VISION, 2,
-        PlayerName.GLOXINIA, 3,
-        PlayerName.WOLF_SMXL, 4);
+        PlayerName.GLOXINIA, 3);
 
     static Map<PlayerName, Integer> NON_WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
         PlayerName.BLACK_VISION, 2,
-        PlayerName.GLOXINIA, 3,
-        PlayerName.WOLF_SMXL, 4,
-        PlayerName.WESDIA, 5,
-        PlayerName.CHELIKOPUKICH, 6);
+        PlayerName.GLOXINIA, 3);
 
     static Map<PlayerName, Integer> PLAYER_OFFSET = Map.of(
         PlayerName.DESMOND, 0,          // первый столбец блока
         PlayerName.BLACK_VISION, 1,
-        PlayerName.GLOXINIA, 2,
-        PlayerName.WOLF_SMXL, 3,
-        PlayerName.WESDIA, 4,
-        PlayerName.CHELIKOPUKICH, 5
+        PlayerName.GLOXINIA, 2
     );
     static Map<PlayerName, Integer> PLAYER_OFFSET_WINGMAN = Map.of(
         PlayerName.DESMOND, 0,
         PlayerName.BLACK_VISION, 1,
-        PlayerName.GLOXINIA, 2,
-        PlayerName.WOLF_SMXL, 3
+        PlayerName.GLOXINIA, 2
     );
 
     public void matchmaking(Workbook workbook, MatchItem match, int matchRowIndex) {
         // Определение листа по типу матча (обновление для MATCH_MAKING и PREMIER)
         String sheetName = null;
         if (match.getType() == MatchType.MATCH_MAKING) {
-            sheetName = "2025 mm";
+            sheetName = "2026 mm";
         } else if (match.getType() == MatchType.PREMIER) {
-            sheetName = "Premier 2025";
+            sheetName = "Premier 2026";
         } else if (match.getType() == MatchType.FACEIT) {
-            sheetName = "Faceit 2025";
+            sheetName = "Faceit 2026";
         }
         if (sheetName == null) {
             return;
@@ -196,7 +175,7 @@ public class UpdateMapAndPlayerStatistics {
 
     public void wingman(Workbook workbook, MatchItem match, int matchRowIndex) {
         // Определение листа для WINGMAN
-        String sheetName = "2х2 2025";
+        String sheetName = "2х2 2026";
         Sheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
             return;
