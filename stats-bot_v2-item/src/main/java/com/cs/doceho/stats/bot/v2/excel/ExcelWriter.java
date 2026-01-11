@@ -39,19 +39,17 @@ public class ExcelWriter {
   static Map<PlayerName, Integer> WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
       PlayerName.BLACK_VISION, 2,
       PlayerName.GLOXINIA, 3,
-      PlayerName.WOLF_SMXL, 4);
+      PlayerName.N1KEHO, 4);
   static Map<PlayerName, Integer> NON_WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
       PlayerName.BLACK_VISION, 2,
       PlayerName.GLOXINIA, 3,
-      PlayerName.WOLF_SMXL, 4,
-      PlayerName.WESDIA, 5,
-      PlayerName.CHELIKOPUKICH, 6);
+      PlayerName.CHELIKOPUKICH, 4,
+      PlayerName.N1KEHO, 5);
   static Map<PlayerName, Integer> NON_WINGMAN_STATS_START_COLUMN_MAP = Map.of(PlayerName.DESMOND, 7,
       PlayerName.BLACK_VISION, 20,
       PlayerName.GLOXINIA, 33,
-      PlayerName.WOLF_SMXL, 46,
-      PlayerName.WESDIA, 59,
-      PlayerName.CHELIKOPUKICH, 72);
+      PlayerName.CHELIKOPUKICH, 46,
+      PlayerName.N1KEHO, 59);
 
 
   public XSSFWorkbook readWorkbook(String filePath) throws IOException {

@@ -42,26 +42,39 @@ public class UpdateMapAndPlayerStatistics {
         "INFERNO", new WingmanMapCellBlock(2, 3, 7),   // H3-K3, H4-K4
         "NUKE",    new WingmanMapCellBlock(2, 3, 11),  // L3-O3, L4-O4
         "OVERPASS",new WingmanMapCellBlock(2, 3, 15),  // X3-Z3, X4-AA4
-        "VERTIGO", new WingmanMapCellBlock(2, 3, 19)   // AB3-AE3, AB4-AE4
+        "VERTIGO", new WingmanMapCellBlock(2, 3, 19),   // AB3-AE3, AB4-AE4
+        "ROOFTOP", new WingmanMapCellBlock(2, 3, 23)
     );
 
-    static Map<PlayerName, Integer> WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
-        PlayerName.BLACK_VISION, 2,
-        PlayerName.GLOXINIA, 3);
 
-    static Map<PlayerName, Integer> NON_WINGMAN_RATING_COLUMN_MAP = Map.of(PlayerName.DESMOND, 1,
+    static Map<PlayerName, Integer> NON_WINGMAN_RATING_COLUMN_MAP = Map.of(
+        PlayerName.DESMOND, 1,
         PlayerName.BLACK_VISION, 2,
-        PlayerName.GLOXINIA, 3);
+        PlayerName.GLOXINIA, 3,
+        PlayerName.CHELIKOPUKICH, 4,
+        PlayerName.N1KEHO, 5
+    );
 
     static Map<PlayerName, Integer> PLAYER_OFFSET = Map.of(
         PlayerName.DESMOND, 0,          // первый столбец блока
         PlayerName.BLACK_VISION, 1,
-        PlayerName.GLOXINIA, 2
+        PlayerName.GLOXINIA, 2,
+        PlayerName.CHELIKOPUKICH, 3,
+        PlayerName.N1KEHO, 4
     );
+
+    static Map<PlayerName, Integer> WINGMAN_RATING_COLUMN_MAP = Map.of(
+        PlayerName.DESMOND, 1,
+        PlayerName.BLACK_VISION, 2,
+        PlayerName.GLOXINIA, 3,
+        PlayerName.N1KEHO, 4
+    );
+
     static Map<PlayerName, Integer> PLAYER_OFFSET_WINGMAN = Map.of(
         PlayerName.DESMOND, 0,
         PlayerName.BLACK_VISION, 1,
-        PlayerName.GLOXINIA, 2
+        PlayerName.GLOXINIA, 2,
+        PlayerName.N1KEHO, 3
     );
 
     public void matchmaking(Workbook workbook, MatchItem match, int matchRowIndex) {

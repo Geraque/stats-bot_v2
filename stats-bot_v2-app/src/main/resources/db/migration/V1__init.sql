@@ -10,7 +10,8 @@ DO $$ BEGIN
         'MVFOREVER01',
         'WOLF_SMXL',
         'WESDIA',
-        'CHELIKOPUKICH'
+        'CHELIKOPUKICH',
+        'N1KEHO'
 
     );
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует

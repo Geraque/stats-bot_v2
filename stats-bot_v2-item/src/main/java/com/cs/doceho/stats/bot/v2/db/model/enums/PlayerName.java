@@ -19,8 +19,9 @@ public enum PlayerName {
     NEKIT("221w33", List.of("76561198096869637"), List.of("заменить")),
     MVFOREVER01("MVforever01", List.of("notFound"), List.of("заменить")),
     WOLF_SMXL("Wolf_SMXL", List.of("76561198341666571"), List.of("заменить")),
-    CHELIKOPUKICH("Chelicopukich", List.of("76561198110403185"), List.of("заменить")),
-    WESDIA("Wesdia", List.of("76561198330586281"), List.of("заменить"));
+    CHELIKOPUKICH("Chelicopukich", List.of("76561198110403185"), List.of("150137457")),
+    WESDIA("Wesdia", List.of("76561198330586281"), List.of("заменить")),
+    N1KEHO("N1keho", List.of("76561198156487754"), List.of("196222026"));
 
     String name;
     List<String> ids;
