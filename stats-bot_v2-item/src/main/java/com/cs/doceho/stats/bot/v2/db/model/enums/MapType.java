@@ -30,7 +30,9 @@ public enum MapType {
   ROOFTOP("roof", "de_rooftop", "Rooftop"),
   GOLDEN("gold", "de_golden", "Golden"),
   PALACIO("pala", "de_palacio", "Palacio"),
-  OVERPASS("over", "de_overpass", "Overpass");
+  OVERPASS("over", "de_overpass", "Overpass"),
+  SANCTUM("san", "de_sanctum", "SANCTUM"),
+  POSEIDON("pos", "de_poseidon", "POSEIDON");
 
   String name;
   String csName;

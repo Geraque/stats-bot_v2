@@ -43,7 +43,9 @@ public class UpdateMapAndPlayerStatistics {
         "NUKE",    new WingmanMapCellBlock(2, 3, 11),  // L3-O3, L4-O4
         "OVERPASS",new WingmanMapCellBlock(2, 3, 15),  // X3-Z3, X4-AA4
         "VERTIGO", new WingmanMapCellBlock(2, 3, 19),   // AB3-AE3, AB4-AE4
-        "ROOFTOP", new WingmanMapCellBlock(2, 3, 23)
+        "ROOFTOP", new WingmanMapCellBlock(2, 3, 23),
+        "POSEIDON", new WingmanMapCellBlock(2, 3, 27),
+        "SANCTUM", new WingmanMapCellBlock(2, 3, 31)
     );
 
 
