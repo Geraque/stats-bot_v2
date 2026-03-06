@@ -1,6 +1,7 @@
 package com.cs.doceho.stats.bot.v2.scopegg.dto;
 
 import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
+import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GameInfo {
     MapType mapName;
+    MatchResult result;
     long finishedAt;
     String dataSource;
     List<PlayerStat> playerStats;

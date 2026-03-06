@@ -29,7 +29,13 @@ public class ImportController implements ImportApi {
 
     @Override
     public ResponseEntity<?> getFromScopeGG() throws IOException {
-        scopeGGProcessingService.processMatches();
+        scopeGGProcessingService.addLastMatches();
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<?> getMatch(String id) throws IOException {
+        scopeGGProcessingService.addMatch(id);
         return ResponseEntity.ok().build();
     }
 }

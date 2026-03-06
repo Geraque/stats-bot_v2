@@ -1,9 +1,8 @@
 package com.cs.doceho.stats.bot.v2.scopegg;
 
-// ScopeGGApi.java
-
 import com.cs.doceho.stats.bot.v2.db.model.enums.MapType;
 import com.cs.doceho.stats.bot.v2.db.model.enums.MatchResult;
+import com.cs.doceho.stats.bot.v2.db.model.enums.PlayerName;
 import com.cs.doceho.stats.bot.v2.scopegg.dto.GameInfo;
 import com.cs.doceho.stats.bot.v2.scopegg.dto.PlayerStat;
 import com.cs.doceho.stats.bot.v2.scopegg.dto.ScopeGGMatch;
@@ -33,17 +32,12 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ScopeGGApi {
 
-    static String URL = "https://app.scope.gg/api/matches/getMyMatches";
-    static String URL_REVIEW = "https://app.scope.gg/api/matches/getMatchReviewDataBatch";
+    static String HISTORY_URL = "https://app.scope.gg/api/matches/getMyMatches";
+    static String MATCH_URL = "https://app.scope.gg/api/matches/getMatchReviewDataBatch";
 
     RestTemplate restTemplate = new RestTemplate();
     ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * Выполняет POST-запрос на /getMyMatches с заголовком Cookie и возвращает историю матчей.
-     *
-     * @param cookie значение заголовка Cookie (например, "sid=...; Path=/; ...")
-     */
     @SneakyThrows
     public List<ScopeGGMatch> getHistory(String cookie) {
         HttpHeaders headers = new HttpHeaders();
@@ -69,9 +63,8 @@ public class ScopeGGApi {
 
         ResponseEntity<String> resp;
         try {
-            resp = restTemplate.exchange(URL, HttpMethod.POST, entity, String.class);
+            resp = restTemplate.exchange(HISTORY_URL, HttpMethod.POST, entity, String.class);
         } catch (RestClientResponseException e) {
-            // Прозрачная ошибка HTTP
             throw new IOException("HTTP " + e.getRawStatusCode() + " " + e.getStatusText() + ": " + e.getResponseBodyAsString(), e);
         }
 
@@ -79,46 +72,22 @@ public class ScopeGGApi {
             return Collections.emptyList();
         }
 
-        // Топ-уровнево ответ — массив объектов с полями MatchID, MatchTime
-        List<RawMatch> raw = mapper.readValue(resp.getBody(), new TypeReference<>() {
-        });
+        List<RawMatch> raw = mapper.readValue(resp.getBody(), new TypeReference<>() {});
         List<ScopeGGMatch> out = new ArrayList<>(raw.size());
         for (RawMatch r : raw) {
             String id = r.matchID != null ? r.matchID : "";
-            String finishedAt = String.valueOf(r.matchTime); // приводится к строке по требованию
-            boolean hasWon = false;
-            boolean myResult = false;
-            for (RawMatch.TeamInfos team : r.teams) {
-                if (team.isUserTeam) {
-                    myResult = team.won;
-                }
-                if (team.won) {
-                    hasWon = true;
-                }
-            }
-            MatchResult result;
-            if (!hasWon) result = MatchResult.DRAW;
-            else if (myResult) result = MatchResult.WIN;
-            else result = MatchResult.LOSE;
-
-            out.add(new ScopeGGMatch(id, finishedAt, result));
+            String finishedAt = String.valueOf(r.matchTime);
+            out.add(new ScopeGGMatch(id, finishedAt));
         }
         return out;
     }
 
-    /**
-     * Получает агрегированную информацию по матчу и маппит её в GameInfo.
-     * В payload постоянны blocks и steamAccountId, варьируется только matchId.
-     * Для авторизации повторно передаётся cookie (как и в getHistory()).
-     */
     @SneakyThrows
     public GameInfo getGameInfo(String matchId) {
-        // 1) Заголовки
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // 2) Тело запроса (всё постоянно, кроме matchId)
         ObjectNode body = mapper.createObjectNode();
         body.put("matchId", matchId);
         ArrayNode blocks = body.putArray("blocks");
@@ -141,10 +110,9 @@ public class ScopeGGApi {
 
         HttpEntity<String> entity = new HttpEntity<>(mapper.writeValueAsString(body), headers);
 
-        // 3) Вызов
         ResponseEntity<String> resp;
         try {
-            resp = restTemplate.exchange(URL_REVIEW, HttpMethod.POST, entity, String.class);
+            resp = restTemplate.exchange(MATCH_URL, HttpMethod.POST, entity, String.class);
         } catch (RestClientResponseException e) {
             throw new IOException("HTTP " + e.getRawStatusCode() + " " + e.getStatusText() + ": " + e.getResponseBodyAsString(), e);
         }
@@ -153,23 +121,19 @@ public class ScopeGGApi {
             return null;
         }
 
-        // 4) Парсинг JSON
         JsonNode root = mapper.readTree(resp.getBody());
 
-        // map.csgoName -> MapType
         String csName = optText(root.path("map").path("csgoName"));
-        MapType mapType = MapType.fromCSName(csName); // см. пример csgoName="de_dust2" :contentReference[oaicite:12]{index=12}
+        MapType mapType = MapType.fromCSName(csName);
 
-        // match_data.MatchTime (в примере — миллисекунды; приводится к секундам для int)
-        long finishedAt = root.path("match_data").path("MatchTime").asLong(0L); // мс
+        long finishedAt = root.path("match_data").path("MatchTime").asLong(0L);
+        String dataSource = optText(root.path("match_data").path("Gamemode"));
 
-        // match_data.Gamemode
-        String dataSource = optText(root.path("match_data").path("Gamemode")); // "premier" :contentReference[oaicite:14]{index=14}
+        MatchResult result = resolveMatchResult(root.path("base"));
 
-        // playerStats из scoreboard_values
-        JsonNode scoreboardValues = root.path("scoreboard_values"); // :contentReference[oaicite:15]{index=15}
-        JsonNode highlights = root.path("highlights");              // набор счётчиков по игрокам :contentReference[oaicite:16]{index=16}
-        JsonNode clutches = root.path("clutches");                  // структура клатчей (CT/T → Won/Lost) :contentReference[oaicite:17]{index=17}
+        JsonNode scoreboardValues = root.path("scoreboard_values");
+        JsonNode highlights = root.path("highlights");
+        JsonNode clutches = root.path("clutches");
 
         List<PlayerStat> stats = new ArrayList<>();
         if (scoreboardValues.isObject()) {
@@ -177,33 +141,35 @@ public class ScopeGGApi {
             while (it.hasNext()) {
                 String playerId = it.next();
                 JsonNode p = scoreboardValues.path(playerId);
-                JsonNode basic = p.path("GeneralStats").path("ScoreboardPages").path("Basic"); // :contentReference[oaicite:18]{index=18}
+                JsonNode basic = p.path("GeneralStats").path("ScoreboardPages").path("Basic");
 
                 double rating2 = basic.path("Rating2").asDouble(0d);
                 int openKills = basic.path("OpenKills").asInt(0);
                 int tradeKills = basic.path("TradeKills").asInt(0);
 
-                JsonNode h = highlights.path(playerId); // может отсутствовать
-                int smoke = h.path("KillsThroughSmoke").path("Value").asInt(0);   // :contentReference[oaicite:19]{index=19}
-                int wallbang = h.path("WallbangKills").path("Value").asInt(0);    // :contentReference[oaicite:20]{index=20}
-                int flashA = h.path("FlashAssistsReal").path("Value").asInt(0);   // :contentReference[oaicite:21]{index=21}
-                int triple = h.path("TripleKills").path("Value").asInt(0);        // см. highlights-структуру :contentReference[oaicite:22]{index=22}
+                JsonNode h = highlights.path(playerId);
+                int smoke = h.path("KillsThroughSmoke").path("Value").asInt(0);
+                int wallbang = h.path("WallbangKills").path("Value").asInt(0);
+                int flashA = h.path("FlashAssistsReal").path("Value").asInt(0);
+                int triple = h.path("TripleKills").path("Value").asInt(0);
                 int quad = h.path("QuadrupleKills").path("Value").asInt(0);
                 int penta = h.path("PentaKills").path("Value").asInt(0);
 
-                // Клатчи из clutches
-                int[] clutch = new int[6]; // 1..5
+                int[] clutch = new int[6];
                 JsonNode playerClutches = clutches.path(playerId);
                 if (playerClutches.isObject()) {
-                    // обе стороны: CT, T
                     for (String side : new String[]{"CT", "T"}) {
                         JsonNode sideNode = playerClutches.path(side);
-                        if (!sideNode.isObject()) continue;
+                        if (!sideNode.isObject()) {
+                            continue;
+                        }
                         JsonNode won = sideNode.path("Won");
                         if (won.isArray()) {
                             for (JsonNode w : won) {
                                 int enemies = w.path("EnemiesCount").asInt(0);
-                                if (enemies >= 1 && enemies <= 5) clutch[enemies] += 1;
+                                if (enemies >= 1 && enemies <= 5) {
+                                    clutch[enemies] += 1;
+                                }
                             }
                         }
                     }
@@ -230,10 +196,49 @@ public class ScopeGGApi {
             }
         }
 
-        return new GameInfo(mapType, finishedAt, dataSource, stats);
+        return new GameInfo(mapType, result, finishedAt, dataSource, stats);
     }
 
-    // безопасное чтение текстовых полей
+    private MatchResult resolveMatchResult(JsonNode baseNode) {
+        if (!baseNode.isArray() || baseNode.size() < 2) {
+            throw new IllegalStateException("ScopeGG response does not contain valid 'base' teams block");
+        }
+
+        Set<String> desmondScopeggIds = new HashSet<>(PlayerName.DESMOND.getScopeggIds());
+
+        int desmondTeamIndex = findTeamIndexByPlayerId(baseNode, desmondScopeggIds);
+        if (desmondTeamIndex < 0) {
+            throw new IllegalStateException("Player DESMOND was not found in ScopeGG match base block");
+        }
+
+        boolean firstWon = baseNode.path(0).path("Won").asBoolean(false);
+        boolean secondWon = baseNode.path(1).path("Won").asBoolean(false);
+
+        if (!firstWon && !secondWon) {
+            return MatchResult.DRAW;
+        }
+
+        boolean desmondTeamWon = baseNode.path(desmondTeamIndex).path("Won").asBoolean(false);
+        return desmondTeamWon ? MatchResult.WIN : MatchResult.LOSE;
+    }
+
+    private int findTeamIndexByPlayerId(JsonNode baseNode, Set<String> targetPlayerIds) {
+        for (int teamIndex = 0; teamIndex < baseNode.size(); teamIndex++) {
+            JsonNode players = baseNode.path(teamIndex).path("Players");
+            if (!players.isArray()) {
+                continue;
+            }
+
+            for (JsonNode player : players) {
+                String playerId = optText(player.path("PlayerID"));
+                if (targetPlayerIds.contains(playerId)) {
+                    return teamIndex;
+                }
+            }
+        }
+        return -1;
+    }
+
     private static String optText(JsonNode node) {
         return (node == null || node.isMissingNode() || node.isNull()) ? "" : node.asText("");
     }
@@ -242,17 +247,8 @@ public class ScopeGGApi {
     private static class RawMatch {
         @JsonProperty("MatchID")
         String matchID;
+
         @JsonProperty("MatchTime")
         long matchTime;
-        @JsonProperty("TeamInfos")
-        List<TeamInfos> teams;
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        private static class TeamInfos {
-            @JsonProperty("Won")
-            Boolean won;
-            @JsonProperty("IsUserTeam")
-            Boolean isUserTeam;
-        }
     }
 }
