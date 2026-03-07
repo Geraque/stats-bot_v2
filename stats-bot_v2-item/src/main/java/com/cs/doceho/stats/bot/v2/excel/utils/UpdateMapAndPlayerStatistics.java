@@ -35,7 +35,8 @@ public class UpdateMapAndPlayerStatistics {
         Map.entry("ANUBIS", new MapCellBlock(3, 4, 99)),   // Общий: CV4, Индив.: CV5, Итог: CV6
         Map.entry("TRAIN", new MapCellBlock(0, 1, 105)),  // Общий: DB1, Индив.: DB2, Итог: DB3 (столбцы DB-DG)
         Map.entry("OVERPASS", new MapCellBlock(3, 4, 105)),  // Общий: DB4, Индив.: DB5, Итог: DB6
-        Map.entry("NUKE", new MapCellBlock(0, 1, 111))  // Общий: DH1, Индив.: DH2, Итог: DH3 (столбцы DH-DM)
+        Map.entry("NUKE", new MapCellBlock(0, 1, 111)),  // Общий: DH1, Индив.: DH2, Итог: DH3 (столбцы DH-DM)
+        Map.entry("OFFICE", new MapCellBlock(0, 4, 111))
     );
 
     static Map<String, WingmanMapCellBlock> WINGMAN_MAP_CELL_BLOCK = Map.of(
