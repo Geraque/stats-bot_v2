@@ -39,7 +39,7 @@ public class CellStyleService {
     }
 
     public void applyColorStyle(Workbook workbook, Row row) {
-        int[] styleColumns = new int[]{7, 15, 20, 28, 33, 41, 46, 54, 59, 67, 72, 80};
+        int[] styleColumns = new int[]{6, 14, 19, 27, 32, 40, 45, 53, 58, 66, 71, 79};
         for (int i = 0; i < MATCH_ROW_COLORS.size(); i++) {
             applyColorStyleCell(workbook, row, MATCH_ROW_COLORS.get(i), styleColumns[i]);
         }

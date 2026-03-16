@@ -3596,3 +3596,8 @@ INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,th
 	 ('b87f23ca-d9e1-4cfc-891a-3b966213e219'::uuid,'BLACK_VISION'::public."player_names",'2026-03-09 12:58:51.000',0.84,0,1,0,0,0,0,2,0,0,0,0,0,0,'PREMIER'::public."match_types",'DUST_II'::public."map_types",'LOSE'::public."match_results"),
 	 ('57c9c72c-c7f8-494d-8060-6afe36cc685d'::uuid,'GLOXINIA'::public."player_names",'2026-03-09 12:58:51.000',0.87,0,3,1,0,0,0,4,0,1,0,0,0,0,'PREMIER'::public."match_types",'DUST_II'::public."map_types",'LOSE'::public."match_results"),
 	 ('073c3947-2767-4b8a-ab1c-aa372928af43'::uuid,'DESMOND'::public."player_names",'2026-03-09 12:58:51.000',0.28,0,1,0,0,0,0,0,1,1,0,0,0,0,'PREMIER'::public."match_types",'DUST_II'::public."map_types",'LOSE'::public."match_results");
+
+INSERT INTO public.matches (id,player_name,"date",rating,smoke_kill,open_kill,three_kill,four_kill,ace,flash,trade,wall_bang,clutch_one,clutch_two,clutch_three,clutch_four,clutch_five,"type","map","result") VALUES
+	 ('eb6af7af-6067-48cc-b38d-639de48bd2df'::uuid,'GLOXINIA'::public."player_names",'2026-03-14 17:14:34.000',0.81,2,1,0,0,0,0,4,0,0,0,0,0,0,'PREMIER'::public."match_types",'ANCIENT'::public."map_types",'LOSE'::public."match_results"),
+	 ('5e4d9976-1a34-4960-a188-8236dc05f06b'::uuid,'DESMOND'::public."player_names",'2026-03-14 17:14:34.000',1.04,2,5,1,0,0,0,2,1,0,0,0,0,0,'PREMIER'::public."match_types",'ANCIENT'::public."map_types",'LOSE'::public."match_results"),
+	 ('39a56097-ad64-4458-a9f7-a859c4b9799d'::uuid,'BLACK_VISION'::public."player_names",'2026-03-14 17:14:34.000',1.36,0,1,2,1,0,1,6,1,1,0,0,0,0,'PREMIER'::public."match_types",'ANCIENT'::public."map_types",'LOSE'::public."match_results");
