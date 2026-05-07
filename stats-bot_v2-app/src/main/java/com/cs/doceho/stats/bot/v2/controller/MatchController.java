@@ -1,6 +1,5 @@
 package com.cs.doceho.stats.bot.v2.controller;
 
-
 import com.cs.doceho.stats.bot.v2.api.MatchApi;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
@@ -15,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFacade;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,12 +59,24 @@ public class MatchController implements MatchApi {
         .get();
   }
 
-
   @Override
   public ResponseEntity<List<Player>> getAllStats() {
     return Try.of(matchService::getAllStats)
         .map(ResponseEntity::ok)
         .get();
+  }
+
+  @Override
+  public ResponseEntity<String> exportMatchesSql(int limit, boolean onConflictDoNothing) {
+    try {
+      return ResponseEntity.ok()
+          .contentType(MediaType.TEXT_PLAIN)
+          .body(matchService.exportLatestAsSql(limit, onConflictDoNothing));
+    } catch (IllegalArgumentException exception) {
+      return ResponseEntity.badRequest()
+          .contentType(MediaType.TEXT_PLAIN)
+          .body(exception.getMessage());
+    }
   }
 
   @Override
@@ -77,8 +89,7 @@ public class MatchController implements MatchApi {
   }
 
   @Override
-  public ResponseEntity<Match> update(UUID matchId,
-      Match matchDetails) {
+  public ResponseEntity<Match> update(UUID matchId, Match matchDetails) {
     return Try.of(() -> matchService.update(matchId, matchDetails))
         .map(reference -> mapper.map(reference, Match.class))
         .map(ResponseEntity::ok)

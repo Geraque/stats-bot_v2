@@ -17,6 +17,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,8 +27,12 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MatchService {
 
+  static final int MIN_EXPORT_LIMIT = 1;
+  static final int MAX_EXPORT_LIMIT = 1000;
+
   MatchRepository matchRepository;
   CalculationService calculationService;
+  MatchSqlFormatter matchSqlFormatter;
 
   public List<MatchItem> getAll() {
     return matchRepository.findAll();
@@ -101,6 +107,18 @@ public class MatchService {
 
   public void delete(UUID id) {
     matchRepository.deleteById(id);
+  }
+
+  public String exportLatestAsSql(int limit, boolean onConflictDoNothing) {
+    validateExportLimit(limit);
+
+    List<MatchItem> matches = matchRepository.findAll(PageRequest.of(
+        0,
+        limit,
+        Sort.by(Sort.Order.desc("date"), Sort.Order.desc("id"))
+    )).getContent();
+
+    return matchSqlFormatter.format(matches, onConflictDoNothing);
   }
 
   public Player getPlayerStats(String playerName) {
@@ -204,6 +222,14 @@ public class MatchService {
           return player;
         })
         .collect(Collectors.toList());
+  }
+
+  private void validateExportLimit(int limit) {
+    if (limit < MIN_EXPORT_LIMIT || limit > MAX_EXPORT_LIMIT) {
+      throw new IllegalArgumentException(
+          String.format("Query parameter 'limit' must be between %d and %d.",
+              MIN_EXPORT_LIMIT, MAX_EXPORT_LIMIT));
+    }
   }
 
 }
