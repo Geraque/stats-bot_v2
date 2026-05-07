@@ -1,20 +1,23 @@
 package com.cs.doceho.stats.bot.v2.service;
 
-
 import com.cs.doceho.stats.bot.v2.api.CategoryApi;
 import com.cs.doceho.stats.bot.v2.api.MatchApi;
 import com.cs.doceho.stats.bot.v2.api.TopApi;
-import com.cs.doceho.stats.bot.v2.config.BotConfig;
+import com.cs.doceho.stats.bot.v2.config.TelegramProperties;
 import com.cs.doceho.stats.bot.v2.model.Match;
 import com.cs.doceho.stats.bot.v2.model.Player;
 import com.cs.doceho.stats.bot.v2.model.Top;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.config.RequestConfig;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -30,42 +33,46 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Slf4j
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@ConditionalOnProperty(prefix = "telegram", name = "enabled", havingValue = "true")
 public class TelegramBot extends TelegramLongPollingBot {
 
-  BotConfig config;
+  TelegramProperties config;
   MatchApi matchApi;
   TopApi topApi;
   CategoryApi categoryApi;
+  AtomicBoolean commandsRegistered = new AtomicBoolean(false);
+
   static String EXCEPTION_MESSAGE = "Error occurred:";
 
-  public TelegramBot(BotConfig config, MatchApi matchApi, TopApi topApi, CategoryApi categoryApi) {
+  public TelegramBot(TelegramProperties config, MatchApi matchApi, TopApi topApi, CategoryApi categoryApi) {
+    super(createOptions(config));
     this.config = config;
     this.matchApi = matchApi;
     this.topApi = topApi;
     this.categoryApi = categoryApi;
-    //Добавление меню
-    List<BotCommand> listOfCommands = new ArrayList<>();
-    listOfCommands.add(new BotCommand("/start", "Вернуться в главное меню"));
-    try {
-      this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
-    } catch (TelegramApiException e) {
-      log.error("{} {}", EXCEPTION_MESSAGE, e.getMessage());
-    }
   }
 
   @Override
   public String getBotUsername() {
-    return config.getBotName();
+    return config.getBot().getName();
   }
 
   @Override
   public String getBotToken() {
-    return config.getToken();
+    return config.getBot().getToken();
   }
 
-  //Получение и реакция на сообщение
+  public void sendNotification(String chatId, String textToSend) {
+    ensureCommandsRegistered();
+    SendMessage message = new SendMessage();
+    message.setChatId(chatId);
+    message.setText(textToSend);
+    executeSafely(message);
+  }
+
   @Override
   public void onUpdateReceived(Update update) {
+    ensureCommandsRegistered();
 
     if (update.hasMessage() && update.getMessage().hasText()) {
       String messageText = update.getMessage().getText();
@@ -224,7 +231,7 @@ public class TelegramBot extends TelegramLongPollingBot {
           log.info("Статистика Wesdia");
           allStatsByName(chatId, "Wesdia");
           break;
-          case "Статистика Chelicopukich":
+        case "Статистика Chelicopukich":
           log.info("Статистика Chelicopukich");
           allStatsByName(chatId, "Chelicopukich");
           break;
@@ -601,16 +608,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         break;
       case "Статистика, моя статистика":
         playerStatsButton(message);
+        break;
+      default:
+        break;
     }
 
-    try {
-      execute(message);
-    } catch (TelegramApiException e) {
-      log.error("{} {}", EXCEPTION_MESSAGE, e.getMessage());
-    }
+    executeSafely(message);
   }
 
-  //Отправка стикера
   private void sendSticker(long chatId) {
     SendSticker sticker = new SendSticker();
     sticker.setChatId(String.valueOf(chatId));
@@ -648,13 +653,53 @@ public class TelegramBot extends TelegramLongPollingBot {
       default:
         inputFile = new InputFile(
             "CAACAgIAAxkBAAEHgfhj1rYKYgxrQVA8ej3vTO27U1OMKAACtxYAAsbYIEgxxoDMn3yL4C0E");
+        break;
     }
     sticker.setSticker(inputFile);
 
+    executeSafely(sticker);
+  }
+
+  private void ensureCommandsRegistered() {
+    if (commandsRegistered.get()) {
+      return;
+    }
+
+    List<BotCommand> listOfCommands = new ArrayList<>();
+    listOfCommands.add(new BotCommand("/start", "Р’РµСЂРЅСѓС‚СЊСЃСЏ РІ РіР»Р°РІРЅРѕРµ РјРµРЅСЋ"));
+    try {
+      execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
+      commandsRegistered.set(true);
+    } catch (TelegramApiException e) {
+      log.warn("Telegram commands registration skipped: {}", e.getMessage());
+    }
+  }
+
+  private void executeSafely(SendMessage message) {
+    try {
+      execute(message);
+    } catch (TelegramApiException e) {
+      log.error("{} {}", EXCEPTION_MESSAGE, e.getMessage());
+    }
+  }
+
+  private void executeSafely(SendSticker sticker) {
     try {
       execute(sticker);
     } catch (TelegramApiException e) {
       log.error("{} {}", EXCEPTION_MESSAGE, e.getMessage());
     }
+  }
+
+  private static DefaultBotOptions createOptions(TelegramProperties properties) {
+    DefaultBotOptions options = new DefaultBotOptions();
+    RequestConfig requestConfig = RequestConfig.custom()
+        .setConnectTimeout(properties.getTimeout().getConnectMs())
+        .setSocketTimeout(properties.getTimeout().getReadMs())
+        .setConnectionRequestTimeout(properties.getTimeout().getRequestMs())
+        .build();
+    options.setRequestConfig(requestConfig);
+    options.setGetUpdatesTimeout(properties.getTimeout().getGetUpdatesSeconds());
+    return options;
   }
 }
