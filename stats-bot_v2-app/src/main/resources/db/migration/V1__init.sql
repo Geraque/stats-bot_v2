@@ -62,7 +62,8 @@ DO $$ BEGIN
         'PALACIO',
         'OVERPASS',
         'SANCTUM',
-        'POSEIDON'
+        'POSEIDON',
+        'CACHE'
     );
 EXCEPTION WHEN duplicate_object THEN null; -- Игнорировать, если тип уже существует
 END $$;

@@ -13,7 +13,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -36,13 +35,14 @@ public class UpdateMapAndPlayerStatistics {
         Map.entry("TRAIN", new MapCellBlock(0, 1, 105)),  // Общий: DB1, Индив.: DB2, Итог: DB3 (столбцы DB-DG)
         Map.entry("OVERPASS", new MapCellBlock(3, 4, 105)),  // Общий: DB4, Индив.: DB5, Итог: DB6
         Map.entry("NUKE", new MapCellBlock(0, 1, 111)),  // Общий: DH1, Индив.: DH2, Итог: DH3 (столбцы DH-DM)
-        Map.entry("OFFICE", new MapCellBlock(0, 4, 111))
+        Map.entry("OFFICE", new MapCellBlock(0, 4, 111)),
+        Map.entry("CACHE", new MapCellBlock(0, 1, 117))
     );
 
     static Map<String, WingmanMapCellBlock> WINGMAN_MAP_CELL_BLOCK = Map.of(
         "INFERNO", new WingmanMapCellBlock(2, 3, 7),   // H3-K3, H4-K4
-        "NUKE",    new WingmanMapCellBlock(2, 3, 11),  // L3-O3, L4-O4
-        "OVERPASS",new WingmanMapCellBlock(2, 3, 15),  // X3-Z3, X4-AA4
+        "NUKE", new WingmanMapCellBlock(2, 3, 11),  // L3-O3, L4-O4
+        "OVERPASS", new WingmanMapCellBlock(2, 3, 15),  // X3-Z3, X4-AA4
         "VERTIGO", new WingmanMapCellBlock(2, 3, 19),   // AB3-AE3, AB4-AE4
         "ROOFTOP", new WingmanMapCellBlock(2, 3, 23),
         "POSEIDON", new WingmanMapCellBlock(2, 3, 27),
@@ -269,7 +269,7 @@ public class UpdateMapAndPlayerStatistics {
         int individualRow;  // Индекс для ячеек индивидуальной статистики игроков
         int startColumn;    // Номер столбца для первого игрока в блоке
     }
-    
+
     @AllArgsConstructor
     private static class WingmanMapCellBlock {
         int overallRow;   // Строка, где записано название карты (без формул)
